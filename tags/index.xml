@@ -2,84 +2,84 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Cong&#39;s little space</title>
-    <link>/tags/</link>
+    <link>https://rampadc.github.io/tags/</link>
     <description>Recent content in Tags on Cong&#39;s little space</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-au</language>
     <lastBuildDate>Fri, 20 Sep 2019 16:16:00 +1100</lastBuildDate>
     
-	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://rampadc.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>toddler</title>
-      <link>/tags/toddler/</link>
+      <link>https://rampadc.github.io/tags/toddler/</link>
       <pubDate>Fri, 20 Sep 2019 16:16:00 +1100</pubDate>
       
-      <guid>/tags/toddler/</guid>
+      <guid>https://rampadc.github.io/tags/toddler/</guid>
       <description></description>
     </item>
     
     <item>
       <title>IBM</title>
-      <link>/tags/ibm/</link>
+      <link>https://rampadc.github.io/tags/ibm/</link>
       <pubDate>Sun, 23 Jun 2019 16:44:00 +1100</pubDate>
       
-      <guid>/tags/ibm/</guid>
+      <guid>https://rampadc.github.io/tags/ibm/</guid>
       <description></description>
     </item>
     
     <item>
       <title>logging</title>
-      <link>/tags/logging/</link>
+      <link>https://rampadc.github.io/tags/logging/</link>
       <pubDate>Sun, 23 Jun 2019 16:44:00 +1100</pubDate>
       
-      <guid>/tags/logging/</guid>
+      <guid>https://rampadc.github.io/tags/logging/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Cloud Foundry</title>
-      <link>/tags/cloud-foundry/</link>
+      <link>https://rampadc.github.io/tags/cloud-foundry/</link>
       <pubDate>Wed, 12 Jun 2019 23:00:00 +1100</pubDate>
       
-      <guid>/tags/cloud-foundry/</guid>
+      <guid>https://rampadc.github.io/tags/cloud-foundry/</guid>
       <description></description>
     </item>
     
     <item>
       <title>keyboard</title>
-      <link>/tags/keyboard/</link>
+      <link>https://rampadc.github.io/tags/keyboard/</link>
       <pubDate>Sun, 31 Mar 2019 12:25:00 +1100</pubDate>
       
-      <guid>/tags/keyboard/</guid>
+      <guid>https://rampadc.github.io/tags/keyboard/</guid>
       <description></description>
     </item>
     
     <item>
       <title>ghost</title>
-      <link>/tags/ghost/</link>
+      <link>https://rampadc.github.io/tags/ghost/</link>
       <pubDate>Sat, 22 Dec 2018 00:20:00 +1100</pubDate>
       
-      <guid>/tags/ghost/</guid>
+      <guid>https://rampadc.github.io/tags/ghost/</guid>
       <description></description>
     </item>
     
     <item>
       <title>general</title>
-      <link>/tags/general/</link>
+      <link>https://rampadc.github.io/tags/general/</link>
       <pubDate>Wed, 19 Dec 2018 12:12:01 +1100</pubDate>
       
-      <guid>/tags/general/</guid>
+      <guid>https://rampadc.github.io/tags/general/</guid>
       <description></description>
     </item>
     
     <item>
       <title>music</title>
-      <link>/tags/music/</link>
+      <link>https://rampadc.github.io/tags/music/</link>
       <pubDate>Tue, 08 Jan 2013 12:12:01 +1100</pubDate>
       
-      <guid>/tags/music/</guid>
+      <guid>https://rampadc.github.io/tags/music/</guid>
       <description></description>
     </item>
     

@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>general on Cong&#39;s little space</title>
-    <link>/tags/general/</link>
+    <link>https://rampadc.github.io/tags/general/</link>
     <description>Recent content in general on Cong&#39;s little space</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-au</language>
     <lastBuildDate>Wed, 19 Dec 2018 12:12:01 +1100</lastBuildDate>
     
-	<atom:link href="/tags/general/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://rampadc.github.io/tags/general/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>What is this blog about?</title>
-      <link>/posts/my-first-post/</link>
+      <link>https://rampadc.github.io/posts/my-first-post/</link>
       <pubDate>Wed, 19 Dec 2018 12:12:01 +1100</pubDate>
       
-      <guid>/posts/my-first-post/</guid>
+      <guid>https://rampadc.github.io/posts/my-first-post/</guid>
       <description>This is my fresh start to personal blogging. Back in 2012, I was a huge advocate for Adobe Flash despite Apple&amp;rsquo;s decision to exclude it from the OS&amp;rsquo;s and remote-controlled toys. So I started flashandrc.wordpress.com. After a while, my interests grew past Adobe Flash and remote-controlled helicopters, and evolved onto transcribing music that I like and making electronics. Soon, my blog became the go-to knowledge base for ThinkPad keyboards and Machinarium bossa nova guitar piece transcription.</description>
     </item>
     
