@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>toddler on Cong&#39;s little space</title>
+    <link>/tags/toddler/</link>
+    <description>Recent content in toddler on Cong&#39;s little space</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-au</language>
+    <lastBuildDate>Fri, 20 Sep 2019 16:16:00 +1100</lastBuildDate>
+    
+	<atom:link href="/tags/toddler/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>How Toddler plays</title>
+      <link>/posts/how-toddler-plays/</link>
+      <pubDate>Fri, 20 Sep 2019 16:16:00 +1100</pubDate>
+      
+      <guid>/posts/how-toddler-plays/</guid>
+      <description>Back when I first started looking into making the manager (like 4 years ago), looking through Github&amp;rsquo;s projects on automating Tribal Wars 2, I found most, if not all, of the projects relies on automating the browser instead of utilising the the game&amp;rsquo;s WebSocket connection. Therefore, I think it&amp;rsquo;s worthwhile to capture the essence of how the game client talks to the game server. Hopefully, this blog post may be helpful to those looking to automate this game.</description>
+    </item>
+    
+    <item>
+      <title>Birth of Toddler</title>
+      <link>/posts/birth-of-toddler/</link>
+      <pubDate>Thu, 13 Jun 2019 08:51:00 +1100</pubDate>
+      
+      <guid>/posts/birth-of-toddler/</guid>
+      <description>Tribal Wars 2 Manager is now called Toddler!
+Why? It&amp;rsquo;s a shorter name.
+Additionally, there had been a few changes to project Toddler:
+ RabbitMQ swapped out for NATS Project repos hosted on Github auth-svc is now called toddler-auth data-svc is now called toddler-world-data Elasticsearch is removed completely to simplify development World data is stored into a MongoDB database Deployment is sharply turned to Cloud Foundry - so much cheaper  </description>
+    </item>
+    
+    <item>
+      <title>Beyond the basics with Cloud Foundry</title>
+      <link>/posts/beyond-the-basics-with-cloud-foundry/</link>
+      <pubDate>Wed, 12 Jun 2019 23:00:00 +1100</pubDate>
+      
+      <guid>/posts/beyond-the-basics-with-cloud-foundry/</guid>
+      <description>The advent of Docker changed the way we develop applications. Once you had written a Dockerfile and built the image, your application will run (almost) anywhere, regardless of the underlying operating system, and best of all, it just works. You can then expose ports, map volumes to persist data and deploy your image in Docker Swarm or Kubernetes (K8s). With great flexibility, however, comes greater costs, whether that is increased developer&amp;rsquo;s skillset requirements and time spent on writing multiple K8s YAML config files, or pricier services on your favourite cloud provider.</description>
+    </item>
+    
+    <item>
+      <title>Tribal Wars 2 Manager - Authentication Service</title>
+      <link>/posts/tribal-wars-2-manager-authentication-service/</link>
+      <pubDate>Mon, 31 Dec 2018 21:32:00 +1100</pubDate>
+      
+      <guid>/posts/tribal-wars-2-manager-authentication-service/</guid>
+      <description>In the previous post, I mentioned the 6 services essential to wrap up the Tribal Wars 2 manager: data collection, alert, farm, ops and build-recruit services. Before that to happen however, we need to figure out a way to talk to the game i.e. the authentication service.
+Core service overview The source code for this service is hosted at https://bitbucket.org/cn-d/auth-service.
+The authentication service is sandwiched between the 6 services and the game server.</description>
+    </item>
+    
+    <item>
+      <title>Tribal Wars 2 Manager - Services Overview</title>
+      <link>/posts/tribal-wars-2-manager-services-overview/</link>
+      <pubDate>Wed, 26 Dec 2018 06:53:00 +1100</pubDate>
+      
+      <guid>/posts/tribal-wars-2-manager-services-overview/</guid>
+      <description>Merry Christmas everyone, and Happy Boxing day to folks in the Southern hemisphere.
+In the last post, I wrote about the tech I&amp;rsquo;d like to play with for this project, but never really go into what each of the services does. This prompts the question to some of my mates who don&amp;rsquo;t play Tribal Wars &amp;ldquo;does this application need to be this complex?&amp;rdquo;. Besides getting all the tech in, what functionalities and services should this project provide to the player?</description>
+    </item>
+    
+    <item>
+      <title>Tribal Wars 2 Manager - Architecture</title>
+      <link>/posts/tribal-wars-2-manager-architecture/</link>
+      <pubDate>Thu, 20 Dec 2018 17:24:00 +1100</pubDate>
+      
+      <guid>/posts/tribal-wars-2-manager-architecture/</guid>
+      <description>Earlier this year, I developed a single process NodeJS application for all the services in this manager (shown down below) and it started to raise out-of-memory errors due to Node&amp;rsquo;s limitation. This project aims to eliminate this problem by splitting the manager into multiple services.
+This blog post serves a documentation for the high-level design of my Tribal Wars 2 manager. The development for this project is not about cheating in Tribal Wars 2 but using the game as a motivator to learn new technologies.</description>
+    </item>
+    
+  </channel>
+</rss>

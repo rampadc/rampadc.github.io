@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2019-11-23T22:39:53+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/toc/</loc>
+    <lastmod>2019-11-23T22:39:53+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/readme/</loc>
+    <lastmod>2019-11-23T22:31:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/how-toddler-plays/</loc>
+    <lastmod>2019-09-20T16:16:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/</loc>
+    <lastmod>2019-09-20T16:16:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2019-09-20T16:16:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/toddler/</loc>
+    <lastmod>2019-09-20T16:16:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/ibm/</loc>
+    <lastmod>2019-06-23T16:44:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/logging/</loc>
+    <lastmod>2019-06-23T16:44:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/logging-with-papertrail/</loc>
+    <lastmod>2019-06-23T16:44:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/birth-of-toddler/</loc>
+    <lastmod>2019-06-13T08:51:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/beyond-the-basics-with-cloud-foundry/</loc>
+    <lastmod>2019-06-12T23:00:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/cloud-foundry/</loc>
+    <lastmod>2019-06-12T23:00:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/keyboard/</loc>
+    <lastmod>2019-03-31T12:25:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/thinkpad-keyboards-controllers/</loc>
+    <lastmod>2019-03-31T12:25:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/tribal-wars-2-manager-authentication-service/</loc>
+    <lastmod>2018-12-31T21:32:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/tribal-wars-2-manager-services-overview/</loc>
+    <lastmod>2018-12-26T06:53:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/add-talk-commenting-to-ghost/</loc>
+    <lastmod>2018-12-22T00:20:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/ghost/</loc>
+    <lastmod>2018-12-22T00:20:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/tribal-wars-2-manager-architecture/</loc>
+    <lastmod>2018-12-20T17:24:00+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/general/</loc>
+    <lastmod>2018-12-19T12:12:01+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/my-first-post/</loc>
+    <lastmod>2018-12-19T12:12:01+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/machinarium/</loc>
+    <lastmod>2013-01-08T12:12:01+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/music/</loc>
+    <lastmod>2013-01-08T12:12:01+11:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
+  </url>
+  
+</urlset>

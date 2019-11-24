@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Tribal Wars 2 Manager - Architecture :: Cong&#39;s little space — A little technical blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="description" content="Earlier this year, I developed a single process NodeJS application for all the services in this manager (shown down below) and it started to raise out-of-memory errors due to Node&amp;rsquo;s limitation. This project aims to eliminate this problem by splitting the manager into multiple services.
+This blog post serves a documentation for the high-level design of my Tribal Wars 2 manager. The development for this project is not about cheating in Tribal Wars 2 but using the game as a motivator to learn new technologies."/>
+<meta name="keywords" content="tribal wars 2, "/>
+<meta name="robots" content="noodp"/>
+<link rel="canonical" href="/posts/tribal-wars-2-manager-architecture/" />
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/img/apple-touch-icon-144-precomposed.png">
+
+<link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Tribal Wars 2 Manager - Architecture :: Cong&#39;s little space — A little technical blog" />
+<meta name="twitter:description" content="Earlier this year, I developed a single process NodeJS application for all the services in this manager (shown down below) and it started to raise out-of-memory errors due to Node&amp;rsquo;s limitation. This project aims to eliminate this problem by splitting the manager into multiple services.
+This blog post serves a documentation for the high-level design of my Tribal Wars 2 manager. The development for this project is not about cheating in Tribal Wars 2 but using the game as a motivator to learn new technologies." />
+<meta name="twitter:site" content="/" />
+<meta name="twitter:creator" content="Cong Nguyen" />
+<meta name="twitter:image" content="">
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Tribal Wars 2 Manager - Architecture :: Cong&#39;s little space — A little technical blog">
+<meta property="og:description" content="Earlier this year, I developed a single process NodeJS application for all the services in this manager (shown down below) and it started to raise out-of-memory errors due to Node&amp;rsquo;s limitation. This project aims to eliminate this problem by splitting the manager into multiple services.
+This blog post serves a documentation for the high-level design of my Tribal Wars 2 manager. The development for this project is not about cheating in Tribal Wars 2 but using the game as a motivator to learn new technologies." />
+<meta property="og:url" content="/posts/tribal-wars-2-manager-architecture/" />
+<meta property="og:site_name" content="Tribal Wars 2 Manager - Architecture" />
+<meta property="og:image" content="">
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+<meta property="article:published_time" content="2018-12-20 17:24:00 &#43;1100 AEDT" />
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="">
+
+
+<div class="container">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Cong&#39;s little blog
+  </div>
+</a>
+
+    </div>
+    <div class="menu-trigger">menu</div>
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/readme">README</a></li>
+        
+      
+        
+          <li><a href="/toc">T.O.C</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/readme">README</a></li>
+      
+    
+      
+        <li><a href="/toc">T.O.C</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/posts/tribal-wars-2-manager-architecture/">Tribal Wars 2 Manager - Architecture</a></h1>
+  <div class="post-meta">
+      
+    <span class="post-date">
+      2018-12-20
+    </span>
+    
+    
+    <span class="post-author">::
+      Cong Nguyen
+    </span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="/tags/toddler/">toddler</a>&nbsp;
+    
+  </span>
+  
+
+  
+
+  <div class="post-content">
+    
+
+<p>Earlier this year, I developed a single process NodeJS application for all the services in this manager (shown down below) and it started to raise out-of-memory errors due to Node&rsquo;s limitation. This project aims to eliminate this problem by splitting the manager into multiple services.</p>
+
+<p>This blog post serves a documentation for the high-level design of my Tribal Wars 2 manager. The development for this project is not about cheating in Tribal Wars 2 but using the game as a motivator to learn new technologies. As of the published date of this post, this project is not open-source as it is still in development.</p>
+
+<h1 id="how-the-game-works">How the game works</h1>
+
+<p>Behind the scenes, Tribal Wars 2, henceforth referred to as TW2, uses a web socket implementation Socket.IO to communicate between the game GUI and server. At the time of this post December 2018, the game is using <a href="http://socket.io">Socket.IO</a> version 2.0. To connect to the game, I am using <a href="https://www.npmjs.com/package/socket.io-client">socket.io-client</a> for Javascript as other implementations of the library is not as up-to-date.</p>
+
+<p>The sequence to establish a connection to the game is as follows:</p>
+
+<ol>
+<li>Use socket.io-client to connect to the game</li>
+<li>Listen to the socket&rsquo;s connect and disconnect events detect when a connection is ready.</li>
+<li>Listen to the socket&rsquo;s msg event to intercept messages.</li>
+
+<li><p>The code excerpt below shows a rough sketch of how this works.</p>
+
+<pre><code class="language-javascript">const io = require('socket.io-client');
+
+const socket = io.connect('https://en.tribalwars2.com/', {
+query: 'platform=desktop',
+transports: [&quot;websocket&quot;, &quot;polling&quot;, &quot;polling-jsonp&quot;, &quot;polling-xhr&quot;]
+});
+
+socket.on('connect', () =&gt; {
+// socket connected
+});
+socket.on(&quot;disconnect&quot;, () =&gt; {
+// socket disconnected, handle retries here
+});
+
+socket.on(&quot;msg&quot;, (messageObject: any) =&gt; {
+// message received
+});
+</code></pre></li>
+</ol>
+
+<p>To send a message to the game, the message must contain a type from the game&rsquo;s routing and events keys in the game&rsquo;s loaded Javascript file, and it should have an ID to identify replies to any requests. The game&rsquo;s Javascript file changes frequently with each new release version. When loading the game, a game file usually comes up following the naming convention game-xyz.min.js, where xyz is a string of numbers and letters.</p>
+
+<p>The code block to send a message is similar to the following.</p>
+
+<pre><code class="language-javascript">send(msgObj: any) {
+    this.socket.emit(&quot;msg&quot;, {
+        type: msgObj.type,
+        data: msgObj.data,
+        id: msgObj.id,
+        headers: {
+            traveltimes: [[&quot;browser_send&quot;, Date.now()]]
+        }
+    });
+}
+</code></pre>
+
+<h1 id="project-high-level-design">Project high-level design</h1>
+
+<p>Now, with the basics out of the way, there are a couple of technologies that I want to play with in this project. These include:</p>
+
+<ol>
+<li>RabbitMQ - originally, I was going with Apache ArtemisMQ since I was learning Kotlin and was going to do a full Spring microservices thing. However, one of my mates was looking for a tech project to try out Jenkins and he&rsquo;s only Ruby proficient. We went with RabbitMQ for its range of client library support in multiple languages.</li>
+<li>Elastic Stack - while looking for an alternative to Splunk Enterprise, I came across the Elastic stack or ELK previously. It&rsquo;s like a MongoDB with all the cool bells and whistles; and you can even build a nice custom dashboard with Kibana and/or Canvas. So say a custom game map with player info and achievement datagrid.</li>
+<li>Activiti BPM - ops service for sending farms, attacks, defending, back-timing, dodging, etc. usually comes with some intelligence or rules that can be baked in and prioritised by the player.</li>
+<li>Anchore - for container security and compliance checks</li>
+<li>Jenkins pipeline to build up a docker stack for all services, perform CI tasks along the way.</li>
+<li>NGINX - last but not least, some reverse proxy. The player is likely to want a dashboard with information from each service, game data, etc.</li>
+<li>Kubernetes - used to orchestrate services in the manager. Personally, I have yet to work with K8s on a multi-node setup.</li>
+</ol>
+
+<p>This manager is going to include multiple services: data scraping service, farm service, ops service, reports, trading service and alerting services for when you get attacked and such. They communicate to each other and to/from the game via RabbitMQ. The data is likely be stored in Elasticsearch and backed up to a free mlab&rsquo;s MongoDB cluster.</p>
+
+<p>The following diagram illustrates how services would work with each other. All services will likely to live on a single Docker node, while RabbitMQ and Elastic stack lives on their own separate nodes. I look forward to using Kubernetes to orchestrate the stack.</p>
+
+<p><img src="components.png" alt="Manager's components" /></p>
+
+  </div>
+  
+  <div class="pagination">
+    <div class="pagination__title">
+      <span
+        class="pagination__title-h">Read other posts</span>
+      <hr />
+    </div>
+    <div class="pagination__buttons">
+      
+      <span class="button previous">
+        <a href="/posts/add-talk-commenting-to-ghost/">
+          <span class="button__icon">←</span>
+          <span class="button__text">Adding Talk to Ghost</span>
+        </a>
+      </span>
+      
+      
+      <span class="button next">
+        <a href="/posts/my-first-post/">
+          <span class="button__text">What is this blog about?</span>
+          <span class="button__icon">→</span>
+        </a>
+      </span>
+      
+    </div>
+  </div>
+  
+
+  
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2019 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

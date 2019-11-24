@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on Cong&#39;s little space</title>
+    <link>/tags/</link>
+    <description>Recent content in Tags on Cong&#39;s little space</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-au</language>
+    <lastBuildDate>Fri, 20 Sep 2019 16:16:00 +1100</lastBuildDate>
+    
+	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>toddler</title>
+      <link>/tags/toddler/</link>
+      <pubDate>Fri, 20 Sep 2019 16:16:00 +1100</pubDate>
+      
+      <guid>/tags/toddler/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>IBM</title>
+      <link>/tags/ibm/</link>
+      <pubDate>Sun, 23 Jun 2019 16:44:00 +1100</pubDate>
+      
+      <guid>/tags/ibm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>logging</title>
+      <link>/tags/logging/</link>
+      <pubDate>Sun, 23 Jun 2019 16:44:00 +1100</pubDate>
+      
+      <guid>/tags/logging/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cloud Foundry</title>
+      <link>/tags/cloud-foundry/</link>
+      <pubDate>Wed, 12 Jun 2019 23:00:00 +1100</pubDate>
+      
+      <guid>/tags/cloud-foundry/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>keyboard</title>
+      <link>/tags/keyboard/</link>
+      <pubDate>Sun, 31 Mar 2019 12:25:00 +1100</pubDate>
+      
+      <guid>/tags/keyboard/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ghost</title>
+      <link>/tags/ghost/</link>
+      <pubDate>Sat, 22 Dec 2018 00:20:00 +1100</pubDate>
+      
+      <guid>/tags/ghost/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>general</title>
+      <link>/tags/general/</link>
+      <pubDate>Wed, 19 Dec 2018 12:12:01 +1100</pubDate>
+      
+      <guid>/tags/general/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>music</title>
+      <link>/tags/music/</link>
+      <pubDate>Tue, 08 Jan 2013 12:12:01 +1100</pubDate>
+      
+      <guid>/tags/music/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
