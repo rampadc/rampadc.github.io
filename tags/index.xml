@@ -6,10 +6,19 @@
     <description>Recent content in Tags on Cong&#39;s little space</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-au</language>
-    <lastBuildDate>Tue, 10 Dec 2019 11:39:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 10 Dec 2019 14:40:00 +0000</lastBuildDate>
     
 	<atom:link href="https://congx.dev/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>hugo</title>
+      <link>https://congx.dev/tags/hugo/</link>
+      <pubDate>Tue, 10 Dec 2019 14:40:00 +0000</pubDate>
+      
+      <guid>https://congx.dev/tags/hugo/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>xpsl</title>
