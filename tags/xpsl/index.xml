@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>xpsl on Cong&#39;s little space</title>
+    <link>https://congx.dev/tags/xpsl/</link>
+    <description>Recent content in xpsl on Cong&#39;s little space</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-au</language>
+    <lastBuildDate>Tue, 10 Dec 2019 11:39:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://congx.dev/tags/xpsl/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>XPSL Docs: Motivation and Overview</title>
+      <link>https://congx.dev/posts/xpsl-docs-motivation-overview/xpsl-docs-overview-and-motivation/</link>
+      <pubDate>Tue, 10 Dec 2019 11:39:00 +0000</pubDate>
+      
+      <guid>https://congx.dev/posts/xpsl-docs-motivation-overview/xpsl-docs-overview-and-motivation/</guid>
+      <description>Motivation Walking on the street, listening to a song you like, sharing that song with your friends, do a bit of silent dancing on the street, groove a little bit. Maybe you like that song your friend suggests, and wants to add it into your own music library.
+Except you are on Apple Music and your mate is on Spotify. There are no services out there that offers a unified listening experience across multiple music providers.</description>
+    </item>
+    
+  </channel>
+</rss>

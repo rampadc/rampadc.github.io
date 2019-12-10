@@ -4,7 +4,27 @@
   
   <url>
     <loc>https://congx.dev/</loc>
-    <lastmod>2019-11-23T22:39:53+11:00</lastmod>
+    <lastmod>2019-12-10T11:39:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://congx.dev/posts/</loc>
+    <lastmod>2019-12-10T11:39:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://congx.dev/tags/</loc>
+    <lastmod>2019-12-10T11:39:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://congx.dev/tags/xpsl/</loc>
+    <lastmod>2019-12-10T11:39:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://congx.dev/posts/xpsl-docs-motivation-overview/xpsl-docs-overview-and-motivation/</loc>
+    <lastmod>2019-12-10T11:39:00+00:00</lastmod>
   </url>
   
   <url>
@@ -19,16 +39,6 @@
   
   <url>
     <loc>https://congx.dev/posts/how-toddler-plays/</loc>
-    <lastmod>2019-09-20T16:16:00+11:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://congx.dev/posts/</loc>
-    <lastmod>2019-09-20T16:16:00+11:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://congx.dev/tags/</loc>
     <lastmod>2019-09-20T16:16:00+11:00</lastmod>
   </url>
   
