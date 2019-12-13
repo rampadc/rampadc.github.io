@@ -3,33 +3,38 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://congx.dev/posts/building-and-shipping-hugo-posts-with-travis-ci-for-github-pages/</loc>
-    <lastmod>2019-12-10T14:40:00+00:00</lastmod>
+    <loc>https://congx.dev/</loc>
+    <lastmod>2019-12-13T04:57:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://congx.dev/</loc>
+    <loc>https://congx.dev/posts/</loc>
+    <lastmod>2019-12-13T04:57:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://congx.dev/tags/</loc>
+    <lastmod>2019-12-13T04:57:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://congx.dev/tags/xpsl/</loc>
+    <lastmod>2019-12-13T04:57:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://congx.dev/posts/xpsl-docs-functional-requirements/xpsl-docs-functional-requirements/</loc>
+    <lastmod>2019-12-13T04:57:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://congx.dev/posts/building-and-shipping-hugo-posts-with-travis-ci-for-github-pages/</loc>
     <lastmod>2019-12-10T14:40:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://congx.dev/tags/hugo/</loc>
     <lastmod>2019-12-10T14:40:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://congx.dev/posts/</loc>
-    <lastmod>2019-12-10T14:40:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://congx.dev/tags/</loc>
-    <lastmod>2019-12-10T14:40:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://congx.dev/tags/xpsl/</loc>
-    <lastmod>2019-12-10T11:39:00+00:00</lastmod>
   </url>
   
   <url>
