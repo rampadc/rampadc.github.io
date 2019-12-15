@@ -13,10 +13,10 @@
     
     <item>
       <title>XPSL Docs: Functional requirements</title>
-      <link>https://congx.dev/posts/xpsl-docs-functional-requirements/xpsl-docs-functional-requirements/</link>
+      <link>https://congx.dev/posts/xpsl-docs-functional-requirements/</link>
       <pubDate>Fri, 13 Dec 2019 04:57:00 +0000</pubDate>
       
-      <guid>https://congx.dev/posts/xpsl-docs-functional-requirements/xpsl-docs-functional-requirements/</guid>
+      <guid>https://congx.dev/posts/xpsl-docs-functional-requirements/</guid>
       <description>There are 4 types in XPSL: user, room, track, playlist. This blog post lists the functional requirements for each of these types.
 XPSL User  A user must have access to either Spotify or Apple Music A user must authorise XPSL for their Spotify and/or Apple Music account User can only belong to 1 room User can create a room or join a room once they have authorised XPSL to access Spotify and/or Apple Music XPSL will refresh Spotify access token on the user’s behalf Each XPSL user has a unique ID A user must have a display name A user could have a short name XPSL user client is a NATS client that subscribe to a XPSL Room (NATS Topic)  XPSL Room  Each room has a group of users who manage a shared playlist Room is a NATS topic that multiple users can subscribe to Each room has a topic ID of xpsl-room- Each room can have 1 or more users.</description>
     </item>
