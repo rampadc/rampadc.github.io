@@ -6,10 +6,37 @@
     <description>Recent content in Tags on congx.dev</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-au</language>
-    <lastBuildDate>Fri, 13 Dec 2019 04:57:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 29 Feb 2020 14:12:00 +0000</lastBuildDate>
     
 	<atom:link href="https://congx.dev/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>general</title>
+      <link>https://congx.dev/tags/general/</link>
+      <pubDate>Sat, 29 Feb 2020 14:12:00 +0000</pubDate>
+      
+      <guid>https://congx.dev/tags/general/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ibm</title>
+      <link>https://congx.dev/tags/ibm/</link>
+      <pubDate>Sat, 29 Feb 2020 14:12:00 +0000</pubDate>
+      
+      <guid>https://congx.dev/tags/ibm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>security</title>
+      <link>https://congx.dev/tags/security/</link>
+      <pubDate>Sat, 29 Feb 2020 14:12:00 +0000</pubDate>
+      
+      <guid>https://congx.dev/tags/security/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>xpsl</title>
@@ -35,15 +62,6 @@
       <pubDate>Fri, 20 Sep 2019 16:16:00 +1100</pubDate>
       
       <guid>https://congx.dev/tags/toddler/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>IBM</title>
-      <link>https://congx.dev/tags/ibm/</link>
-      <pubDate>Sun, 23 Jun 2019 16:44:00 +1100</pubDate>
-      
-      <guid>https://congx.dev/tags/ibm/</guid>
       <description></description>
     </item>
     
@@ -80,15 +98,6 @@
       <pubDate>Sat, 22 Dec 2018 00:20:00 +1100</pubDate>
       
       <guid>https://congx.dev/tags/ghost/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>general</title>
-      <link>https://congx.dev/tags/general/</link>
-      <pubDate>Wed, 19 Dec 2018 12:12:01 +1100</pubDate>
-      
-      <guid>https://congx.dev/tags/general/</guid>
       <description></description>
     </item>
     
