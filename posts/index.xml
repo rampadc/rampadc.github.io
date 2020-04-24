@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>congx.dev</title>
-    <link>https://congx.dev/</link>
-    <description>Recent content on congx.dev</description>
+    <title>Posts on congx.dev</title>
+    <link>https://congx.dev/posts/</link>
+    <description>Recent content in Posts on congx.dev</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-au</language>
     <lastBuildDate>Sun, 19 Apr 2020 09:13:00 +0000</lastBuildDate>
     
-	<atom:link href="https://congx.dev/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://congx.dev/posts/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -50,27 +50,6 @@ Configuring Travis CI .travis.yml
       <guid>https://congx.dev/posts/xpsl-docs-motivation-overview/xpsl-docs-overview-and-motivation/</guid>
       <description>Motivation Walking on the street, listening to a song you like, sharing that song with your friends, do a bit of silent dancing on the street, groove a little bit. Maybe you like that song your friend suggests, and wants to add it into your own music library.
 Except you are on Apple Music and your mate is on Spotify. There are no services out there that offers a unified listening experience across multiple music providers.</description>
-    </item>
-    
-    <item>
-      <title>T.O.C</title>
-      <link>https://congx.dev/toc/</link>
-      <pubDate>Sat, 23 Nov 2019 22:39:53 +1100</pubDate>
-      
-      <guid>https://congx.dev/toc/</guid>
-      <description>Table of contents? Yea nah, it&amp;rsquo;s a list of tags.
- Toddler - implementation of a Tribal Wars 2 game bot Keyboard - ThinkPad keyboard controller Music - song transcriptions General - anything that don&amp;rsquo;t belong in the list above  </description>
-    </item>
-    
-    <item>
-      <title>README</title>
-      <link>https://congx.dev/readme/</link>
-      <pubDate>Sat, 23 Nov 2019 22:31:00 +1100</pubDate>
-      
-      <guid>https://congx.dev/readme/</guid>
-      <description>Hi, my name is Cong. I am a developer advocate at IBM. I am passionate about learning new technologies and applying them to make people&amp;rsquo;s lives easier.
-I enjoy writing articles and giving talks at local meetups and conferences. You can find me at IBM Developers.
-On a day to day basis, I work proactively with clients across industries to implement and deliver enterprise IT projects using web and mobile, to cognitive and Blockchain.</description>
     </item>
     
     <item>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Tribal Wars 2 Manager - Services Overview :: congx.dev — A little technical blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="description" content="Merry Christmas everyone, and Happy Boxing day to folks in the Southern hemisphere.
+In the last post, I wrote about the tech I&amp;rsquo;d like to play with for this project, but never really go into what each of the services does. This prompts the question to some of my mates who don&amp;rsquo;t play Tribal Wars &amp;ldquo;does this application need to be this complex?&amp;rdquo;. Besides getting all the tech in, what functionalities and services should this project provide to the player?" />
+<meta name="keywords" content="tribal wars 2" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="https://congx.dev/posts/tribal-wars-2-manager-services-overview/" />
+
+
+
+
+<link rel="stylesheet" href="https://congx.dev/assets/style.css">
+
+  <link rel="stylesheet" href="https://congx.dev/assets/blue.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://congx.dev/img/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="https://congx.dev/img/favicon/blue.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+<meta name="twitter:creator" content="Cong Nguyen" />
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Tribal Wars 2 Manager - Services Overview :: congx.dev">
+<meta property="og:description" content="Merry Christmas everyone, and Happy Boxing day to folks in the Southern hemisphere.
+In the last post, I wrote about the tech I&amp;rsquo;d like to play with for this project, but never really go into what each of the services does. This prompts the question to some of my mates who don&amp;rsquo;t play Tribal Wars &amp;ldquo;does this application need to be this complex?&amp;rdquo;. Besides getting all the tech in, what functionalities and services should this project provide to the player?" />
+<meta property="og:url" content="https://congx.dev/posts/tribal-wars-2-manager-services-overview/" />
+<meta property="og:site_name" content="Tribal Wars 2 Manager - Services Overview" />
+
+  <meta property="og:image" content="https://congx.dev/">
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2018-12-26 06:53:00 &#43;1100 AEDT" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Cong&#39;s little blog
+  </div>
+</a>
+
+    </div>
+    <div class="menu-trigger">menu</div>
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/readme">README</a></li>
+        
+      
+        
+          <li><a href="/toc">T.O.C</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/readme">README</a></li>
+      
+    
+      
+        <li><a href="/toc">T.O.C</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="https://congx.dev/posts/tribal-wars-2-manager-services-overview/">Tribal Wars 2 Manager - Services Overview</a></h1>
+  <div class="post-meta">
+      
+    <span class="post-date">
+      2018-12-26
+    </span>
+    
+    
+    <span class="post-author">::
+      Cong Nguyen
+    </span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="https://congx.dev/tags/toddler/">toddler</a>&nbsp;
+    
+  </span>
+  
+
+  
+
+  <div class="post-content"><div>
+        
+
+<p>Merry Christmas everyone, and Happy Boxing day to folks in the Southern hemisphere.</p>
+
+<p>In the last post, I wrote about the tech I&rsquo;d like to play with for this project, but never really go into what each of the services does. This prompts the question to some of my mates who don&rsquo;t play Tribal Wars &ldquo;does this application need to be this complex?&rdquo;. Besides getting all the tech in, what functionalities and services should this project provide to the player?</p>
+
+<p>At the very basic level, to be of value, this project needs to provide 6 services:
+- Data collection service
+- Alerting service
+- Farm service
+- Ops service
+- Build &amp; recruit service</p>
+
+<h1 id="data-collection-service">Data collection service<a href="#data-collection-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+
+<p>At the heart of it all, first we have the data collection service. This service requests:</p>
+
+<ul>
+<li>World data, including information about the villages on the map, players and their achievements, tribes</li>
+<li>Player&rsquo;s build data, including building levels, current build queue, recruit queue, troops count, resources and market information</li>
+<li>Player&rsquo;s ops data, including outgoing and incoming commands</li>
+</ul>
+
+<p>All of these services require the player&rsquo;s credentials to log into the game. The data collected here serves as a the source of truth for all planning and building services going forward. In the past, I had chosen to go with MongoDB due to mlab&rsquo;s free 500MB clusters. For this project I decided to go with Elasticsearch as its querying capability is very much similar to that of MongoDB and it includes a really nice UI i.e. Kibana out of the box.</p>
+
+<p>As the game can notify the web UI on any new events through web socket, I&rsquo;m employing RabbitMQ&rsquo;s persistence and queue durability to allow for higher reliability. Yes this is a total overkill if the entire project is going to run on a single Docker node, but we never know. With <a href="https://en.forum.tribalwars2.com/index.php?threads/tw2-tools.5182/">tw2-tools</a> being sunset, this service could become more prevalent than ever.</p>
+
+<h1 id="alerting-service">Alerting service<a href="#alerting-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+
+<p>The alert service is aimed to use Elasticsearch&rsquo;s alerting plugins such as <a href="https://github.com/Yelp/elastalert">Yelp&rsquo;s elastalert</a> since we&rsquo;re not using X-Pack. The alerts will depend on player&rsquo;s configurations but at the very least, I&rsquo;d expect to see an alert when:</p>
+
+<ul>
+<li>There&rsquo;s an incoming attack</li>
+<li>Troops in the village had completed building to a preset</li>
+<li>A player/tribe/village I&rsquo;m monitoring changes</li>
+<li>Someone relies to my watching messages</li>
+</ul>
+
+<p>Each of these alerts could trigger further actions to be done like send the messages to Slack or Discord for the last one.</p>
+
+<h1 id="farm-service">Farm service<a href="#farm-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+
+<p>The farm service is 100% a bot. The mechanics is simple:
+1. Get a list of all barbarian villages in a 15-village radius.
+2. Divide available units used for farming into 50 teams with equal capacity.
+3. Send them out.</p>
+
+<p>Within the service, through a web UI, the player can configure:</p>
+
+<ul>
+<li>List of any other inactive non-barb villages</li>
+<li>List of barb villages to exclude after a certain time, say when your tribe mate wants to take it</li>
+<li>What types of units qualify as farming units</li>
+<li>Time interval to send out farm runs</li>
+</ul>
+
+<p>The farm service is very simple. However, before we send out our farm runs, there are couple of checks we need to do: is this village getting attacked, is it due to send out support to another village after its determined run time, is it a prime target in an ongoing op that troops need to stay home for?</p>
+
+<p>While these questions can be answered and solved with coding or text configuration, after using either approaches, I&rsquo;ve come to a conclusion that I needed something more verbose, easier to manage, something that do all the checks, lets me configure the rules and send out the final commands to the game, something like&hellip;</p>
+
+<h1 id="operation-service">Operation service<a href="#operation-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+
+<p>The operation service or Ops service is responsible for issuing final commands to the game. It checks the data service&rsquo;s collected data, perform checks on any requested commands, deny/approve the commands and issue them. The Ops service should have a GUI with nodes that you can drag to draw up workflows, configure rule sets, something like <a href="https://www.ibm.com/au-en/marketplace/cloud-integration">IBM App Connect</a>, <a href="https://www.automationanywhere.com.au/products/enterprise">Automation Anywhere RPA</a> or <a href="https://nodered.org/">NodeRED</a>; but free and well-documented.</p>
+
+<p>Aside from providing checks for farming, this service is also responsible for calculating and performing <a href="https://en.wiki.tribalwars2.com/index.php?title=Abbreviations#D">dodge</a> and <a href="https://en.wiki.tribalwars2.com/index.php?title=Abbreviations#B">backtime</a> based on rules set by player, such as when a village is offensive, it should dodge or backtime or whether such action is specified by player.</p>
+
+<p>Workflows for this service will be configured in <a href="https://www.activiti.org/">Activiti BPM</a>.</p>
+
+<h1 id="build-recruit-service">Build &amp; recruit service<a href="#build-recruit-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+
+<p>Lastly, we have the final automation bit: build and recruit. These are dumb services with configuration files most likely hosted on mlab for each villages, specifying the build order and troops presets. This service will include a web UI to view buildings and troops queues for all of the player&rsquo;s villages.</p>
+
+      </div></div>
+  
+  <div class="pagination">
+    <div class="pagination__title">
+      <span
+        class="pagination__title-h">Read other posts</span>
+      <hr />
+    </div>
+    <div class="pagination__buttons">
+      
+      <span class="button previous">
+        <a href="https://congx.dev/posts/tribal-wars-2-manager-authentication-service/">
+          <span class="button__icon">←</span>
+          <span class="button__text">Tribal Wars 2 Manager - Authentication Service</span>
+        </a>
+      </span>
+      
+      
+      <span class="button next">
+        <a href="https://congx.dev/posts/add-talk-commenting-to-ghost/">
+          <span class="button__text">Adding Talk to Ghost</span>
+          <span class="button__icon">→</span>
+        </a>
+      </span>
+      
+    </div>
+  </div>
+  
+
+  
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2020 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="https://congx.dev/assets/main.js"></script>
+<script src="https://congx.dev/assets/prism.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

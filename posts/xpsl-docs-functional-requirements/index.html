@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>XPSL Docs: Functional requirements :: congx.dev — A little technical blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="description" content="There are 4 types in XPSL: user, room, track, playlist. This blog post lists the functional requirements for each of these types.
+XPSL User  A user must have access to either Spotify or Apple Music A user must authorise XPSL for their Spotify and/or Apple Music account User can only belong to 1 room User can create a room or join a room once they have authorised XPSL to access Spotify and/or Apple Music XPSL will refresh Spotify access token on the user’s behalf Each XPSL user has a unique ID A user must have a display name A user could have a short name XPSL user client is a NATS client that subscribe to a XPSL Room (NATS Topic)  XPSL Room  Each room has a group of users who manage a shared playlist Room is a NATS topic that multiple users can subscribe to Each room has a topic ID of xpsl-room- Each room can have 1 or more users." />
+<meta name="keywords" content="xpsl, social listening" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="https://congx.dev/posts/xpsl-docs-functional-requirements/" />
+
+
+
+
+<link rel="stylesheet" href="https://congx.dev/assets/style.css">
+
+  <link rel="stylesheet" href="https://congx.dev/assets/blue.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://congx.dev/img/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="https://congx.dev/img/favicon/blue.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+<meta name="twitter:creator" content="Cong Nguyen" />
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="XPSL Docs: Functional requirements :: congx.dev">
+<meta property="og:description" content="There are 4 types in XPSL: user, room, track, playlist. This blog post lists the functional requirements for each of these types." />
+<meta property="og:url" content="https://congx.dev/posts/xpsl-docs-functional-requirements/" />
+<meta property="og:site_name" content="XPSL Docs: Functional requirements" />
+
+  <meta property="og:image" content="https://congx.dev/">
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2019-12-13 04:57:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Cong&#39;s little blog
+  </div>
+</a>
+
+    </div>
+    <div class="menu-trigger">menu</div>
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/readme">README</a></li>
+        
+      
+        
+          <li><a href="/toc">T.O.C</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/readme">README</a></li>
+      
+    
+      
+        <li><a href="/toc">T.O.C</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="https://congx.dev/posts/xpsl-docs-functional-requirements/">XPSL Docs: Functional requirements</a></h1>
+  <div class="post-meta">
+      
+    <span class="post-date">
+      2019-12-13
+    </span>
+    
+    
+    <span class="post-author">::
+      Cong Nguyen
+    </span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="https://congx.dev/tags/xpsl/">xpsl</a>&nbsp;
+    
+  </span>
+  
+
+  
+
+  <div class="post-content"><div>
+        
+
+<p>There are 4 types in XPSL: user, room, track, playlist. This blog post lists the functional requirements for each of these types.</p>
+
+<h2 id="xpsl-user">XPSL User<a href="#xpsl-user" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+
+<ul>
+<li>A user must have access to either Spotify or Apple Music</li>
+<li>A user must authorise XPSL for their Spotify and/or Apple Music account</li>
+<li>User can only belong to 1 room</li>
+<li>User can create a room or join a room once they have authorised XPSL to access Spotify and/or Apple Music</li>
+<li>XPSL will refresh Spotify access token on the user’s behalf</li>
+<li>Each XPSL user has a unique ID</li>
+<li>A user must have a display name</li>
+<li>A user could have a short name</li>
+<li>XPSL user client is a NATS client that subscribe to a XPSL Room (NATS Topic)</li>
+</ul>
+
+<h2 id="xpsl-room">XPSL Room<a href="#xpsl-room" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+
+<ul>
+<li>Each room has a group of users who manage a shared playlist</li>
+<li>Room is a NATS topic that multiple users can subscribe to</li>
+<li>Each room has a topic ID of xpsl-room-<a unique UUID with no dashes></li>
+<li>Each room can have 1 or more users. If there are no users in the room, the room is deleted.</li>
+<li>A user can only have 1 room</li>
+<li>Each room can only have 1 playlist</li>
+<li>Each room broadcast to subscribers events emitted from playlist controls (play, pause, next, previous, add, remove) and events from users interacting with the room (leave, join)</li>
+<li>Rooms track currently playing track</li>
+<li>Users can input share link from Spotify and Apple Music</li>
+<li>Users can search for songs. Only shared results from Spotify and Apple Music are shown.</li>
+</ul>
+
+<h2 id="xpsl-track">XPSL Track<a href="#xpsl-track" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+
+<ul>
+<li>Track has a unique ISRC</li>
+<li>Track has a name, album, artists, a single ISRC, Spotify and/or Apple Music links</li>
+<li>Track can belong to multiple playlists</li>
+</ul>
+
+<h2 id="xpsl-playlist">XPSL Playlist<a href="#xpsl-playlist" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+
+<ul>
+<li>A playlist can belong to only 1 room</li>
+<li>A playlist can contain multiple tracks</li>
+<li>Playlists emit track <em>add</em> and <em>remove</em> events</li>
+<li>Playlists emit <em>play, pause, next, previous</em> events, each of this event must contain the track ISRC, Spotify link and/or Apple Music link</li>
+</ul>
+
+<h2 id="getting-track-information-from-spotify-apple-music">Getting track information from Spotify / Apple Music<a href="#getting-track-information-from-spotify-apple-music" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+
+<ul>
+<li>XPSL stores Spotify access token from the user</li>
+<li>XPSL stores Apple Music access token from the developer</li>
+<li>When looking up a song in Spotify, a random access token from a user is used</li>
+<li>When looking up a song in Apple Music, the developer’s access token is used</li>
+<li>If a user inputs a Spotify share link, the track’s metadata are retrieved using that user’s access token - unless track metadata is already present</li>
+<li>If a user inputs an Apple Music share link, the track’s metadata are retrieved using the developer’s access token</li>
+</ul>
+
+<p><strong>Note</strong>: <a href="http://NATS.io">NATS.io</a> is not a hard requirement</p>
+
+      </div></div>
+  
+  <div class="pagination">
+    <div class="pagination__title">
+      <span
+        class="pagination__title-h">Read other posts</span>
+      <hr />
+    </div>
+    <div class="pagination__buttons">
+      
+      <span class="button previous">
+        <a href="https://congx.dev/posts/transcription-it-cant-be-wrong/">
+          <span class="button__icon">←</span>
+          <span class="button__text">Transcription: It can&#39;t be wrong</span>
+        </a>
+      </span>
+      
+      
+      <span class="button next">
+        <a href="https://congx.dev/posts/building-and-shipping-hugo-posts-with-travis-ci-for-github-pages/">
+          <span class="button__text">Building and shipping Hugo posts with Travis CI for Github Pages</span>
+          <span class="button__icon">→</span>
+        </a>
+      </span>
+      
+    </div>
+  </div>
+  
+
+  
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2020 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="https://congx.dev/assets/main.js"></script>
+<script src="https://congx.dev/assets/prism.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>
