@@ -1,154 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  
-    <title>Beyond the basics with Cloud Foundry :: congx.dev — A little technical blog</title>
-  
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<meta name="description" content="The advent of Docker changed the way we develop applications. Once you had written a Dockerfile and built the image, your application will run (almost) anywhere, regardless of the underlying operating system, and best of all, it just works. You can then expose ports, map volumes to persist data and deploy your image in Docker Swarm or Kubernetes (K8s). With great flexibility, however, comes greater costs, whether that is increased developer&amp;rsquo;s skillset requirements and time spent on writing multiple K8s YAML config files, or pricier services on your favourite cloud provider." />
-<meta name="keywords" content=", " />
-<meta name="robots" content="noodp" />
-<link rel="canonical" href="https://congx.dev/posts/beyond-the-basics-with-cloud-foundry/" />
-
-
-
-
-<link rel="stylesheet" href="https://congx.dev/assets/style.css">
-
-  <link rel="stylesheet" href="https://congx.dev/assets/blue.css">
-
-
-
-
-
-
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://congx.dev/img/apple-touch-icon-144-precomposed.png">
-
-  <link rel="shortcut icon" href="https://congx.dev/img/favicon/blue.png">
-
-
-
-<meta name="twitter:card" content="summary" />
-
-<meta name="twitter:creator" content="Cong Nguyen" />
-
-
-<meta property="og:locale" content="en" />
-<meta property="og:type" content="article" />
-<meta property="og:title" content="Beyond the basics with Cloud Foundry :: congx.dev">
-<meta property="og:description" content="The advent of Docker changed the way we develop applications. Once you had written a Dockerfile and built the image, your application will run (almost) anywhere, regardless of the underlying operating system, and best of all, it just works. You can then expose ports, map volumes to persist data and deploy your image in Docker Swarm or Kubernetes (K8s). With great flexibility, however, comes greater costs, whether that is increased developer&amp;rsquo;s skillset requirements and time spent on writing multiple K8s YAML config files, or pricier services on your favourite cloud provider." />
-<meta property="og:url" content="https://congx.dev/posts/beyond-the-basics-with-cloud-foundry/" />
-<meta property="og:site_name" content="Beyond the basics with Cloud Foundry" />
-
-  <meta property="og:image" content="https://congx.dev/">
-
-<meta property="og:image:width" content="2048">
-<meta property="og:image:height" content="1024">
-
-
-  <meta property="article:published_time" content="2019-06-12 23:00:00 &#43;1100 &#43;1100" />
-
-
-
-
-
-
-
-
-
-
-
-
-</head>
-<body class="">
-
-
-<div class="container headings--one-size">
-
-  <header class="header">
-  <div class="header__inner">
-    <div class="header__logo">
-      <a href="/">
-  <div class="logo">
-    Cong&#39;s little blog
-  </div>
-</a>
-
+<html lang="en"><head>
+    <title>CONGX.DEV</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="theme-color" content="#000084" />
+    <link rel="icon" href="https://congx.dev//favicon.ico">
+    <link rel="canonical" href="https://congx.dev/">
+    
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/bootstrap-responsive.css">
+    <link rel="stylesheet" href="/css/style.css">
+    
+</head><body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"></button>
+            <a class="brand" href="https://congx.dev/">CONGX.DEV</a>
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    
+                    
+                        
+                            <li>
+                                <a href="/readme">
+                                    
+                                    <span>README</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li>
+                                <a href="/posts/">
+                                    
+                                    <span>All posts</span>
+                                </a>
+                            </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
     </div>
-    <div class="menu-trigger">menu</div>
-  </div>
-  
-    <nav class="menu">
-  <ul class="menu__inner menu__inner--desktop">
-    
-      
-        
-          <li><a href="/readme">README</a></li>
-        
-      
-        
-          <li><a href="/toc">T.O.C</a></li>
-        
-      
-      
-    
+</nav><div id="content" class="container">
 
+<div class="row-fluid navmargin">
+    <div class="page-header">
+        <h1>Beyond the basics with Cloud Foundry - Wed, Jun 12, 2019</h1>
+    </div>
+    <p class="lead"></p>
     
-  </ul>
-
-  <ul class="menu__inner menu__inner--mobile">
-    
-      
-        <li><a href="/readme">README</a></li>
-      
-    
-      
-        <li><a href="/toc">T.O.C</a></li>
-      
-    
-    
-  </ul>
-</nav>
-
-  
-</header>
-
-
-  <div class="content">
-    
-<div class="post">
-  <h1 class="post-title">
-    <a href="https://congx.dev/posts/beyond-the-basics-with-cloud-foundry/">Beyond the basics with Cloud Foundry</a></h1>
-  <div class="post-meta">
-      
-    <span class="post-date">
-      2019-06-12
-    </span>
-    
-    
-    <span class="post-author">::
-      Cong Nguyen
-    </span>
-    
-  </div>
-
-  
-  <span class="post-tags">
-    
-    #<a href="https://congx.dev/tags/ibm/">IBM</a>&nbsp;
-    
-    #<a href="https://congx.dev/tags/cloud-foundry/">Cloud Foundry</a>&nbsp;
-    
-    #<a href="https://congx.dev/tags/toddler/">toddler</a>&nbsp;
-    
-  </span>
-  
-
-  
-
-  <div class="post-content"><div>
-        
 
 <p>The advent of Docker changed the way we develop applications. Once you had written a Dockerfile and built the image, your application will run (almost) anywhere, regardless of the underlying operating system, and best of all, it just works. You can then expose ports, map volumes to persist data and deploy your image in Docker Swarm or Kubernetes (K8s). With great flexibility, however, comes greater costs, whether that is increased developer&rsquo;s skillset requirements and time spent on writing multiple K8s YAML config files, or pricier services on your favourite cloud provider.</p>
 
@@ -163,11 +65,11 @@
 
 <p>For the remainder of this blog post, I will be using <a href="https://github.com/rampadc/toddler-auth">toddler-auth</a> as the example.</p>
 
-<h1 id="which-cf-cli-to-use">Which CF CLI to use<a href="#which-cf-cli-to-use" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h1 id="which-cf-cli-to-use">Which CF CLI to use</h1>
 
 <p>Just before we get started, if you are using the standalone IBM Cloud CLI, it bundles in CF CLI. Everything that comes after <code>ibmcloud cf</code> maps to the normal Cloud Foundry cf&rsquo;s command. Personally, because I use IBM Cloud day-to-day, I removed <code>cf</code> and created an alias to <code>ibmcloud cf</code> with <code>alias cf='ibmcloud cf'</code>. Henceforth, any mentions of <code>cf</code> refers to <code>ibmcloud cf</code>.</p>
 
-<h1 id="developing-locally-with-cf-local">Developing locally with CF Local<a href="#developing-locally-with-cf-local" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h1 id="developing-locally-with-cf-local">Developing locally with CF Local</h1>
 
 <p><a href="https://pivotal.io/cf-local">CF Local</a> lets you develop locally and requires Docker to be installed. To install CF Local, invoke <code>cf install-plugin cflocal</code>. CF Local <a href="https://github.com/cloudfoundry-incubator/cflocal/issues/3">only</a> uses a <code>local.yml</code> instead of <code>manifest.yml</code>.</p>
 
@@ -200,7 +102,7 @@ applications:
 
 <p>The first staging period can take some time to download buildpacks and set things up, but once it completes, CF Local creates <code>.cache</code> files inside the application&rsquo;s directory. Subsequent runs are faster.</p>
 
-<h1 id="deploying-docker-images-into-cf-containers">Deploying Docker images into CF containers<a href="#deploying-docker-images-into-cf-containers" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h1 id="deploying-docker-images-into-cf-containers">Deploying Docker images into CF containers</h1>
 
 <p><a href="https://www.cloudfoundry.org/blog/garden-and-runc/">Sometime in 2015</a>, Cloud Foundry started to support Docker images by adopting the Open Container Initiative (OCI) container execution interface. For more information on deploying a Docker image, have a look at the <a href="https://docs.cloudfoundry.org/devguide/deploy-apps/push-docker.html">full documentation</a>. Two most important tidbits are:</p>
 
@@ -224,17 +126,17 @@ applications:
 
 <p>In the above example, I am running an application named toddler-nats. It uses bitnami&rsquo;s nats.io image from Docker Hub and maps an internal route of <code>toddler-nats.apps.internal</code>.</p>
 
-<h1 id="sequencing-applications-start-up">Sequencing applications start-up<a href="#sequencing-applications-start-up" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h1 id="sequencing-applications-start-up">Sequencing applications start-up</h1>
 
 <p>In the world of Docker Compose, Swarm and Kubernetes, applications are started in parallel. Applications startup sequence is not controlled by the orchestrator. This can be annoying as you need to write extra bash files and build in service availability detection.</p>
 
 <p>On the contrary, if your manifest.yml contains multiple applications, CF applications are deployed in sequence during deployment from top to bottom. If any application in the chain fails, the entire deployment is halted. This is great if you need to sequence start-ups of multiple applications.</p>
 
-<h1 id="configuring-container-to-container-networking">Configuring container-to-container networking<a href="#configuring-container-to-container-networking" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h1 id="configuring-container-to-container-networking">Configuring container-to-container networking</h1>
 
 <p>Before touching on container-to-container networking, I just want to touch on why this was significant for my project.</p>
 
-<h2 id="what-i-need-is-tcp-routing">What I need is TCP routing<a href="#what-i-need-is-tcp-routing" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h2 id="what-i-need-is-tcp-routing">What I need is TCP routing</h2>
 
 <p>My Toddler stack relies on NATS as the centralised message queue for microservices&rsquo; communication. NATS is a great alternative to HTTP. It&rsquo;s got all the nice features of a message queue like pub/sub, topic routing, very high throughput and well-developed client libraries.</p>
 
@@ -244,7 +146,7 @@ applications:
 
 <p>From the <a href="https://docs.cloudfoundry.org/devguide/deploy-apps/routes-domains.html#list-routes">listing routes</a> doc, if <code>tcp</code> is shown under type for any route, that route can be configured as a TCP route. Well, my public CF account does not. Searching around revealed that you can, however, set up custom TCP port with <a href="https://www.ibm.com/cloud/blog/cloud-foundry-container-to-container-networking">container-to-container networking (C2C networking)</a>.</p>
 
-<h2 id="actually-configuring-c2c-networking">Actually configuring C2C networking<a href="#actually-configuring-c2c-networking" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h2 id="actually-configuring-c2c-networking">Actually configuring C2C networking</h2>
 
 <p>Setting up C2C networking was straightforward. C2C networking is disabled by default. To enable C2C between 2 applications, you first need both apps deployed. Then, invoke</p>
 
@@ -258,7 +160,7 @@ applications:
 
 <p>Something to note here was that I did not have to add a network policy into CF Local when deploying the application locally.</p>
 
-<h1 id="so">So&hellip;<a href="#so" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h1 id="so">So&hellip;</h1>
 
 <p>To summarise,
 - Developing and testing locally with CF Local maps to locally build an image and test a deployment with docker-compose.
@@ -266,62 +168,56 @@ applications:
 - Running a Docker image inside a CF container was a good-to-know.
 - Sequencing application start-up was a good-to-know.</p>
 
-      </div></div>
-  
-  <div class="pagination">
-    <div class="pagination__title">
-      <span
-        class="pagination__title-h">Read other posts</span>
-      <hr />
-    </div>
-    <div class="pagination__buttons">
-      
-      <span class="button previous">
-        <a href="https://congx.dev/posts/birth-of-toddler/">
-          <span class="button__icon">←</span>
-          <span class="button__text">Birth of Toddler</span>
-        </a>
-      </span>
-      
-      
-      <span class="button next">
-        <a href="https://congx.dev/posts/thinkpad-keyboards-controllers/">
-          <span class="button__text">There will be ThinkPad keyboard controllers</span>
-          <span class="button__icon">→</span>
-        </a>
-      </span>
-      
-    </div>
-  </div>
-  
-
-  
-
+    <h4><a href="https://congx.dev/">Back to Home</a></h4>
 </div>
 
-  </div>
 
-  
-    <footer class="footer">
-  <div class="footer__inner">
-    
-      <div class="copyright">
-        <span>© 2020 Powered by <a href="http://gohugo.io">Hugo</a></span>
-    
-        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
-      </div>
-  </div>
+        </div><footer class="container">
+    <hr class="soften">
+    <p>
+        &copy; 
+        <a href="congx.dev" target="_blank">
+            Cong Nguyen
+        </a>
+        <span id="thisyear">2020</span>
+        
+             | Built on <a href="//gohugo.io" target="_blank">Hugo</a>
+        
+    </p>
+    <p class="text-center">
+        
+        <a href="https://twitter.com/congxdev">Twitter</a> 
+        <a href="https://linkedin.com/in/cong-ng">Linkedin</a> 
+        <a href="https://github.com/rampadc">GitHub</a> 
+        
+    </p>
 </footer>
 
-<script src="https://congx.dev/assets/main.js"></script>
-<script src="https://congx.dev/assets/prism.js"></script>
+<script src="/js/jquery.js"></script>
+<script src="/js/bootstrap-386.js"></script>
+<script src="/js/bootstrap-transition.js"></script>
+<script src="/js/bootstrap-alert.js"></script>
+<script src="/js/bootstrap-modal.js"></script>
+<script src="/js/bootstrap-dropdown.js"></script>
+<script src="/js/bootstrap-scrollspy.js"></script>
+<script src="/js/bootstrap-tab.js"></script>
+<script src="/js/bootstrap-tooltip.js"></script>
+<script src="/js/bootstrap-popover.js"></script>
+<script src="/js/bootstrap-button.js"></script>
+<script src="/js/bootstrap-collapse.js"></script>
+<script src="/js/bootstrap-carousel.js"></script>
+<script src="/js/bootstrap-typeahead.js"></script>
+<script src="/js/bootstrap-affix.js"></script>
+<script>
+    _386 = { 
+        fastLoad: false ,
+        onePass: false , 
+        speedFactor: 1.25 
+    };
 
-
-
-
-
-  
-</div>
-
-</body>
+    
+    function ThisYear() {
+        document.getElementById('thisyear').innerHTML = new Date().getFullYear();
+    };
+</script></body>
 </html>

@@ -1,158 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  
-    <title>Tribal Wars 2 Manager - Architecture :: congx.dev — A little technical blog</title>
-  
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<meta name="description" content="Earlier this year, I developed a single process NodeJS application for all the services in this manager (shown down below) and it started to raise out-of-memory errors due to Node&amp;rsquo;s limitation. This project aims to eliminate this problem by splitting the manager into multiple services.
-This blog post serves a documentation for the high-level design of my Tribal Wars 2 manager. The development for this project is not about cheating in Tribal Wars 2 but using the game as a motivator to learn new technologies." />
-<meta name="keywords" content="tribal wars 2, " />
-<meta name="robots" content="noodp" />
-<link rel="canonical" href="https://congx.dev/posts/tribal-wars-2-manager-architecture/" />
-
-
-
-
-<link rel="stylesheet" href="https://congx.dev/assets/style.css">
-
-  <link rel="stylesheet" href="https://congx.dev/assets/blue.css">
-
-
-
-
-
-
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://congx.dev/img/apple-touch-icon-144-precomposed.png">
-
-  <link rel="shortcut icon" href="https://congx.dev/img/favicon/blue.png">
-
-
-
-<meta name="twitter:card" content="summary" />
-
-<meta name="twitter:creator" content="Cong Nguyen" />
-
-
-<meta property="og:locale" content="en" />
-<meta property="og:type" content="article" />
-<meta property="og:title" content="Tribal Wars 2 Manager - Architecture :: congx.dev">
-<meta property="og:description" content="Earlier this year, I developed a single process NodeJS application for all the services in this manager (shown down below) and it started to raise out-of-memory errors due to Node&amp;rsquo;s limitation. This project aims to eliminate this problem by splitting the manager into multiple services.
-This blog post serves a documentation for the high-level design of my Tribal Wars 2 manager. The development for this project is not about cheating in Tribal Wars 2 but using the game as a motivator to learn new technologies." />
-<meta property="og:url" content="https://congx.dev/posts/tribal-wars-2-manager-architecture/" />
-<meta property="og:site_name" content="Tribal Wars 2 Manager - Architecture" />
-
-  <meta property="og:image" content="https://congx.dev/">
-
-<meta property="og:image:width" content="2048">
-<meta property="og:image:height" content="1024">
-
-
-  <meta property="article:published_time" content="2018-12-20 17:24:00 &#43;1100 &#43;1100" />
-
-
-
-
-
-
-
-
-
-
-
-
-</head>
-<body class="">
-
-
-<div class="container headings--one-size">
-
-  <header class="header">
-  <div class="header__inner">
-    <div class="header__logo">
-      <a href="/">
-  <div class="logo">
-    Cong&#39;s little blog
-  </div>
-</a>
-
+<html lang="en"><head>
+    <title>CONGX.DEV</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="theme-color" content="#000084" />
+    <link rel="icon" href="https://congx.dev//favicon.ico">
+    <link rel="canonical" href="https://congx.dev/">
+    
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/bootstrap-responsive.css">
+    <link rel="stylesheet" href="/css/style.css">
+    
+</head><body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"></button>
+            <a class="brand" href="https://congx.dev/">CONGX.DEV</a>
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    
+                    
+                        
+                            <li>
+                                <a href="/readme">
+                                    
+                                    <span>README</span>
+                                </a>
+                            </li>
+                        
+                    
+                        
+                            <li>
+                                <a href="/posts/">
+                                    
+                                    <span>All posts</span>
+                                </a>
+                            </li>
+                        
+                    
+                </ul>
+            </div>
+        </div>
     </div>
-    <div class="menu-trigger">menu</div>
-  </div>
-  
-    <nav class="menu">
-  <ul class="menu__inner menu__inner--desktop">
-    
-      
-        
-          <li><a href="/readme">README</a></li>
-        
-      
-        
-          <li><a href="/toc">T.O.C</a></li>
-        
-      
-      
-    
+</nav><div id="content" class="container">
 
+<div class="row-fluid navmargin">
+    <div class="page-header">
+        <h1>Tribal Wars 2 Manager - Architecture - Thu, Dec 20, 2018</h1>
+    </div>
+    <p class="lead"></p>
     
-  </ul>
-
-  <ul class="menu__inner menu__inner--mobile">
-    
-      
-        <li><a href="/readme">README</a></li>
-      
-    
-      
-        <li><a href="/toc">T.O.C</a></li>
-      
-    
-    
-  </ul>
-</nav>
-
-  
-</header>
-
-
-  <div class="content">
-    
-<div class="post">
-  <h1 class="post-title">
-    <a href="https://congx.dev/posts/tribal-wars-2-manager-architecture/">Tribal Wars 2 Manager - Architecture</a></h1>
-  <div class="post-meta">
-      
-    <span class="post-date">
-      2018-12-20
-    </span>
-    
-    
-    <span class="post-author">::
-      Cong Nguyen
-    </span>
-    
-  </div>
-
-  
-  <span class="post-tags">
-    
-    #<a href="https://congx.dev/tags/toddler/">toddler</a>&nbsp;
-    
-  </span>
-  
-
-  
-
-  <div class="post-content"><div>
-        
 
 <p>Earlier this year, I developed a single process NodeJS application for all the services in this manager (shown down below) and it started to raise out-of-memory errors due to Node&rsquo;s limitation. This project aims to eliminate this problem by splitting the manager into multiple services.</p>
 
 <p>This blog post serves a documentation for the high-level design of my Tribal Wars 2 manager. The development for this project is not about cheating in Tribal Wars 2 but using the game as a motivator to learn new technologies. As of the published date of this post, this project is not open-source as it is still in development.</p>
 
-<h1 id="how-the-game-works">How the game works<a href="#how-the-game-works" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h1 id="how-the-game-works">How the game works</h1>
 
 <p>Behind the scenes, Tribal Wars 2, henceforth referred to as TW2, uses a web socket implementation Socket.IO to communicate between the game GUI and server. At the time of this post December 2018, the game is using <a href="http://socket.io">Socket.IO</a> version 2.0. To connect to the game, I am using <a href="https://www.npmjs.com/package/socket.io-client">socket.io-client</a> for Javascript as other implementations of the library is not as up-to-date.</p>
 
@@ -201,7 +105,7 @@ socket.on(&quot;msg&quot;, (messageObject: any) =&gt; {
 }
 </code></pre>
 
-<h1 id="project-high-level-design">Project high-level design<a href="#project-high-level-design" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h1 id="project-high-level-design">Project high-level design</h1>
 
 <p>Now, with the basics out of the way, there are a couple of technologies that I want to play with in this project. These include:</p>
 
@@ -221,62 +125,56 @@ socket.on(&quot;msg&quot;, (messageObject: any) =&gt; {
 
 <p><img src="components.png" alt="Manager's components" /></p>
 
-      </div></div>
-  
-  <div class="pagination">
-    <div class="pagination__title">
-      <span
-        class="pagination__title-h">Read other posts</span>
-      <hr />
-    </div>
-    <div class="pagination__buttons">
-      
-      <span class="button previous">
-        <a href="https://congx.dev/posts/add-talk-commenting-to-ghost/">
-          <span class="button__icon">←</span>
-          <span class="button__text">Adding Talk to Ghost</span>
-        </a>
-      </span>
-      
-      
-      <span class="button next">
-        <a href="https://congx.dev/posts/my-first-post/">
-          <span class="button__text">What is this blog about?</span>
-          <span class="button__icon">→</span>
-        </a>
-      </span>
-      
-    </div>
-  </div>
-  
-
-  
-
+    <h4><a href="https://congx.dev/">Back to Home</a></h4>
 </div>
 
-  </div>
 
-  
-    <footer class="footer">
-  <div class="footer__inner">
-    
-      <div class="copyright">
-        <span>© 2020 Powered by <a href="http://gohugo.io">Hugo</a></span>
-    
-        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
-      </div>
-  </div>
+        </div><footer class="container">
+    <hr class="soften">
+    <p>
+        &copy; 
+        <a href="congx.dev" target="_blank">
+            Cong Nguyen
+        </a>
+        <span id="thisyear">2020</span>
+        
+             | Built on <a href="//gohugo.io" target="_blank">Hugo</a>
+        
+    </p>
+    <p class="text-center">
+        
+        <a href="https://twitter.com/congxdev">Twitter</a> 
+        <a href="https://linkedin.com/in/cong-ng">Linkedin</a> 
+        <a href="https://github.com/rampadc">GitHub</a> 
+        
+    </p>
 </footer>
 
-<script src="https://congx.dev/assets/main.js"></script>
-<script src="https://congx.dev/assets/prism.js"></script>
+<script src="/js/jquery.js"></script>
+<script src="/js/bootstrap-386.js"></script>
+<script src="/js/bootstrap-transition.js"></script>
+<script src="/js/bootstrap-alert.js"></script>
+<script src="/js/bootstrap-modal.js"></script>
+<script src="/js/bootstrap-dropdown.js"></script>
+<script src="/js/bootstrap-scrollspy.js"></script>
+<script src="/js/bootstrap-tab.js"></script>
+<script src="/js/bootstrap-tooltip.js"></script>
+<script src="/js/bootstrap-popover.js"></script>
+<script src="/js/bootstrap-button.js"></script>
+<script src="/js/bootstrap-collapse.js"></script>
+<script src="/js/bootstrap-carousel.js"></script>
+<script src="/js/bootstrap-typeahead.js"></script>
+<script src="/js/bootstrap-affix.js"></script>
+<script>
+    _386 = { 
+        fastLoad: false ,
+        onePass: false , 
+        speedFactor: 1.25 
+    };
 
-
-
-
-
-  
-</div>
-
-</body>
+    
+    function ThisYear() {
+        document.getElementById('thisyear').innerHTML = new Date().getFullYear();
+    };
+</script></body>
 </html>
