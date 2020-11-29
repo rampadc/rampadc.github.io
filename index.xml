@@ -6,11 +6,7 @@
     <description>Recent content on congx.dev</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-au</language>
-    <lastBuildDate>Sun, 19 Apr 2020 09:13:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://congx.dev/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sun, 19 Apr 2020 09:13:00 +0000</lastBuildDate><atom:link href="https://congx.dev/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Transcription: It can&#39;t be wrong</title>
       <link>https://congx.dev/posts/transcription-it-cant-be-wrong/</link>
@@ -163,15 +159,6 @@ Legit, adding Talk to Ghost is not as straightforward as the documentation. Whil
       <guid>https://congx.dev/posts/tribal-wars-2-manager-architecture/</guid>
       <description>Earlier this year, I developed a single process NodeJS application for all the services in this manager (shown down below) and it started to raise out-of-memory errors due to Node&amp;rsquo;s limitation. This project aims to eliminate this problem by splitting the manager into multiple services.
 This blog post serves a documentation for the high-level design of my Tribal Wars 2 manager. The development for this project is not about cheating in Tribal Wars 2 but using the game as a motivator to learn new technologies.</description>
-    </item>
-    
-    <item>
-      <title>What is this blog about?</title>
-      <link>https://congx.dev/posts/my-first-post/</link>
-      <pubDate>Wed, 19 Dec 2018 12:12:01 +1100</pubDate>
-      
-      <guid>https://congx.dev/posts/my-first-post/</guid>
-      <description>This is my fresh start to personal blogging. Back in 2012, I was a huge advocate for Adobe Flash despite Apple&amp;rsquo;s decision to exclude it from the OS&amp;rsquo;s and remote-controlled toys. So I started flashandrc.wordpress.com. After a while, my interests grew past Adobe Flash and remote-controlled helicopters, and evolved onto transcribing music that I like and making electronics. Soon, my blog became the go-to knowledge base for ThinkPad keyboards and Machinarium bossa nova guitar piece transcription.</description>
     </item>
     
     <item>

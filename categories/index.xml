@@ -5,10 +5,6 @@
     <link>https://congx.dev/categories/</link>
     <description>Recent content in Categories on congx.dev</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-au</language>
-    
-	<atom:link href="https://congx.dev/categories/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <language>en-au</language><atom:link href="https://congx.dev/categories/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

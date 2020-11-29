@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   
-    <title>How Toddler plays :: congx.dev — A little technical blog</title>
+    <title>How Toddler plays :: congx.dev</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Back when I first started looking into making the manager (like 4 years ago), looking through Github&amp;rsquo;s projects on automating Tribal Wars 2, I found most, if not all, of the projects relies on automating the browser instead of utilising the the game&amp;rsquo;s WebSocket connection. Therefore, I think it&amp;rsquo;s worthwhile to capture the essence of how the game client talks to the game server. Hopefully, this blog post may be helpful to those looking to automate this game." />
 <meta name="keywords" content=", " />
 <meta name="robots" content="noodp" />
@@ -16,30 +16,27 @@
 
 <link rel="stylesheet" href="https://congx.dev/assets/style.css">
 
-  <link rel="stylesheet" href="https://congx.dev/assets/pink.css">
 
 
 
 
 
+<link rel="apple-touch-icon" href="https://congx.dev/img/apple-touch-icon-192x192.png">
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://congx.dev/img/apple-touch-icon-144-precomposed.png">
-
-  <link rel="shortcut icon" href="https://congx.dev/img/favicon/pink.png">
+  <link rel="shortcut icon" href="https://congx.dev/img/favicon/orange.png">
 
 
 
 <meta name="twitter:card" content="summary" />
 
-<meta name="twitter:creator" content="Cong Nguyen" />
 
 
 <meta property="og:locale" content="en" />
 <meta property="og:type" content="article" />
-<meta property="og:title" content="How Toddler plays :: congx.dev">
+<meta property="og:title" content="How Toddler plays">
 <meta property="og:description" content="A closer look at how Tribal Wars 2 client and server communicates" />
 <meta property="og:url" content="https://congx.dev/posts/how-toddler-plays/" />
-<meta property="og:site_name" content="How Toddler plays" />
+<meta property="og:site_name" content="congx.dev" />
 
   <meta property="og:image" content="https://congx.dev/">
 
@@ -61,7 +58,7 @@
 
 
 </head>
-<body class="">
+<body class="orange">
 
 
 <div class="container headings--one-size">
@@ -76,7 +73,9 @@
 </a>
 
     </div>
-    <div class="menu-trigger">menu</div>
+    
+      <div class="menu-trigger">menu</div>
+    
   </div>
   
     <nav class="menu">
@@ -127,9 +126,7 @@
       </span>
     
     
-    <span class="post-author">::
-      Cong Nguyen
-    </span>
+    <span class="post-author">:: Cong Nguyen</span>
     
   </div>
 
@@ -147,29 +144,19 @@
 
   <div class="post-content"><div>
         <p>Back when I first started looking into making the manager (like 4 years ago), looking through Github&rsquo;s projects on automating Tribal Wars 2, I found most, if not all, of the projects relies on automating the browser instead of utilising the the game&rsquo;s WebSocket connection. Therefore, I think it&rsquo;s worthwhile to capture the essence of how the game client talks to the game server. Hopefully, this blog post may be helpful to those looking to automate this game.</p>
-
 <p>When Tribal Wars 2 website is loaded, a websocket is connected using Socket.io 2.0.</p>
-
-<p><img src="./socket-io-connection.png" alt="socketiO connection" /></p>
-
+<p><img src="./socket-io-connection.png" alt="socketiO connection"></p>
 <p>Messages sent between the game client (browser or mobile) and server includes metadata from Socket.io 2.0 library and looks something like the screenshot below. In the screenshot shown, green arrows denote messages sent to the server from the browser, and red arrows denote messages received from the server.</p>
-
-<p><img src="./frames.png" alt="frames" /></p>
-
+<p><img src="./frames.png" alt="frames"></p>
 <p>There are 3 types of messages that are sent between the game server and the client:</p>
-
 <ul>
 <li>Request/response messages. As an example, the highlighted line in the picture above is requesting for global world&rsquo;s information <code>GlobalInformation/getInfo</code>. The request has an <code>id</code> of 8. A few lines after this line, another message with <code>id</code> 8 is sent from the server to the client with type <code>GlobalInformation/info</code>. This is the response for the <code>get</code> request.</li>
 <li>Fire-forget message from the client to the server. The most notable and only example of this is when the client requests server for future notifications.</li>
 <li>Notifications from the server to the client. These messages are special in which the <code>id</code> of the message is <code>null</code>.</li>
 </ul>
-
-<p><img src="./message-types.png" alt="types" /></p>
-
+<p><img src="./message-types.png" alt="types"></p>
 <p>The screenshot above shows the cleaned version of different types of messages. <code>42[&quot;msg&quot;</code>, portion and <code>&quot;headers&quot;</code> portion is removed from the message above.</p>
-
 <p>You can visit this <a href="https://gist.github.com/rampadc/d719d60a2e359670808f862712bcb9ae">Gist</a> to look at what some captured messages look like, and <a href="https://gist.github.com/rampadc/6b76bc3c00d94d7ac2cfad9999de737b">examples of report JSONs</a>.</p>
-
 <p>For a Javascript example of how the authentication sequence work, have a look at the <a href="https://github.com/rampadc/toddler-auth">toddler-auth</a> project.</p>
 
       </div></div>
@@ -223,6 +210,8 @@
 
 <script src="https://congx.dev/assets/main.js"></script>
 <script src="https://congx.dev/assets/prism.js"></script>
+
+
 
 
 

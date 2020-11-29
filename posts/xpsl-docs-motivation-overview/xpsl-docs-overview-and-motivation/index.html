@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   
-    <title>XPSL Docs: Motivation and Overview :: congx.dev — A little technical blog</title>
+    <title>XPSL Docs: Motivation and Overview :: congx.dev</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Motivation Walking on the street, listening to a song you like, sharing that song with your friends, do a bit of silent dancing on the street, groove a little bit. Maybe you like that song your friend suggests, and wants to add it into your own music library.
 Except you are on Apple Music and your mate is on Spotify. There are no services out there that offers a unified listening experience across multiple music providers." />
 <meta name="keywords" content="apple music, spotify, social listening" />
@@ -17,31 +17,28 @@ Except you are on Apple Music and your mate is on Spotify. There are no services
 
 <link rel="stylesheet" href="https://congx.dev/assets/style.css">
 
-  <link rel="stylesheet" href="https://congx.dev/assets/pink.css">
 
 
 
 
 
+<link rel="apple-touch-icon" href="https://congx.dev/img/apple-touch-icon-192x192.png">
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://congx.dev/img/apple-touch-icon-144-precomposed.png">
-
-  <link rel="shortcut icon" href="https://congx.dev/img/favicon/pink.png">
+  <link rel="shortcut icon" href="https://congx.dev/img/favicon/orange.png">
 
 
 
 <meta name="twitter:card" content="summary" />
 
-<meta name="twitter:creator" content="Cong Nguyen" />
 
 
 <meta property="og:locale" content="en" />
 <meta property="og:type" content="article" />
-<meta property="og:title" content="XPSL Docs: Motivation and Overview :: congx.dev">
+<meta property="og:title" content="XPSL Docs: Motivation and Overview">
 <meta property="og:description" content="Motivation Walking on the street, listening to a song you like, sharing that song with your friends, do a bit of silent dancing on the street, groove a little bit. Maybe you like that song your friend suggests, and wants to add it into your own music library.
 Except you are on Apple Music and your mate is on Spotify. There are no services out there that offers a unified listening experience across multiple music providers." />
 <meta property="og:url" content="https://congx.dev/posts/xpsl-docs-motivation-overview/xpsl-docs-overview-and-motivation/" />
-<meta property="og:site_name" content="XPSL Docs: Motivation and Overview" />
+<meta property="og:site_name" content="congx.dev" />
 
   <meta property="og:image" content="https://congx.dev/">
 
@@ -63,7 +60,7 @@ Except you are on Apple Music and your mate is on Spotify. There are no services
 
 
 </head>
-<body class="">
+<body class="orange">
 
 
 <div class="container headings--one-size">
@@ -78,7 +75,9 @@ Except you are on Apple Music and your mate is on Spotify. There are no services
 </a>
 
     </div>
-    <div class="menu-trigger">menu</div>
+    
+      <div class="menu-trigger">menu</div>
+    
   </div>
   
     <nav class="menu">
@@ -129,9 +128,7 @@ Except you are on Apple Music and your mate is on Spotify. There are no services
       </span>
     
     
-    <span class="post-author">::
-      Cong Nguyen
-    </span>
+    <span class="post-author">:: Cong Nguyen</span>
     
   </div>
 
@@ -148,43 +145,26 @@ Except you are on Apple Music and your mate is on Spotify. There are no services
   
 
   <div class="post-content"><div>
-        
-
-<h1 id="motivation">Motivation<a href="#motivation" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
-
+        <h1 id="motivation">Motivation<a href="#motivation" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
 <p>Walking on the street, listening to a song you like, sharing that song with your friends, do a bit of silent dancing on the street, groove a little bit. Maybe you like that song your friend suggests, and wants to add it into your own music library.</p>
-
 <p>Except you are on Apple Music and your mate is on Spotify. There are no services out there that offers a unified listening experience across multiple music providers.</p>
-
 <p>XPSL aims to solve this.</p>
-
 <h1 id="how-xpsl-will-work">How XPSL will work<a href="#how-xpsl-will-work" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
-
 <blockquote>
 <p>X - Cross</p>
-
 <p>P - Platform</p>
-
 <p>S - Social</p>
-
 <p>L - Listening</p>
 </blockquote>
-
 <p>XPSL works as a middleman between Spotify and/or Apple Music. To use XPSL, a user must either use Spotify or Apple Music, henceforth referred to as <strong>SAM</strong>.</p>
-
 <p>Once authenticated, they will have the option to either join a room or create a new room. A user can only belong to one room at a time. In each room, there are multiple users. They have a shared playlist that they can add and remove songs using <a href="http://www.aria.com.au/pages/isrc.htm">ISRC</a>s. ISRC stands for International Standard Recording Code. It is an international identifier for sound recordings and music video recordings. Both Apple Music and Spotify supports retrieval of and searching for ISRCs.</p>
-
 <ul>
 <li><a href="https://developer.apple.com/documentation/applemusicapi/get_multiple_catalog_songs_by_isrc">Apple Music: Get multiple catalog songs by ISRC</a></li>
 <li><a href="https://developer.spotify.com/documentation/web-api/reference/search/search/">Spotify: Search for song with ISRC</a></li>
 </ul>
-
-<p>Each song in the playlist contains direct links or identifiers from Spotify or Apple Music. This is dependent on what music providers are present in the room (based on users&rsquo; subscriptions).</p>
-
+<p>Each song in the playlist contains direct links or identifiers from Spotify or Apple Music. This is dependent on what music providers are present in the room (based on users' subscriptions).</p>
 <p>In each room, all users will be listening to the same song at the same time. This <code>exact time</code> can vary. Control events such as scrub, play, pause, next, previous, stop are shared using a low-latency transport like WebSocket or <a href="https://nats.io/">NATS.io</a>.</p>
-
 <p>The implementation of rooms can be simplified by using NATS.io. Each room can be a topic that a group of users subscribes to. Control of switching rooms and validating how many rooms a user is subscribed to can also be simplified and delegated to the Player Controller.</p>
-
 <p>Additionally, events such as user joining, leaving a room are tracked and broadcast to other users in the same room.</p>
 
       </div></div>
@@ -238,6 +218,8 @@ Except you are on Apple Music and your mate is on Spotify. There are no services
 
 <script src="https://congx.dev/assets/main.js"></script>
 <script src="https://congx.dev/assets/prism.js"></script>
+
+
 
 
 

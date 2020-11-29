@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   
-    <title>There will be ThinkPad keyboard controllers :: congx.dev — A little technical blog</title>
+    <title>There will be ThinkPad keyboard controllers :: congx.dev</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="A long long long time ago, finding an absence of projects on the internet to re-use a ThinkPad T60 keyboard to be used as a USB keyboard, I set out to research, make USB adapter kits and write documentation to this project. It was a success! I learned how to:
  Hunt down ThinkPad laptop schematics Design circuits in Eagle and eventually Altium Designer 3D modelling in Autodesk Inventor and rendering in Autodesk Showcase Send out PCB gerbers to abroad board houses for prototyping Write firmware for my first ever first USB microcontroller MSP430F5510 Develop a HID bridge firmware for Bluetooth 4." />
 <meta name="keywords" content="" />
@@ -17,31 +17,28 @@
 
 <link rel="stylesheet" href="https://congx.dev/assets/style.css">
 
-  <link rel="stylesheet" href="https://congx.dev/assets/pink.css">
 
 
 
 
 
+<link rel="apple-touch-icon" href="https://congx.dev/img/apple-touch-icon-192x192.png">
 
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://congx.dev/img/apple-touch-icon-144-precomposed.png">
-
-  <link rel="shortcut icon" href="https://congx.dev/img/favicon/pink.png">
+  <link rel="shortcut icon" href="https://congx.dev/img/favicon/orange.png">
 
 
 
 <meta name="twitter:card" content="summary" />
 
-<meta name="twitter:creator" content="Cong Nguyen" />
 
 
 <meta property="og:locale" content="en" />
 <meta property="og:type" content="article" />
-<meta property="og:title" content="There will be ThinkPad keyboard controllers :: congx.dev">
+<meta property="og:title" content="There will be ThinkPad keyboard controllers">
 <meta property="og:description" content="A long long long time ago, finding an absence of projects on the internet to re-use a ThinkPad T60 keyboard to be used as a USB keyboard, I set out to research, make USB adapter kits and write documentation to this project. It was a success! I learned how to:
  Hunt down ThinkPad laptop schematics Design circuits in Eagle and eventually Altium Designer 3D modelling in Autodesk Inventor and rendering in Autodesk Showcase Send out PCB gerbers to abroad board houses for prototyping Write firmware for my first ever first USB microcontroller MSP430F5510 Develop a HID bridge firmware for Bluetooth 4." />
 <meta property="og:url" content="https://congx.dev/posts/thinkpad-keyboards-controllers/" />
-<meta property="og:site_name" content="There will be ThinkPad keyboard controllers" />
+<meta property="og:site_name" content="congx.dev" />
 
   <meta property="og:image" content="https://congx.dev/posts/thinkpad-keyboards-controllers/t60-keys.jpg">
 
@@ -63,7 +60,7 @@
 
 
 </head>
-<body class="">
+<body class="orange">
 
 
 <div class="container headings--one-size">
@@ -78,7 +75,9 @@
 </a>
 
     </div>
-    <div class="menu-trigger">menu</div>
+    
+      <div class="menu-trigger">menu</div>
+    
   </div>
   
     <nav class="menu">
@@ -129,9 +128,7 @@
       </span>
     
     
-    <span class="post-author">::
-      Cong Nguyen
-    </span>
+    <span class="post-author">:: Cong Nguyen</span>
     
   </div>
 
@@ -144,14 +141,13 @@
   
 
   
-    <img src="https://congx.dev/posts/thinkpad-keyboards-controllers/t60-keys.jpg" class="post-cover" />
+    <img src="https://congx.dev/posts/thinkpad-keyboards-controllers/t60-keys.jpg" class="post-cover" alt="There will be ThinkPad keyboard controllers" />
   
 
   
 
   <div class="post-content"><div>
         <p>A long long long time ago, finding an absence of projects on the internet to re-use a ThinkPad T60 keyboard to be used as a USB keyboard, I set out to research, make USB adapter kits and write documentation to this project. It was a success! I learned how to:</p>
-
 <ul>
 <li>Hunt down ThinkPad laptop schematics</li>
 <li>Design circuits in Eagle and eventually Altium Designer</li>
@@ -160,19 +156,14 @@
 <li>Write firmware for my first ever first USB microcontroller MSP430F5510</li>
 <li>Develop a <a href="https://github.com/rampadc/cc254x-hidKbdM">HID bridge firmware</a> for Bluetooth 4.0 CC2541 chips to use cheap HM-10 modules as a cheap alternative to RN-42, albeit a lot of bugs and pretty much non-usable in production - so practically useless - good learning experience though</li>
 </ul>
-
 <p>On the downside, it was extremely costly for me at the time to <a href="https://www.eevblog.com/forum/beginners/parts-sourcing-help/">cash out $700</a> to buy 50 AA01B-S040VA1-R3000 receptacles to connect up the T60 keyboard.  So after the final prototype v0.6, with many PCBs to spare, I decided to sell them on Tindie. Started off slow, but there were so many people around the world (and here in Australia as well!) who helped me recover the costs.</p>
-
 <p>Fast forward 5 years, Felix Klee, one of my first supporter from Germany, reached out and and offered to cover the materials R&amp;D costs to develop a customisable Bluetooth controller for his ThinkPad X41 keyboard.</p>
-
 <p>With lessons learned from the previous iteration, the plan today is to build this with reusable components with support from a wide community</p>
-
 <ul>
 <li>Firmware: QMK or TMK core with Microchip AT90USB</li>
 <li>Bluetooth: RN-42 or custom Bluetooth HID firmware on a certified module</li>
 <li>Separate out the USB+Bluetooth controller into a solderable SOM for reusablity</li>
 </ul>
-
 <p>Completion ETA? Probably October 2019. Stay tuned!</p>
 
       </div></div>
@@ -226,6 +217,8 @@
 
 <script src="https://congx.dev/assets/main.js"></script>
 <script src="https://congx.dev/assets/prism.js"></script>
+
+
 
 
 
