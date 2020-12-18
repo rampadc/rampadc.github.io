@@ -9,10 +9,10 @@
     <lastBuildDate>Tue, 10 Dec 2019 14:40:00 +0000</lastBuildDate><atom:link href="https://congx.dev/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Building and shipping Hugo posts with Travis CI for Github Pages</title>
-      <link>https://congx.dev/posts/building-and-shipping-hugo-posts-with-travis-ci-for-github-pages/</link>
+      <link>https://congx.dev/posts/build-ship-hugo-travisci-gh-pages/</link>
       <pubDate>Tue, 10 Dec 2019 14:40:00 +0000</pubDate>
       
-      <guid>https://congx.dev/posts/building-and-shipping-hugo-posts-with-travis-ci-for-github-pages/</guid>
+      <guid>https://congx.dev/posts/build-ship-hugo-travisci-gh-pages/</guid>
       <description>Since my blog source code is private, this blog post contains snippets of how I set up Travis CI to build and push Hugo&amp;rsquo;s public folder to another repository that hosts my public Github Pages.
 It&amp;rsquo;s a simple solution, yet the top Google results only feature custom scripts 🤷🤷‍♀️🤷‍♂️.
 Configuring Travis CI .travis.yml
