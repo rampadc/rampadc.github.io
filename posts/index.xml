@@ -6,7 +6,17 @@
     <description>Recent content in Posts on congx.dev</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-au</language>
-    <lastBuildDate>Sun, 13 Dec 2020 14:40:00 +0000</lastBuildDate><atom:link href="https://congx.dev/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 02 Jan 2021 03:55:00 +1100</lastBuildDate><atom:link href="https://congx.dev/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Custom Light Theme for Hugo Terminal</title>
+      <link>https://congx.dev/posts/custom-light-terminal-theme/</link>
+      <pubDate>Sat, 02 Jan 2021 03:55:00 +1100</pubDate>
+      
+      <guid>https://congx.dev/posts/custom-light-terminal-theme/</guid>
+      <description>I really like Panr&amp;rsquo;s Hugo theme Terminal. It&amp;rsquo;s beautiful. For long texts, however, the contrast can make texts a bit hard to read. This post outlines the files I made customisations to, to create a light theme with a dark red accent. This is in no way a complete customisation of the Terminal theme, just enough of it that fits my current needs.
+Create a new theme variant To begin creating a new theme variant, I use my existing blog https://congx.</description>
+    </item>
+    
     <item>
       <title>If a tree falls in a forest and no one is around to hear it, does it make a sound?</title>
       <link>https://congx.dev/posts/devrel-reflection-2020/</link>

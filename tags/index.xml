@@ -6,7 +6,16 @@
     <description>Recent content in Tags on congx.dev</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-au</language>
-    <lastBuildDate>Sun, 13 Dec 2020 14:40:00 +0000</lastBuildDate><atom:link href="https://congx.dev/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 02 Jan 2021 03:55:00 +1100</lastBuildDate><atom:link href="https://congx.dev/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>hugo</title>
+      <link>https://congx.dev/tags/hugo/</link>
+      <pubDate>Sat, 02 Jan 2021 03:55:00 +1100</pubDate>
+      
+      <guid>https://congx.dev/tags/hugo/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>thoughts</title>
       <link>https://congx.dev/tags/thoughts/</link>
@@ -31,15 +40,6 @@
       <pubDate>Fri, 13 Dec 2019 04:57:00 +0000</pubDate>
       
       <guid>https://congx.dev/tags/xpsl/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>hugo</title>
-      <link>https://congx.dev/tags/hugo/</link>
-      <pubDate>Tue, 10 Dec 2019 14:40:00 +0000</pubDate>
-      
-      <guid>https://congx.dev/tags/hugo/</guid>
       <description></description>
     </item>
     
