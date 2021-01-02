@@ -192,10 +192,11 @@ Create a new theme variant To begin creating a new theme variant, I use my exist
 <p>Changed the outline to a solid 1px border with the accent colour:</p>
 <p><code>themes/terminal/assets/css/prism.css</code> added modified <a href="https://github.com/rampadc/hugo-theme-terminal/blob/master/assets/css/prism.css#L102">line 102</a>.</p>
 <p>This is a destructive change as it changes the underlying CSS.</p>
-<h3 id="modifying-token-punctuation-values">Modifying token punctuation values<a href="#modifying-token-punctuation-values" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<h3 id="syntax-colour-changes">Syntax colour changes<a href="#syntax-colour-changes" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Personally, I have not used enough of the features offered by Terminal and PrismJS to effectively cover all cases for code highlighting. Therefore, I only changed the text colour from <code>white</code> to the text colour in the variant where I find them.</p>
-<p><code>themes/terminal/assets/css/syntax.css</code>: <a href="https://github.com/rampadc/hugo-theme-terminal/blob/master/assets/css/syntax.css#L44">line 44</a>.</p>
+<p>Modifying token punctuation values: <code>themes/terminal/assets/css/syntax.css</code> at <a href="https://github.com/rampadc/hugo-theme-terminal/blob/master/assets/css/syntax.css#L44">line 44</a>.</p>
 <p>This should not be a destructive change as it reuses the colour defined in the variant CSS.</p>
+<p>All other accent colours blends are darkened to make them readable on the screen. This is a destructive change.</p>
 <h2 id="read-other-posts-text-font-modded-to-white-font">Read other posts text font modded to white font<a href="#read-other-posts-text-font-modded-to-white-font" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Added in variant file <a href="https://github.com/rampadc/hugo-theme-terminal/blob/master/assets/css/color/light_blue.css#L16">under <code>.pagination</code></a>.</p>
 <p>This is a non-destructive change as it only occurs in the variant theme.</p>
