@@ -145,6 +145,23 @@ In the last post, I wrote about the tech I&amp;rsquo;d like to play with for thi
   
 
   
+    <div class="table-of-contents">
+      <h2>
+        
+          Table of Contents
+        
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#data-collection-service">Data collection service</a></li>
+    <li><a href="#alerting-service">Alerting service</a></li>
+    <li><a href="#farm-service">Farm service</a></li>
+    <li><a href="#operation-service">Operation service</a></li>
+    <li><a href="#build--recruit-service">Build &amp; recruit service</a></li>
+  </ul>
+</nav>
+    </div>
+  
 
   <div class="post-content"><div>
         <p>Merry Christmas everyone, and Happy Boxing day to folks in the Southern hemisphere.</p>
@@ -157,7 +174,7 @@ In the last post, I wrote about the tech I&amp;rsquo;d like to play with for thi
 <li>Ops service</li>
 <li>Build &amp; recruit service</li>
 </ul>
-<h1 id="data-collection-service">Data collection service<a href="#data-collection-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="data-collection-service">Data collection service<a href="#data-collection-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>At the heart of it all, first we have the data collection service. This service requests:</p>
 <ul>
 <li>World data, including information about the villages on the map, players and their achievements, tribes</li>
@@ -166,7 +183,7 @@ In the last post, I wrote about the tech I&amp;rsquo;d like to play with for thi
 </ul>
 <p>All of these services require the player&rsquo;s credentials to log into the game. The data collected here serves as a the source of truth for all planning and building services going forward. In the past, I had chosen to go with MongoDB due to mlab&rsquo;s free 500MB clusters. For this project I decided to go with Elasticsearch as its querying capability is very much similar to that of MongoDB and it includes a really nice UI i.e. Kibana out of the box.</p>
 <p>As the game can notify the web UI on any new events through web socket, I&rsquo;m employing RabbitMQ&rsquo;s persistence and queue durability to allow for higher reliability. Yes this is a total overkill if the entire project is going to run on a single Docker node, but we never know. With <a href="https://en.forum.tribalwars2.com/index.php?threads/tw2-tools.5182/">tw2-tools</a> being sunset, this service could become more prevalent than ever.</p>
-<h1 id="alerting-service">Alerting service<a href="#alerting-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="alerting-service">Alerting service<a href="#alerting-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The alert service is aimed to use Elasticsearch&rsquo;s alerting plugins such as <a href="https://github.com/Yelp/elastalert">Yelp&rsquo;s elastalert</a> since we&rsquo;re not using X-Pack. The alerts will depend on player&rsquo;s configurations but at the very least, I&rsquo;d expect to see an alert when:</p>
 <ul>
 <li>There&rsquo;s an incoming attack</li>
@@ -175,7 +192,7 @@ In the last post, I wrote about the tech I&amp;rsquo;d like to play with for thi
 <li>Someone relies to my watching messages</li>
 </ul>
 <p>Each of these alerts could trigger further actions to be done like send the messages to Slack or Discord for the last one.</p>
-<h1 id="farm-service">Farm service<a href="#farm-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="farm-service">Farm service<a href="#farm-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The farm service is 100% a bot. The mechanics is simple:</p>
 <ol>
 <li>Get a list of all barbarian villages in a 15-village radius.</li>
@@ -191,11 +208,11 @@ In the last post, I wrote about the tech I&amp;rsquo;d like to play with for thi
 </ul>
 <p>The farm service is very simple. However, before we send out our farm runs, there are couple of checks we need to do: is this village getting attacked, is it due to send out support to another village after its determined run time, is it a prime target in an ongoing op that troops need to stay home for?</p>
 <p>While these questions can be answered and solved with coding or text configuration, after using either approaches, I&rsquo;ve come to a conclusion that I needed something more verbose, easier to manage, something that do all the checks, lets me configure the rules and send out the final commands to the game, something like&hellip;</p>
-<h1 id="operation-service">Operation service<a href="#operation-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="operation-service">Operation service<a href="#operation-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The operation service or Ops service is responsible for issuing final commands to the game. It checks the data service&rsquo;s collected data, perform checks on any requested commands, deny/approve the commands and issue them. The Ops service should have a GUI with nodes that you can drag to draw up workflows, configure rule sets, something like <a href="https://www.ibm.com/au-en/marketplace/cloud-integration">IBM App Connect</a>, <a href="https://www.automationanywhere.com.au/products/enterprise">Automation Anywhere RPA</a> or <a href="https://nodered.org/">NodeRED</a>; but free and well-documented.</p>
 <p>Aside from providing checks for farming, this service is also responsible for calculating and performing <a href="https://en.wiki.tribalwars2.com/index.php?title=Abbreviations#D">dodge</a> and <a href="https://en.wiki.tribalwars2.com/index.php?title=Abbreviations#B">backtime</a> based on rules set by player, such as when a village is offensive, it should dodge or backtime or whether such action is specified by player.</p>
 <p>Workflows for this service will be configured in <a href="https://www.activiti.org/">Activiti BPM</a>.</p>
-<h1 id="build--recruit-service">Build &amp; recruit service<a href="#build--recruit-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="build--recruit-service">Build &amp; recruit service<a href="#build--recruit-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Lastly, we have the final automation bit: build and recruit. These are dumb services with configuration files most likely hosted on mlab for each villages, specifying the build order and troops presets. This service will include a web UI to view buildings and troops queues for all of the player&rsquo;s villages.</p>
 
       </div></div>

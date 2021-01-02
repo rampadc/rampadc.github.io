@@ -147,10 +147,37 @@ The authentication service is sandwiched between the 6 services and the game ser
   
 
   
+    <div class="table-of-contents">
+      <h2>
+        
+          Table of Contents
+        
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#core-service-overview">Core service overview</a></li>
+    <li><a href="#socket-client">Socket Client</a></li>
+    <li><a href="#authenticator">Authenticator</a></li>
+    <li><a href="#mq-components">MQ components</a></li>
+    <li><a href="#log-builder">Log Builder</a></li>
+    <li><a href="#secrets">Secrets</a></li>
+    <li><a href="#changes-to-technology-choices">Changes to technology choices</a></li>
+    <li><a href="#putting-in-the-elastic-stack">Putting in the Elastic Stack</a></li>
+    <li><a href="#results">Results</a>
+      <ul>
+        <li><a href="#the-source-code">The source code</a></li>
+        <li><a href="#the-screens">The screens</a></li>
+      </ul>
+    </li>
+    <li><a href="#whats-next">What&rsquo;s next?</a></li>
+  </ul>
+</nav>
+    </div>
+  
 
   <div class="post-content"><div>
         <p>In the previous post, I mentioned the 6 services essential to wrap up the Tribal Wars 2 manager: data collection, alert, farm, ops and build-recruit services. Before that to happen however, we need to figure out a way to talk to the game i.e. the authentication service.</p>
-<h1 id="core-service-overview">Core service overview<a href="#core-service-overview" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="core-service-overview">Core service overview<a href="#core-service-overview" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p><img src="auth-svc-overview.png" alt="Core services"></p>
 <p>The source code for this service is hosted at <a href="https://bitbucket.org/cn-d/auth-service">https://bitbucket.org/cn-d/auth-service</a>.</p>
 <p>The authentication service is sandwiched between the 6 services and the game server. Its purpose is to manage authentication and the message flows to and from the game. At its core, the service has 6 components: socket client, authenticator, log builder and 3 MQ (message queue) components. Each of these components are developed as singletons to:</p>
@@ -159,7 +186,7 @@ The authentication service is sandwiched between the 6 services and the game ser
 <li>Limit access points to disk (logs) and game server in case an object is called twice during initialization.</li>
 </ul>
 <p>The following sections describes each component in more detail with links to the source code. Please note that the source can change in the future and you should always have a look for the code in the <code>master</code> branch.</p>
-<h1 id="socket-client">Socket Client<a href="#socket-client" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="socket-client">Socket Client<a href="#socket-client" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>SocketClient (src) is a singleton class, responsible for managing a connection to the game server and handles messages in-and-out of the game to the Authenticator component. To use this class, request for an instance by calling <code>SocketClient.shared</code>.</p>
 <p>This class has 2 message handling features: fire-and-forget messaging to the game with <code>fire(message: ISocketMessage)</code>, and asynchronous request/reply messaging with <code>request(message: ISocketMessage, reply: (replyMsg: ISocketMessage) =&gt; void)</code> and <code>reply(message: ISocketMessage)</code>.</p>
 <p>To ensure that messages are matched to the request, the game employs an <code>id</code> field. For example, when a request is sent with</p>
@@ -183,26 +210,26 @@ The authentication service is sandwiched between the 6 services and the game ser
 }
 </code></pre></div><p>Either way, there&rsquo;s a match of id of 2 in the response field. Internally, SocketClient uses a private <code>_msgId</code> field and an array <code>_replyQueue</code> to keep track of requested IDs to match for responses when they come in.</p>
 <p>SocketClient extends node&rsquo;s EventEmitter class. A list of events can be found in <code>SocketClientEvent</code> enum.</p>
-<h1 id="authenticator">Authenticator<a href="#authenticator" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="authenticator">Authenticator<a href="#authenticator" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Authenticator is a singleton class, responsible for managing the client sessions and connections to both the game via SocketClient and RabbitMQ via the 3 MQ components. To use this class, request for an instance with <code>Authenticator.shared</code>.</p>
 <p>Tribal Wars 2 login message requires a username field of <code>name</code> in the message but does not specify how the password is passed in. This is done either with a pass field with raw password text or <code>token</code>, a generated hash which I have no idea how they get it. In this application, I opted with using <code>pass</code>.</p>
 <p>The authenticator starts and ensures the player is authenticated with the game using SocketClient before starting MQ components to ensure that the queued messages will not be processed before the game is connected.</p>
 <p>The sequence of data to be sent and received for authenticating a player is shown in the Kibana logs for game-messages.log in the Results section.</p>
-<h1 id="mq-components">MQ components<a href="#mq-components" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="mq-components">MQ components<a href="#mq-components" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The auth-svc has 3 MQ classes as singleton-classes. Each of these are responsible for a different category of messaging to-and-from the game.</p>
 <p>Messages sent to and from the game can be divided into 3 categories: request for information (villages on the map, player data), notification from the game (incomings, building/recruit task is completed) and changing a configuration (enable notifications). Due to this nature, the authentication service includes 3 MQ components as mentioned. This is similar to how the game&rsquo;s socket service works behind the scene.</p>
 <p><code>MQProducer</code> and <code>MQConsumer</code> are topic exchanges. When receiving a message through <code>MQProducer.send(message: ISocketMessage)</code> (not a static method), the topic key is created by replacing <code>/</code> with <code>.</code> and send to <code>from.game.exchange</code> to be distributed to interested services. The socket message is sent as a whole. MQConsumer is a queue listening to the <code>to.game.exchange</code>. It listens to everything <code>#</code> and forwards the messages to Authenticator for processing. Currently, the Authenticator class does not attempt to verify the messages.</p>
 <p><code>MQRpcServer</code> implements the RPC pattern. It listens to <code>game.rpc_server</code> queue and sends messages to Authenticator by emitting an event. Aside from the game message, <code>MQRpcServer</code> also passes along the MQ message to be stored in Authenticator to async callback can be achieved.</p>
-<h1 id="log-builder">Log Builder<a href="#log-builder" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="log-builder">Log Builder<a href="#log-builder" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The service includes 2 log files stored at <code>/var/log/</code> in a Node container: <code>game-messages.log</code> and <code>services/auth-svc.log</code>. These are created and written to by the LogBuilder built with WinstonJS. Type and direction of data flows are separated by colours in the diagram above.</p>
 <p>FileBeat is configured to monitor <code>/var/log/game-messages.log</code> and <code>/var/log/services/*.log </code>for log files. New log files from other services will be placed in <code>/var/log/services/</code>. This is accomplished by sharing a volume between multiple services.</p>
-<h1 id="secrets">Secrets<a href="#secrets" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="secrets">Secrets<a href="#secrets" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Throughout the development cycle, I have been using environment variables to load in the player&rsquo;s username, password and world ID. For deployment, these will be replaced with Docker <a href="https://docs.docker.com/engine/swarm/secrets/">secrets</a> in Docker Swarm.</p>
-<h1 id="changes-to-technology-choices">Changes to technology choices<a href="#changes-to-technology-choices" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="changes-to-technology-choices">Changes to technology choices<a href="#changes-to-technology-choices" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>From developing this service, I am going to change the deployment technology to Docker Swarm and proxy tool to Traefik.</p>
 <p>Kubernetes has a lot of baggage. You don&rsquo;t just use Kubernetes, you use all the tools that makes it better like Helm and Istio. There&rsquo;s a whole new set of commands and languages you gotta master. Docker Swarm&rsquo;s learning curve is less steep. Once you knew Docker CLI, getting the hang of Swarm is easier. Orchestration is a big topic, but the tools shouldn&rsquo;t make it harder.</p>
 <p>Next up is Traefik. After using it to configure this blog thanks to Ghost, I don&rsquo;t think that it&rsquo;s the right fit for microservices. For new services and end-points, NGINX needs you to edit and confgure a conf file. These files need to be curated and version-controlled. Traefik&rsquo;s way of configuration by enabling a flag in the docker-compose file is a god-send. The Traefik guys have got to do more marketing to compete.</p>
-<h1 id="putting-in-the-elastic-stack">Putting in the Elastic Stack<a href="#putting-in-the-elastic-stack" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="putting-in-the-elastic-stack">Putting in the Elastic Stack<a href="#putting-in-the-elastic-stack" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>This section is more of a rant. If you want to have a look at the code that makes up the stack for this project, head over to <a href="https://bitbucket.org/cn-d/elastic-stack">https://bitbucket.org/cn-d/elastic-stack</a>.</p>
 <p>In this project, I wanted to setup Elasticsearch, Kibana and Beats on Docker containers. Elastic Co has a reference <a href="https://github.com/elastic/stack-docker">Elastic stack Docker repository</a>.</p>
 <p>The repository sets the default password, create keystores to store passwords and install dashboards, index patterns for beats and apm. That&rsquo;s great and all but the free Elastic stack <a href="https://www.elastic.co/subscriptions">doesn&rsquo;t</a> have authentication built-in. No security ticks in the Free tier. The LICENSE (Apache 2.0) is no help either. Is this a trial? <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html">Yes it is</a>. That was a lot of clicks to find out what&rsquo;s the T&amp;Cs huh.</p>
@@ -221,8 +248,8 @@ The authentication service is sandwiched between the 6 services and the game ser
   <span style="color:#f92672">&#34;message.data&#34;</span>: <span style="color:#960050;background-color:#1e0010">&lt;data</span> <span style="color:#960050;background-color:#1e0010">value</span> <span style="color:#960050;background-color:#1e0010">in</span> <span style="color:#960050;background-color:#1e0010">JSON</span> <span style="color:#960050;background-color:#1e0010">block</span> <span style="color:#960050;background-color:#1e0010">above</span> <span style="color:#960050;background-color:#1e0010">in</span> <span style="color:#960050;background-color:#1e0010">JSON</span> <span style="color:#960050;background-color:#1e0010">format&gt;</span>
 }
 </code></pre></div><p>It worked on the first message received but decides to not process random messages down the line. I could have tried writing a Grok expression to split out the JSON string above but the order of type, data, id, etc. could change for each message. As it is not a high-priority task right now, I plan to look into this further down the line to improve game messages logging.</p>
-<h1 id="results">Results<a href="#results" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
-<h2 id="the-source-code">The source code<a href="#the-source-code" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h2 id="results">Results<a href="#results" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h3 id="the-source-code">The source code<a href="#the-source-code" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>For this project, I am using Bitbucket to share the source code as it allows me to have private repositories for in-development services. The source code for the authentication service and ready-for-public projects can be found at <a href="https://bitbucket.org/account/user/cn-d/projects/TW2MAN">https://bitbucket.org/account/user/cn-d/projects/TW2MAN</a>.</p>
 <p>Inside, there are currently 3 folders: <code>auth-service</code>, <code>compose</code> and <code>elastic-stack</code>. To build and run the services described in this post, you need to be run a Unix-based machine. This is due to a dependency in <code>es-init</code> (service used to configure Elasticsearch once it&rsquo;s healthy) which I have yet to iron out. Clone all 3 repositories and put them into the same folder. Once that&rsquo;s completed, follow the steps below:</p>
 <ol>
@@ -234,7 +261,7 @@ The authentication service is sandwiched between the 6 services and the game ser
 <li>Head to Management and create an index pattern of filebeat* and select the time filter field name to be @timestamp.</li>
 <li>Head back to Discover and you should see a screen similar to below.</li>
 </ol>
-<h2 id="the-screens">The screens<a href="#the-screens" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h3 id="the-screens">The screens<a href="#the-screens" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Kibana up and running</p>
 <p><img src="./kibana-up-running.jpg" alt="Kibana up and running"></p>
 <p>Add a filter on the top left under the search bar to limit the source to <code>/var/log/game-messages.log</code> shows you the authentication sequence.</p>
@@ -244,7 +271,7 @@ The authentication service is sandwiched between the 6 services and the game ser
 <p><img src="./rabbit-mq-1.png" alt="Exchanges"></p>
 <p><img src="./rabbit-mq-2.png" alt="Queues"></p>
 <p>That&rsquo;s it! All is configured and we are ready to proceed.</p>
-<h1 id="whats-next">What&rsquo;s next?<a href="#whats-next" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="whats-next">What&rsquo;s next?<a href="#whats-next" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>I&rsquo;d like to setup a CI server with Jenkins Evergreen to build, bring up and down Docker compose services, configure BlueOcean for an easy-to-use visual method for players to deploy a Docker stack for the final release.</p>
 <p>Alongside that, I&rsquo;ll be learning Ruby and collaborating with one of my mates to work on the data collection service and make a pretty Kibana Canvas to view the game data.</p>
 <p>I hope you guys have had a good read and Happy New Year!</p>
