@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Multi-objective Optimisation with IBM ILOG CPLEX - Part 1 :: congx.dev</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Eons ago (2015), I played this online game called Tribal Wars 2 and create a report that summarises the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happens to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&amp;rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.
+In this first post, I&amp;rsquo;m going to:" />
+<meta name="keywords" content=", " />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/" />
+
+
+
+
+<link rel="stylesheet" href="https://congx.dev/assets/style.css">
+
+  <link rel="stylesheet" href="https://congx.dev/assets/light_blue.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="https://congx.dev/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="https://congx.dev/img/favicon/light_blue.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Multi-objective Optimisation with IBM ILOG CPLEX - Part 1">
+<meta property="og:description" content="Eons ago, I played this online game called Tribal Wars 2. Recently, Innogames wiped their online forums to its pre-historic ages, which happens to include my report on army sizes to build. Back then, I used MATLAB Optimization Toolbox. Now I&#39;m going to give IBM ILOG CPLEX a try and see how it goes." />
+<meta property="og:url" content="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/" />
+<meta property="og:site_name" content="congx.dev" />
+
+  <meta property="og:image" content="https://congx.dev/">
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2021-01-02 14:45:00 &#43;1100 &#43;1100" />
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="light_blue">
+
+
+<div class="container headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    Cong&#39;s little blog
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/readme">README</a></li>
+        
+      
+        
+          <li><a href="/toc">T.O.C</a></li>
+        
+      
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/readme">README</a></li>
+      
+    
+      
+        <li><a href="/toc">T.O.C</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/">Multi-objective Optimisation with IBM ILOG CPLEX - Part 1</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-01-02 
+      </span>
+    
+    
+    <span class="post-author">:: Cong Nguyen</span>
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="https://congx.dev/tags/toddler/">toddler</a>&nbsp;
+    
+    #<a href="https://congx.dev/tags/ibm/">ibm</a>&nbsp;
+    
+  </span>
+  
+
+  
+
+  
+    <div class="table-of-contents">
+      <h2>
+        
+          Table of Contents
+        
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#what-is-ibm-ilog-cplex">What is IBM ILOG CPLEX?</a></li>
+    <li><a href="#what-does-opl-optimisation-programming-language-look-like">What does OPL (Optimisation Programming Language) look like?</a></li>
+    <li><a href="#modeling-the-game">Modeling the game</a>
+      <ul>
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#constraints">Constraints</a></li>
+        <li><a href="#just-get-it-to-work-model-cp-optimizer">&ldquo;Just get it to work&rdquo; model (CP optimizer)</a></li>
+        <li><a href="#refactored--looking-pretty-model-cp-optimizer">&ldquo;Refactored &amp; Looking pretty&rdquo; model (CP optimizer)</a></li>
+        <li><a href="#let-the-optimiser-do-more-with-more-constraints-model-cp-optimizer">&ldquo;Let the optimiser do more with more constraints&rdquo; model (CP optimizer)</a></li>
+        <li><a href="#much-faster-model-with-weights-cplex-optimizer">&ldquo;Much faster&rdquo; model with weights (CPLEX optimizer)</a></li>
+      </ul>
+    </li>
+    <li><a href="#next-step-adding-game-knowledge-with-docplex-python-library">Next step: Adding game knowledge with DOcplex Python library</a></li>
+  </ul>
+</nav>
+    </div>
+  
+
+  <div class="post-content"><div>
+        <p>Eons ago (2015), I played this online game called Tribal Wars 2 and create a report that summarises the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happens to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.</p>
+<p>In this first post, I&rsquo;m going to:</p>
+<ul>
+<li>Provide an overview of what the free desktop tool does</li>
+<li>Explain the domain problem</li>
+<li>Write a few models in OPL (overview in post), script in ILOG script and list the model results</li>
+</ul>
+<p>The code for this post is hosted at <a href="https://github.com/rampadc/multi-obj-optim-prob1">https://github.com/rampadc/multi-obj-optim-prob1</a>.</p>
+<p>Part 2 will touch on adding customisations into the model with Python. If that&rsquo;s not too long, I&rsquo;ll go ahead and deploy that to IBM Cloud somehow as well. Otherwise, that will be a separate post.</p>
+<h2 id="what-is-ibm-ilog-cplex">What is IBM ILOG CPLEX?<a href="#what-is-ibm-ilog-cplex" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>IBM ILOG CPLEX consists of a modeling language, two optimisation engines to solve the models, and an IDE to test and debug the models.</p>
+<ul>
+<li>The modeling language is OPL (optimisation programming language)</li>
+<li>The IDE included is called CPLEX Optimization Studio</li>
+<li>The two engines are:
+<ul>
+<li><a href="https://www.ibm.com/support/knowledgecenter/SSSA5P_20.1.0/ilog.odms.cplex.help/CPLEX/homepages/usrmancplex.html#q3e3nIoV">CPLEX Optimizer Engine</a>: used to find solutions to models that requires maths programming</li>
+<li><a href="https://www.ibm.com/support/knowledgecenter/SSSA5P_20.1.0/ilog.odms.cpo.help/CP_Optimizer/User_manual/topics/usrcpoptimizer.html#H5lapNWH">CP Optimizer Engine</a>: used to find solutions to models that requires constraint programming</li>
+</ul>
+</li>
+</ul>
+<p>It comes with a limited trial version at <a href="https://www.ibm.com/au-en/products/ilog-cplex-optimization-studio">IBM ILOG CPLEX website</a>, which I&rsquo;m going to use here. The trial installer gives you all of the components above, but limits you to 1000 variables and 1000 constraints. More than good enough for my miniscule optimisation problem.</p>
+<p>After optimising a model, you can find a statistics tab in the bottom panel, and it&rsquo;s pretty cool to look at. <a href="http://yetanothermathprogrammingconsultant.blogspot.com/2018/03/mip-gap-artifacts.html">The gap number refers to the percentage between the best possible solution and the best found integer solution</a>. CPLEX works to minimise this gap value over time.</p>
+<p><img src="ilog-chart-bottom-right.png" alt=""></p>
+<p>The code in the screenshot is of the third model in this post.</p>
+<h2 id="what-does-opl-optimisation-programming-language-look-like">What does OPL (Optimisation Programming Language) look like?<a href="#what-does-opl-optimisation-programming-language-look-like" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>From the OPL&rsquo;s <a href="https://www.ibm.com/support/knowledgecenter/en/SSSA5P_20.1.0/ilog.odms.studio.help/Optimization_Studio/orientation_guide/topics/analyze_model.html">orientation guide</a>, OPL syntax is a C#-like language. The following is the sample code listed in the guide. It is contained in a file called <code>production.mod</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">{<span style="color:#66d9ef">string</span>} Products = ...;
+{<span style="color:#66d9ef">string</span>} Resources = ...;
+
+<span style="color:#66d9ef">float</span> Consumption[Products][Resources] = ...;
+<span style="color:#66d9ef">float</span> Capacity[Resources] = ...;
+<span style="color:#66d9ef">float</span> Demand[Products] = ...;
+<span style="color:#66d9ef">float</span> InsideCost[Products] = ...;
+<span style="color:#66d9ef">float</span> OutsideCost[Products]  = ...;
+
+dvar <span style="color:#66d9ef">float</span>+ Inside[Products];
+dvar <span style="color:#66d9ef">float</span>+ Outside[Products];
+
+minimize
+  sum( p <span style="color:#66d9ef">in</span> Products ) 
+    ( InsideCost[p] * Inside[p] + OutsideCost[p] * Outside[p] );
+   
+subject to {
+  forall( r <span style="color:#66d9ef">in</span> Resources )
+    ctCapacity: 
+      sum( p <span style="color:#66d9ef">in</span> Products ) 
+        Consumption[p][r] * Inside[p] &lt;= Capacity[r];
+
+  forall(p <span style="color:#66d9ef">in</span> Products)
+    ctDemand:
+      Inside[p] + Outside[p] &gt;= Demand[p];
+}
+</code></pre></div><ul>
+<li>The <code>{string}</code> on line 1 signifies a set of strings declaration. The 3 dots to the right of this signifies the data is read from an external data file, which can be a data file, a spreadsheet or a database. Pretty cool!</li>
+<li><code>dvar float+</code> signifies a decision variable, <code>float+</code> signifies a real non-negative number.</li>
+<li>The goal of this code is to <code>minimize</code> the total cost with constraints set in the last <code>subject to</code> block.</li>
+</ul>
+<p>The <code>minimize</code> section can be re-written to support <code>dexpr</code>. <code>dexpr</code> lets you <a href="https://www.ibm.com/support/knowledgecenter/en/SSSA5P_20.1.0/ilog.odms.ide.help/OPL_Studio/opllangref/topics/opl_langref_decisiontypes_dexpr.html">create reusable decision expression</a> to make the model more readable, like so:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">dexpr <span style="color:#66d9ef">float</span> TotalCost = sum( p <span style="color:#66d9ef">in</span> Products ) ( InsideCost[p] * Inside[p] + OutsideCost[p] * Outside[p] );
+minimize TotalCost;
+</code></pre></div><p>A data file <code>production.dat</code> lives in the same project with the following contents:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">Products =  { <span style="color:#e6db74">&#34;rings&#34;</span>, <span style="color:#e6db74">&#34;earrings&#34;</span> };  <span style="color:#75715e">//index sets for
+</span><span style="color:#75715e"></span>Resources = { <span style="color:#e6db74">&#34;gold&#34;</span>, <span style="color:#e6db74">&#34;diamonds&#34;</span> };   <span style="color:#75715e">//products and resources
+</span><span style="color:#75715e"></span>
+Consumption = [ [<span style="color:#ae81ff">3.0</span>, <span style="color:#ae81ff">1.0</span>], [<span style="color:#ae81ff">2.0</span>, <span style="color:#ae81ff">2.0</span>] ];
+Capacity = [ <span style="color:#ae81ff">130</span>, <span style="color:#ae81ff">180</span> ];
+Demand = [ <span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">150</span> ];
+InsideCost = [ <span style="color:#ae81ff">250</span>, <span style="color:#ae81ff">200</span> ];
+OutsideCost  = [ <span style="color:#ae81ff">260</span>, <span style="color:#ae81ff">270</span> ];
+</code></pre></div><p>Some notable syntax are <code>sets</code> are defined with the <code>{}</code> curly braces while <code>arrays</code> are defined with the <code>[]</code> square brackets.</p>
+<p>Additionally, OPL has a tuple type. Tuple types can only contain <a href="https://www.ibm.com/support/knowledgecenter/SSSA5P_20.1.0/ilog.odms.ide.help/OPL_Studio/opllangref/topics/opl_langref_datastructures_limitations.html">certain types</a> (primitives, tuples, arrays with primitive types, sets of primitive types). Data contents are defined with the <code>&lt;&gt;</code> less-than and greater-than signs in code, and in the data file, follows a <a href="https://www.ibm.com/support/knowledgecenter/en/SSSA5P_20.1.0/ilog.odms.ide.help/OPL_Studio/opllangref/topics/opl_langref_data_init_tuples.html">certain format</a>.</p>
+<p>If a model has a tuple defined as:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">tuple point
+{
+  <span style="color:#66d9ef">int</span> x;
+  <span style="color:#66d9ef">int</span> y;
+}
+point p1=...;
+point p2=...;
+</code></pre></div><p>Then in the <code>.dat</code> file, the tuple data is defined as</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">p1=<span style="color:#960050;background-color:#1e0010">#</span>&lt;y:<span style="color:#ae81ff">1</span>, x:<span style="color:#ae81ff">2</span>&gt;<span style="color:#960050;background-color:#1e0010">#</span>;
+p2=&lt;<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>&gt;;
+</code></pre></div><p><a href="https://www.ibm.com/support/knowledgecenter/en/SSSA5P_20.1.0/ilog.odms.ide.help/OPL_Studio/opllangref/topics/opl_langref_constraints_modeling.html">OPL&rsquo;s reference manual</a> is a good start to learn about OPL.</p>
+<h2 id="modeling-the-game">Modeling the game<a href="#modeling-the-game" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h3 id="problem">Problem<a href="#problem" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>The win condition of Tribal Wars 2 is for a tribe (a group of players) to control 80% of the entire world&rsquo;s villages. To achieve this, each player needs to conquer as many villages as possible by attacking other players, reducing their troop count, and eventually taking over the opposition&rsquo;s villages.</p>
+<p>To build large armies to conquer other villages, each player needs to continuously recruit troops in their respective villages.</p>
+<p>Each village can have a maximum <a href="https://en.wiki.tribalwars2.com/index.php?title=Basics#Provisions">provision</a> of 24_000 units. <a href="https://en.wiki.tribalwars2.com/index.php?title=Buildings">Buildings</a> take up provisions, upgrades to buildings take up provisions. For example, the headquarter&rsquo;s upgrade costs are listed in the <a href="https://en.wiki.tribalwars2.com/index.php?title=Headquarters#Building_levels">HQ&rsquo;s overview table</a>. Different <a href="https://en.wiki.tribalwars2.com/index.php?title=Units">units</a> also take up different provisions. Upgrades to the barracks use up provisions but also make recruiting troops faster.</p>
+<p>Similarly, each village can have a maximum allotment of resources (wood, clay, iron). The maximum capacity of each type is dependent on the <a href="https://en.wiki.tribalwars2.com/index.php?title=Warehouse#Warehouse_Overview">warehouse&rsquo;s level</a>. Each resource type can be replenished either by the village itself producing those resources or loot from successful attacks from troops in that village on another village.</p>
+<p>There are three problems we aim to solve:</p>
+<ol>
+<li>Maximise the total offensive strength of the army while minimising the time taken to build an army.</li>
+<li>Maximise the total offensive strength of the army while minimising the time taken to build an army, with consideration to resource distribution.</li>
+<li>Maximise the number of wall levels reduced (described below) for a successful attack, while minimising the time taken to build the army.</li>
+</ol>
+<p>This post addresses the first problem.</p>
+<h4 id="known-trends">Known trends<a href="#known-trends" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>From my MATLAB report in 2015, the most effective army is built around 1778 light cavalry, 1652 mounted archer, 250 rams and 771 berserkers, taking a total of 16.7 days to recruit. This has a very high iron cost. On the other hand, a slower but more resource-effective build is around 2217 light cavalry, 2176 mounted archer and 250 rams.</p>
+<p>The 250 rams is an assumed number of rams taken to reduce a level 20 wall to rubbles for a successful attacks. This isn&rsquo;t a hard and fast number, however. More rams results in more wall levels deduction. In the event of a failed attack, i.e. all attacker troops are lost, greater number of rams reduces more wall levels.</p>
+<h3 id="constraints">Constraints<a href="#constraints" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>Provision (or food) is the first constraint. For this problem, I assume that buildings are built to the following configurations:</p>
+<table>
+<thead>
+<tr>
+<th>Building</th>
+<th>Level</th>
+<th>Provisions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Headquarter</td>
+<td>25</td>
+<td>212</td>
+</tr>
+<tr>
+<td>Wood</td>
+<td>30</td>
+<td>322</td>
+</tr>
+<tr>
+<td>Clay</td>
+<td>30</td>
+<td>438</td>
+</tr>
+<tr>
+<td>Iron</td>
+<td>30</td>
+<td>940</td>
+</tr>
+<tr>
+<td>Farm</td>
+<td>30</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Warehouse</td>
+<td>30</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Chapel</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Rally point</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Barracks</td>
+<td>25</td>
+<td>556</td>
+</tr>
+<tr>
+<td>Statue</td>
+<td>5</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Wall</td>
+<td>20</td>
+<td>99</td>
+</tr>
+<tr>
+<td>Hospital</td>
+<td>10</td>
+<td>74</td>
+</tr>
+<tr>
+<td>Market</td>
+<td>20</td>
+<td>395</td>
+</tr>
+<tr>
+<td>Tavern</td>
+<td>15</td>
+<td>276</td>
+</tr>
+<tr>
+<td>Academy</td>
+<td>1</td>
+<td>80</td>
+</tr>
+<tr>
+<td>Hall of Order</td>
+<td>1</td>
+<td>11</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td></td>
+<td>3404</td>
+</tr>
+</tbody>
+</table>
+<p>This configuration lets me build nobles and beserkers.</p>
+<p>If a village is built with a church, the provisions cost is increased as below:</p>
+<table>
+<thead>
+<tr>
+<th>Church Level</th>
+<th>Total Provisions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>8404</td>
+</tr>
+<tr>
+<td>2</td>
+<td>6150</td>
+</tr>
+<tr>
+<td>3</td>
+<td>7667</td>
+</tr>
+</tbody>
+</table>
+<p>For a church level 3 village, it doesn&rsquo;t make sense in-game to make this an offensive village. Therefore, only a level 1 church-village is considered. With a cap of 24_000 provisions per village, this gives us two provision constraints:</p>
+<ul>
+<li><code>ctFoodNoChurch</code>: <code>&lt;= 20596</code></li>
+<li><code>ctFoodChurch1</code>: <code>&lt;= 15596</code></li>
+</ul>
+<p><code>ct</code> stands for constraint. I see this as a convention in IBM ILOG CPLEX&rsquo;s documentation thus I&rsquo;m using it here as well.</p>
+<h3 id="just-get-it-to-work-model-cp-optimizer">&ldquo;Just get it to work&rdquo; model (CP optimizer)<a href="#just-get-it-to-work-model-cp-optimizer" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>In this model, I&rsquo;m writing every variable out as is. I wonder if there are any performance impacts with no matrix operations involved like MATLAB would have.</p>
+<p>Multi-objectives or multi-criteria optimisation requires the use of <a href="https://www.ibm.com/support/knowledgecenter/SSSA5P_12.10.0/ilog.odms.ide.help/OPL_Studio/opllang_quickref/topics/tlr_oplf_staticLex.html"><code>staticLex()</code></a> using the CP Optimizer engine. In this code, it prioritises the attack strength first and then the build time. Since OPL can only optimise in one direction, i.e. <code>minimize</code> or <code>maximize</code>, I&rsquo;m negating the total attack strength, so both build time and &ldquo;negated attack strength&rdquo; can be minimised.</p>
+<p>It&rsquo;s pretty cool that ILOG scripting (in <code>main</code> block) is essentially ES5 JavaScript.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#75715e">// CP Optimizer
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> CP; 
+
+<span style="color:#75715e">// Data
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> axeStrength = <span style="color:#ae81ff">45</span>;
+<span style="color:#66d9ef">int</span> lcStrength = <span style="color:#ae81ff">130</span>;
+<span style="color:#66d9ef">int</span> maStrength = <span style="color:#ae81ff">150</span>;
+<span style="color:#66d9ef">int</span> serkStrength = <span style="color:#ae81ff">300</span>;
+
+<span style="color:#66d9ef">int</span> secRecAxe = <span style="color:#ae81ff">90</span>;
+<span style="color:#66d9ef">int</span> secRecLC = <span style="color:#ae81ff">360</span>;
+<span style="color:#66d9ef">int</span> secRecMA = <span style="color:#ae81ff">450</span>;
+<span style="color:#66d9ef">int</span> secRecSerk = <span style="color:#ae81ff">1200</span>;
+<span style="color:#66d9ef">int</span> secRecRam = <span style="color:#ae81ff">480</span>;
+
+<span style="color:#66d9ef">int</span> foodAxe = <span style="color:#ae81ff">1</span>;
+<span style="color:#66d9ef">int</span> foodLC = <span style="color:#ae81ff">4</span>;
+<span style="color:#66d9ef">int</span> foodMA = <span style="color:#ae81ff">5</span>;
+<span style="color:#66d9ef">int</span> foodSerk = <span style="color:#ae81ff">6</span>;
+<span style="color:#66d9ef">int</span> foodRam = <span style="color:#ae81ff">5</span>;
+
+<span style="color:#75715e">// Decision Variables
+</span><span style="color:#75715e"></span>dvar <span style="color:#66d9ef">int</span>+ numAxe;
+dvar <span style="color:#66d9ef">int</span>+ numLC;
+dvar <span style="color:#66d9ef">int</span>+ numMA;
+dvar <span style="color:#66d9ef">int</span>+ numSerk;
+
+<span style="color:#75715e">// Decision Expressions
+</span><span style="color:#75715e"></span>dexpr <span style="color:#66d9ef">int</span> totalBuildTime = numAxe*secRecAxe + numLC*secRecLC + numMA*secRecMA + numSerk*secRecSerk + <span style="color:#ae81ff">250</span>*secRecRam;
+dexpr <span style="color:#66d9ef">int</span> totalNegativeAttackStrength = -(numAxe*axeStrength + numLC*lcStrength + numMA*maStrength + numSerk*serkStrength);
+
+<span style="color:#75715e">// Objective - always need to be placed before the constraints
+</span><span style="color:#75715e"></span>minimize staticLex(totalNegativeAttackStrength, totalBuildTime);
+
+<span style="color:#75715e">// Constraints
+</span><span style="color:#75715e"></span>subject to {
+  (numAxe*foodAxe + numLC*foodLC + numMA*foodMA + numSerk*foodSerk + <span style="color:#ae81ff">250</span>*foodRam) &lt;= <span style="color:#ae81ff">20596</span>;
+  totalBuildTime &gt; <span style="color:#ae81ff">0</span>;
+}
+
+<span style="color:#75715e">// When a .mod file contains a main block, the IDE (or the oplrun command) 
+</span><span style="color:#75715e">// starts the execution of the model by running the main block first
+</span><span style="color:#75715e"></span>main {
+  <span style="color:#66d9ef">var</span> objectiveValues;
+  
+  <span style="color:#75715e">// the `thisOplModel` corresponds to the model included in this file
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// .generate() generate the optimisation model and feed it to the CPLEX algorithm
+</span><span style="color:#75715e"></span>  thisOplModel.generate();
+  cp.startNewSearch();
+  
+  <span style="color:#66d9ef">while</span> (cp.next()) {
+    thisOplModel.postProcess();
+    writeln(<span style="color:#e6db74">&#34;axe: &#34;</span> + thisOplModel.numAxe +
+    		<span style="color:#e6db74">&#34;, lc: &#34;</span> + thisOplModel.numLC +
+    		<span style="color:#e6db74">&#34;, ma: &#34;</span> + thisOplModel.numMA +
+    		<span style="color:#e6db74">&#34;, ram: &#34;</span> + <span style="color:#ae81ff">250</span> + 
+    		<span style="color:#e6db74">&#34;, serk: &#34;</span> + thisOplModel.numSerk + 
+    		<span style="color:#e6db74">&#34;, strength: &#34;</span> + (-thisOplModel.totalNegativeAttackStrength) +
+    		<span style="color:#e6db74">&#34;, time: &#34;</span> + Math.round(thisOplModel.totalBuildTime / <span style="color:#ae81ff">3600</span> / <span style="color:#ae81ff">24</span> *<span style="color:#ae81ff">100</span>)/<span style="color:#ae81ff">100</span> + <span style="color:#e6db74">&#34; days&#34;</span>);
+  }
+  
+  cp.endSearch();
+}
+</code></pre></div><p>The model above ran for ~7 seconds with the following results:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">axe: 0, lc: 0, ma: 0, ram: 250, serk: 0, strength: 0, time: 1.39 days
+axe: 433, lc: 291, ma: 391, ram: 250, serk: 2464, strength: 855165, time: 39.31 days
+axe: 19346, lc: 0, ma: 0, ram: 250, serk: 0, strength: 870570, time: 21.54 days
+axe: 7345, lc: 408, ma: 19, ram: 250, serk: 1636, strength: 877215, time: 33.56 days
+axe: 66, lc: 204, ma: 198, ram: 250, serk: 2912, strength: 932790, time: 43.78 days
+axe: 3819, lc: 0, ma: 17, ram: 250, serk: 2528, strength: 932805, time: 40.57 days
+axe: 3461, lc: 7, ma: 0, ram: 250, serk: 2634, strength: 946855, time: 41.61 days
+axe: 617, lc: 0, ma: 0, ram: 250, serk: 3064, strength: 946965, time: 44.59 days
+axe: 37, lc: 45, ma: 0, ram: 250, serk: 3188, strength: 963915, time: 45.89 days
+axe: 0, lc: 0, ma: 0, ram: 250, serk: 3214, strength: 964200, time: 46.03 days
+axe: 139, lc: 3, ma: 5, ram: 250, serk: 3191, strength: 964695, time: 45.89 days
+axe: 2, lc: 3, ma: 0, ram: 250, serk: 3221, strength: 966780, time: 46.14 days
+axe: 104, lc: 0, ma: 0, ram: 250, serk: 3207, strength: 966780, time: 46.04 days
+axe: 0, lc: 0, ma: 0, ram: 250, serk: 3223, strength: 966900, time: 46.15 days
+axe: 3, lc: 0, ma: 0, ram: 250, serk: 3223, strength: 967035, time: 46.16 days
+axe: 0, lc: 0, ma: 0, ram: 250, serk: 3224, strength: 967200, time: 46.17 days
+axe: 4, lc: 1, ma: 0, ram: 250, serk: 3223, strength: 967210, time: 46.16 days
+axe: 8, lc: 0, ma: 0, ram: 250, serk: 3223, strength: 967260, time: 46.16 days
+axe: 2, lc: 0, ma: 0, ram: 250, serk: 3224, strength: 967290, time: 46.17 days
+</code></pre></div><p>The optimal compromise seems to be 19346 axes, 250 rams would take 21.54 days with strength 870570. But I <strong>know</strong> from the MATLAB optimisation solution in 2015 that mixing in light cavalry (LC) and mounted archer (MA) would give a lower recruitment time. The difference here is back then, I used varying <em>weights</em> between the two priorties.</p>
+<h3 id="refactored--looking-pretty-model-cp-optimizer">&ldquo;Refactored &amp; Looking pretty&rdquo; model (CP optimizer)<a href="#refactored--looking-pretty-model-cp-optimizer" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>Let&rsquo;s refactor the data code to use arrays and see if we get any performance improvements. It&rsquo;s interesting that the <code>numberOfUnits</code> array in OPL turned into a Javascript object in the ILOG script <code>main</code> block.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#66d9ef">using</span> CP; 
+
+<span style="color:#75715e">// Data
+</span><span style="color:#75715e"></span>{<span style="color:#66d9ef">string</span>} Units = {<span style="color:#e6db74">&#34;axe&#34;</span>, <span style="color:#e6db74">&#34;light cavalry&#34;</span>, <span style="color:#e6db74">&#34;mounted archer&#34;</span>, <span style="color:#e6db74">&#34;berserker&#34;</span>};
+<span style="color:#66d9ef">int</span> strengths[Units] = [<span style="color:#ae81ff">45</span>, <span style="color:#ae81ff">130</span>, <span style="color:#ae81ff">150</span>, <span style="color:#ae81ff">300</span>];
+<span style="color:#66d9ef">int</span> recruitTimeInSeconds[Units] = [<span style="color:#ae81ff">90</span>, <span style="color:#ae81ff">360</span>, <span style="color:#ae81ff">450</span>, <span style="color:#ae81ff">1200</span>];
+<span style="color:#66d9ef">int</span> foodPerUnit[Units] = [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>];
+
+<span style="color:#75715e">// Decision Variables
+</span><span style="color:#75715e"></span>dvar <span style="color:#66d9ef">int</span>+ numberOfUnits[Units];
+
+<span style="color:#75715e">// Decision Expressions
+</span><span style="color:#75715e"></span>dexpr <span style="color:#66d9ef">int</span> totalBuildTime = sum(u <span style="color:#66d9ef">in</span> Units) (numberOfUnits[u] * recruitTimeInSeconds[u]) + <span style="color:#ae81ff">250</span> * <span style="color:#ae81ff">480</span>;
+dexpr <span style="color:#66d9ef">int</span> totalNegativeAttackStrength = -(sum(u <span style="color:#66d9ef">in</span> Units) (numberOfUnits[u] * strengths[u]));
+
+<span style="color:#75715e">// Objective - always need to be placed before the constraints
+</span><span style="color:#75715e"></span>minimize staticLex(totalNegativeAttackStrength, totalBuildTime);
+
+<span style="color:#75715e">// Constraints
+</span><span style="color:#75715e"></span>subject to {
+  ctFoodNoChurch: sum(u <span style="color:#66d9ef">in</span> Units) (numberOfUnits[u] * foodPerUnit[u]) + <span style="color:#ae81ff">1250</span> &lt;= <span style="color:#ae81ff">20596</span>;
+  totalBuildTime &gt; <span style="color:#ae81ff">0</span>;
+}
+
+<span style="color:#75715e">// When a .mod file contains a main block, the IDE (or the oplrun command) 
+</span><span style="color:#75715e">// starts the execution of the model by running the main block first
+</span><span style="color:#75715e"></span>main {
+  <span style="color:#66d9ef">var</span> objectiveValues;
+  
+  <span style="color:#75715e">// the `thisOplModel` corresponds to the model included in this file
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// .generate() generate the optimisation model and feed it to the CPLEX algorithm
+</span><span style="color:#75715e"></span>  thisOplModel.generate();
+  cp.startNewSearch();
+  
+  <span style="color:#66d9ef">while</span> (cp.next()) {
+    thisOplModel.postProcess();
+    writeln();
+    write(<span style="color:#e6db74">&#34;axe: &#34;</span> + thisOplModel.numberOfUnits[<span style="color:#e6db74">&#34;axe&#34;</span>]);
+    write(<span style="color:#e6db74">&#34;, lc: &#34;</span> + thisOplModel.numberOfUnits[<span style="color:#e6db74">&#34;light cavalry&#34;</span>]);
+    write(<span style="color:#e6db74">&#34;, ma: &#34;</span> + thisOplModel.numberOfUnits[<span style="color:#e6db74">&#34;mounted archer&#34;</span>]);
+    write(<span style="color:#e6db74">&#34;, serk: &#34;</span> + thisOplModel.numberOfUnits[<span style="color:#e6db74">&#34;berserker&#34;</span>]);
+    write(<span style="color:#e6db74">&#34;, ram: &#34;</span> + <span style="color:#ae81ff">250</span>);
+    write(<span style="color:#e6db74">&#34;, strength: &#34;</span> + (-thisOplModel.totalNegativeAttackStrength));
+    write(<span style="color:#e6db74">&#34;, time: &#34;</span> + Math.round(thisOplModel.totalBuildTime / <span style="color:#ae81ff">3600</span> / <span style="color:#ae81ff">24</span> *<span style="color:#ae81ff">100</span>)/<span style="color:#ae81ff">100</span> + <span style="color:#e6db74">&#34; days&#34;</span>);
+  }
+  
+  cp.endSearch();
+}
+</code></pre></div><p>The results are exactly the same and it only took 6.88 seconds. There is a performance improvement!</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">axe: 0, lc: 0, ma: 0, serk: 0, ram: 250, strength: 0, time: 1.39 days
+axe: 433, lc: 291, ma: 391, serk: 2464, ram: 250, strength: 855165, time: 39.31 days
+axe: 19346, lc: 0, ma: 0, serk: 0, ram: 250, strength: 870570, time: 21.54 days
+axe: 7345, lc: 408, ma: 19, serk: 1636, ram: 250, strength: 877215, time: 33.56 days
+axe: 66, lc: 204, ma: 198, serk: 2912, ram: 250, strength: 932790, time: 43.78 days
+axe: 3819, lc: 0, ma: 17, serk: 2528, ram: 250, strength: 932805, time: 40.57 days
+axe: 3461, lc: 7, ma: 0, serk: 2634, ram: 250, strength: 946855, time: 41.61 days
+axe: 617, lc: 0, ma: 0, serk: 3064, ram: 250, strength: 946965, time: 44.59 days
+axe: 37, lc: 45, ma: 0, serk: 3188, ram: 250, strength: 963915, time: 45.89 days
+axe: 0, lc: 0, ma: 0, serk: 3214, ram: 250, strength: 964200, time: 46.03 days
+axe: 139, lc: 3, ma: 5, serk: 3191, ram: 250, strength: 964695, time: 45.89 days
+axe: 2, lc: 3, ma: 0, serk: 3221, ram: 250, strength: 966780, time: 46.14 days
+axe: 104, lc: 0, ma: 0, serk: 3207, ram: 250, strength: 966780, time: 46.04 days
+axe: 0, lc: 0, ma: 0, serk: 3223, ram: 250, strength: 966900, time: 46.15 days
+axe: 3, lc: 0, ma: 0, serk: 3223, ram: 250, strength: 967035, time: 46.16 days
+axe: 0, lc: 0, ma: 0, serk: 3224, ram: 250, strength: 967200, time: 46.17 days
+axe: 4, lc: 1, ma: 0, serk: 3223, ram: 250, strength: 967210, time: 46.16 days
+axe: 8, lc: 0, ma: 0, serk: 3223, ram: 250, strength: 967260, time: 46.16 days
+axe: 2, lc: 0, ma: 0, serk: 3224, ram: 250, strength: 967290, time: 46.17 days
+</code></pre></div><h3 id="let-the-optimiser-do-more-with-more-constraints-model-cp-optimizer">&ldquo;Let the optimiser do more with more constraints&rdquo; model (CP optimizer)<a href="#let-the-optimiser-do-more-with-more-constraints-model-cp-optimizer" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>Before moving onto adding weights, let&rsquo;s generalise and try having the optimiser determines how many rams we should build for maximum attack strength. For this, I&rsquo;m adding a constraint that the army must have at least 250 rams since we&rsquo;re assuming the defender will have a level 20 wall.</p>
+<p>Furthermore, I realised at this point I forgot to add in a minimum provision (food) constraint, which explains why we&rsquo;re getting the 1.39 days value. I&rsquo;m going to throw in an arbitary minimum threshold.</p>
+<p>Lastly, 45 days is a really long time. Ideally, we want to have a fresh new army in less than a month. OPL supports <code>lowerbound &lt;= X &lt;= upperbound</code> syntax. I&rsquo;m going to further constraint the totalBuildTime to be less than 4 weeks.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#66d9ef">using</span> CP; 
+
+<span style="color:#75715e">// Data
+</span><span style="color:#75715e"></span>{<span style="color:#66d9ef">string</span>} Units = {<span style="color:#e6db74">&#34;axe&#34;</span>, <span style="color:#e6db74">&#34;light cavalry&#34;</span>, <span style="color:#e6db74">&#34;mounted archer&#34;</span>, <span style="color:#e6db74">&#34;berserker&#34;</span>, <span style="color:#e6db74">&#34;ram&#34;</span>};
+<span style="color:#66d9ef">int</span> strengths[Units] = [<span style="color:#ae81ff">45</span>, <span style="color:#ae81ff">130</span>, <span style="color:#ae81ff">150</span>, <span style="color:#ae81ff">300</span>, <span style="color:#ae81ff">2</span>];
+<span style="color:#66d9ef">int</span> recruitTimeInSeconds[Units] = [<span style="color:#ae81ff">90</span>, <span style="color:#ae81ff">360</span>, <span style="color:#ae81ff">450</span>, <span style="color:#ae81ff">1200</span>, <span style="color:#ae81ff">480</span>];
+<span style="color:#66d9ef">int</span> foodPerUnit[Units] = [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">5</span>];
+
+<span style="color:#75715e">// Decision Variables
+</span><span style="color:#75715e"></span>dvar <span style="color:#66d9ef">int</span>+ numberOfUnits[Units];
+
+<span style="color:#75715e">// Decision Expressions
+</span><span style="color:#75715e"></span>dexpr <span style="color:#66d9ef">int</span> totalBuildTime = sum(u <span style="color:#66d9ef">in</span> Units) (numberOfUnits[u] * recruitTimeInSeconds[u]);
+dexpr <span style="color:#66d9ef">int</span> totalNegativeAttackStrength = -(sum(u <span style="color:#66d9ef">in</span> Units) (numberOfUnits[u] * strengths[u]));
+dexpr <span style="color:#66d9ef">int</span> totalFood = sum(u <span style="color:#66d9ef">in</span> Units) (numberOfUnits[u] * foodPerUnit[u]);
+
+<span style="color:#75715e">// Objective - always need to be placed before the constraints
+</span><span style="color:#75715e"></span>minimize staticLex(totalNegativeAttackStrength, totalBuildTime);
+
+<span style="color:#75715e">// Constraints
+</span><span style="color:#75715e"></span>subject to {
+  ctFoodNoChurch: <span style="color:#ae81ff">20000</span> &lt;= totalFood &lt;= <span style="color:#ae81ff">20596</span>;
+  ctMustHaveRams: numberOfUnits[<span style="color:#e6db74">&#34;ram&#34;</span>] &gt;= <span style="color:#ae81ff">250</span>;
+  <span style="color:#ae81ff">0</span> &lt; totalBuildTime &lt;= <span style="color:#ae81ff">4</span> * <span style="color:#ae81ff">7</span> * <span style="color:#ae81ff">24</span> * <span style="color:#ae81ff">3600</span>; <span style="color:#75715e">// recruit time is in seconds, 4 weeks, 7 days/week, 24 hours/day, 3600 seconds/hour
+</span><span style="color:#75715e"></span>}
+
+<span style="color:#75715e">// When a .mod file contains a main block, the IDE (or the oplrun command) 
+</span><span style="color:#75715e">// starts the execution of the model by running the main block first
+</span><span style="color:#75715e"></span>main {
+  <span style="color:#66d9ef">var</span> objectiveValues;
+  
+  <span style="color:#75715e">// the `thisOplModel` corresponds to the model included in this file
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// .generate() generate the optimisation model and feed it to the CPLEX algorithm
+</span><span style="color:#75715e"></span>  thisOplModel.generate();
+  cp.startNewSearch();
+  
+  <span style="color:#66d9ef">while</span> (cp.next()) {
+    thisOplModel.postProcess();
+	  writeln();
+	  write(<span style="color:#e6db74">&#34;axe: &#34;</span> + thisOplModel.numberOfUnits[<span style="color:#e6db74">&#34;axe&#34;</span>]);
+	  write(<span style="color:#e6db74">&#34;, lc: &#34;</span> + thisOplModel.numberOfUnits[<span style="color:#e6db74">&#34;light cavalry&#34;</span>]);
+	  write(<span style="color:#e6db74">&#34;, ma: &#34;</span> + thisOplModel.numberOfUnits[<span style="color:#e6db74">&#34;mounted archer&#34;</span>]);
+	  write(<span style="color:#e6db74">&#34;, serk: &#34;</span> + thisOplModel.numberOfUnits[<span style="color:#e6db74">&#34;berserker&#34;</span>]);
+	  write(<span style="color:#e6db74">&#34;, ram: &#34;</span> + thisOplModel.numberOfUnits[<span style="color:#e6db74">&#34;ram&#34;</span>]);
+	  write(<span style="color:#e6db74">&#34;, strength: &#34;</span> + (-thisOplModel.totalNegativeAttackStrength));
+	  write(<span style="color:#e6db74">&#34;, time: &#34;</span> + Math.round(thisOplModel.totalBuildTime / <span style="color:#ae81ff">3600</span> / <span style="color:#ae81ff">24</span> *<span style="color:#ae81ff">100</span>)/<span style="color:#ae81ff">100</span> + <span style="color:#e6db74">&#34; days&#34;</span>);
+	  write(<span style="color:#e6db74">&#34;, food: &#34;</span> + thisOplModel.totalFood);
+  }
+  
+  cp.endSearch();
+}
+</code></pre></div><p>Results after 1 minute and 58 seconds:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">axe: 18750, lc: 0, ma: 0, serk: 0, ram: 250, strength: 844250, time: 20.92 days, food: 20000
+axe: 13415, lc: 0, ma: 0, serk: 855, ram: 291, strength: 860757, time: 27.47 days, food: 20000
+axe: 19346, lc: 0, ma: 0, serk: 0, ram: 250, strength: 871070, time: 21.54 days, food: 20596
+axe: 13880, lc: 0, ma: 0, serk: 875, ram: 250, strength: 887600, time: 28 days, food: 20380
+axe: 14578, lc: 3, ma: 50, serk: 748, ram: 252, strength: 888804, time: 27.25 days, food: 20588
+axe: 14578, lc: 0, ma: 0, serk: 779, ram: 252, strength: 890214, time: 27.4 days, food: 20512
+axe: 15265, lc: 1, ma: 0, serk: 676, ram: 253, strength: 890361, time: 26.7 days, food: 20590
+axe: 14314, lc: 1, ma: 50, serk: 796, ram: 250, strength: 891060, time: 27.62 days, food: 20594
+axe: 14119, lc: 0, ma: 60, serk: 821, ram: 250, strength: 891155, time: 27.81 days, food: 20595
+axe: 14324, lc: 0, ma: 0, serk: 837, ram: 250, strength: 896180, time: 27.93 days, food: 20596
+axe: 14306, lc: 0, ma: 0, serk: 840, ram: 250, strength: 896270, time: 27.96 days, food: 20596
+axe: 14288, lc: 0, ma: 0, serk: 843, ram: 250, strength: 896360, time: 27.98 days, food: 20596
+axe: 14276, lc: 0, ma: 0, serk: 845, ram: 250, strength: 896420, time: 28 days, food: 20596
+</code></pre></div><h3 id="much-faster-model-with-weights-cplex-optimizer">&ldquo;Much faster&rdquo; model with weights (CPLEX optimizer)<a href="#much-faster-model-with-weights-cplex-optimizer" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>To add weights, <a href="https://www.ibm.com/support/knowledgecenter/SSSA5P_12.10.0/ilog.odms.ide.help/OPL_Studio/opllang_quickref/topics/tlr_oplf_staticLexFull.html"><code>staticLexFull()</code></a> needs to be used. <a href="https://www.ibm.com/support/knowledgecenter/SSSA5P_12.9.0/ilog.odms.cplex.help/CPLEX/UsrMan/topics/multiobj/multiobj_intro.html">Adding weights is also known as <strong>blended objectives</strong></a>. Thus far, what I have done refers to a lexicographic objective, where priorties are assigned to each objective.</p>
+<p>It&rsquo;s strange that the list of examples for multi-objective optimisation in IBM documentation <a href="https://www.ibm.com/support/knowledgecenter/SSSA5P_12.9.0/ilog.odms.cplex.help/CPLEX/UsrMan/topics/multiobj/multiobj_examples.html">doesn&rsquo;t include OPL</a>, while they do have <code>staticLexFull()</code> usage in the example code that comes with the studio installation.</p>
+<p><code>staticLexFull()</code> accepts 5 parameters:</p>
+<ul>
+<li><code>goals</code>: an array of expression of variables</li>
+<li><code>weights</code>: array of integers that defines the weight of each goal</li>
+<li><code>priorities</code>: array of integers that define the order of optimisations to be solved</li>
+<li><code>abstol</code>: an array of floats that define absolute tolerances. The absolute tolerance, abstol, is an amount by which the returned solution may deviate from the optimal value for this objective in absolute terms.</li>
+<li><code>reltol</code>: an array of floats to define relative tolerances. The relative tolerance, relTol, is an amount by which the returned solution may deviates from the optimal value for this objective in relative terms.</li>
+</ul>
+<blockquote>
+<p>The two attributes <code>AbsTol</code> and <code>RelTol</code> relax the requirement that in each step the objective is optimized among the solutions that are optimal to the previous optimization problems. More precisely, for each objective AbsTol and RelTol specify, in absolute and relative terms, the maximum deviations allowed from the optimal value of that objective.</p>
+</blockquote>
+<p>Absolute and relative tolerances documentation cannot be more vague about what values should be provided. They have a <a href="https://www.slideshare.net/xnodet/cplex-129-multiobjective">default value of 0 though</a>.</p>
+<p>Using <code>staticLexFull()</code> also means that we&rsquo;re now using CPLEX Optimizer instead of CP Optimizer to do the optimisation. Therefore, <code>using CP;</code> will be removed, and the code inside <code>main {}</code> needs to be re-written.</p>
+<p>After <code>generate()</code>, the OPL model becomes immutable. To vary the weights, I have to split the main code into a separate file and load the model explictly.</p>
+<p><strong>staticLexFull.mod</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#75715e">// Data
+</span><span style="color:#75715e"></span>{<span style="color:#66d9ef">string</span>} Units = {<span style="color:#e6db74">&#34;axe&#34;</span>, <span style="color:#e6db74">&#34;light cavalry&#34;</span>, <span style="color:#e6db74">&#34;mounted archer&#34;</span>, <span style="color:#e6db74">&#34;berserker&#34;</span>, <span style="color:#e6db74">&#34;ram&#34;</span>};
+<span style="color:#66d9ef">int</span> strengths[Units] = [<span style="color:#ae81ff">45</span>, <span style="color:#ae81ff">130</span>, <span style="color:#ae81ff">150</span>, <span style="color:#ae81ff">300</span>, <span style="color:#ae81ff">2</span>];
+<span style="color:#66d9ef">int</span> recruitTimeInSeconds[Units] = [<span style="color:#ae81ff">90</span>, <span style="color:#ae81ff">360</span>, <span style="color:#ae81ff">450</span>, <span style="color:#ae81ff">1200</span>, <span style="color:#ae81ff">480</span>];
+<span style="color:#66d9ef">int</span> foodPerUnit[Units] = [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">5</span>];
+
+<span style="color:#75715e">// Decision Variables
+</span><span style="color:#75715e"></span>dvar <span style="color:#66d9ef">int</span>+ numberOfUnits[Units];
+
+<span style="color:#75715e">// Decision Expressions
+</span><span style="color:#75715e"></span>dexpr <span style="color:#66d9ef">int</span> totalBuildTime = sum(u <span style="color:#66d9ef">in</span> Units) (numberOfUnits[u] * recruitTimeInSeconds[u]);
+dexpr <span style="color:#66d9ef">int</span> totalNegativeAttackStrength = -(sum(u <span style="color:#66d9ef">in</span> Units) (numberOfUnits[u] * strengths[u]));
+dexpr <span style="color:#66d9ef">int</span> totalFood = sum(u <span style="color:#66d9ef">in</span> Units) (numberOfUnits[u] * foodPerUnit[u]);
+
+dexpr <span style="color:#66d9ef">int</span> goals[i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1.</span>.<span style="color:#ae81ff">2</span>] = (i == <span style="color:#ae81ff">1</span>) ? totalNegativeAttackStrength : totalBuildTime;
+<span style="color:#66d9ef">int</span> priorities[i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1.</span>.<span style="color:#ae81ff">2</span>] = <span style="color:#ae81ff">1</span>;
+
+<span style="color:#75715e">// Externalise weights for edits
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">float</span> weights[<span style="color:#ae81ff">1.</span>.<span style="color:#ae81ff">2</span>] = ...; <span style="color:#75715e">// weight[1]: strength, weight[2]: time
+</span><span style="color:#75715e">// Assigning abstol and reltol to 0 doesn&#39;t seem to have an impact on the solution
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">float</span> abstol[i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1.</span>.<span style="color:#ae81ff">2</span>] = <span style="color:#ae81ff">0</span>; 
+<span style="color:#66d9ef">float</span> reltol[i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1.</span>.<span style="color:#ae81ff">2</span>] = <span style="color:#ae81ff">0</span>; 
+
+<span style="color:#75715e">// Objective - always need to be placed before the constraints
+</span><span style="color:#75715e"></span>minimize staticLexFull(goals, weights, priorities, abstol, reltol);
+
+<span style="color:#75715e">// Constraints
+</span><span style="color:#75715e"></span>subject to {
+  ctFoodNoChurch: <span style="color:#ae81ff">20580</span> &lt;= totalFood &lt;= <span style="color:#ae81ff">20596</span>;
+  ctMustHaveRams: numberOfUnits[<span style="color:#e6db74">&#34;ram&#34;</span>] &gt;= <span style="color:#ae81ff">250</span>;
+  <span style="color:#ae81ff">0</span> &lt; totalBuildTime &lt;= <span style="color:#ae81ff">4</span> * <span style="color:#ae81ff">7</span> * <span style="color:#ae81ff">24</span> * <span style="color:#ae81ff">3600</span>; <span style="color:#75715e">// recruit time is in seconds, 4 weeks, 7 days/week, 24 hours/day, 3600 seconds/hour
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p><strong>staticLexFull_main.mod</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">main {
+  <span style="color:#66d9ef">var</span> source = <span style="color:#66d9ef">new</span> IloOplModelSource(<span style="color:#e6db74">&#34;./staticLexFull.mod&#34;</span>);
+  <span style="color:#66d9ef">var</span> modelDefinition = <span style="color:#66d9ef">new</span> IloOplModelDefinition(source);
+  <span style="color:#66d9ef">var</span> extData = <span style="color:#66d9ef">new</span> IloOplDataSource(<span style="color:#e6db74">&#34;./staticLexFull_data.dat&#34;</span>);
+  
+  <span style="color:#66d9ef">var</span> cplex = <span style="color:#66d9ef">new</span> IloCplex();
+  <span style="color:#66d9ef">var</span> opl = <span style="color:#66d9ef">new</span> IloOplModel(modelDefinition, cplex);
+  opl.addDataSource(extData);
+	<span style="color:#75715e">// Create a model for optimisation
+</span><span style="color:#75715e"></span>	opl.generate();
+
+	<span style="color:#66d9ef">var</span> weightStep = <span style="color:#ae81ff">0.1</span>;
+	 
+	<span style="color:#66d9ef">var</span> strengthWeight = opl.weights[<span style="color:#ae81ff">1</span>];
+	
+	<span style="color:#66d9ef">while</span> (strengthWeight &gt;= <span style="color:#ae81ff">0</span>) {
+	  <span style="color:#66d9ef">if</span> (cplex.solve()) {
+	    writeln();
+		  write(<span style="color:#e6db74">&#34;axe: &#34;</span> + opl.numberOfUnits[<span style="color:#e6db74">&#34;axe&#34;</span>]);
+		  write(<span style="color:#e6db74">&#34;, lc: &#34;</span> + opl.numberOfUnits[<span style="color:#e6db74">&#34;light cavalry&#34;</span>]);
+		  write(<span style="color:#e6db74">&#34;, ma: &#34;</span> + opl.numberOfUnits[<span style="color:#e6db74">&#34;mounted archer&#34;</span>]);
+		  write(<span style="color:#e6db74">&#34;, serk: &#34;</span> + opl.numberOfUnits[<span style="color:#e6db74">&#34;berserker&#34;</span>]);
+		  write(<span style="color:#e6db74">&#34;, ram: &#34;</span> + opl.numberOfUnits[<span style="color:#e6db74">&#34;ram&#34;</span>]);
+		  write(<span style="color:#e6db74">&#34;, strength: &#34;</span> + (-opl.totalNegativeAttackStrength));
+		  write(<span style="color:#e6db74">&#34;, time: &#34;</span> + Math.round(opl.totalBuildTime / <span style="color:#ae81ff">3600</span> / <span style="color:#ae81ff">24</span> *<span style="color:#ae81ff">100</span>)/<span style="color:#ae81ff">100</span> + <span style="color:#e6db74">&#34; days&#34;</span>);
+		  write(<span style="color:#e6db74">&#34;, food: &#34;</span> + opl.totalFood);
+	  }
+	  
+	  <span style="color:#75715e">// Prepare for next iteration
+</span><span style="color:#75715e"></span>	  <span style="color:#75715e">// Decrease strength weight by `weightStep`
+</span><span style="color:#75715e"></span>	  <span style="color:#75715e">// Increase time weight by `weightStep` or (1 - strengthWeight)
+</span><span style="color:#75715e"></span>	  strengthWeight = opl.weights[<span style="color:#ae81ff">1</span>];
+	  strengthWeight -= weightStep;
+	  
+	  <span style="color:#75715e">// create new external data to load in as weights
+</span><span style="color:#75715e"></span>	  <span style="color:#66d9ef">var</span> newData = opl.dataElements;
+	  newData.weights[<span style="color:#ae81ff">1</span>] = strengthWeight;
+	  newData.weights[<span style="color:#ae81ff">2</span>] = <span style="color:#ae81ff">1</span> - strengthWeight;
+	  
+	  <span style="color:#75715e">// Load the new data structure into a newly created model
+</span><span style="color:#75715e"></span>	  <span style="color:#66d9ef">var</span> opl = <span style="color:#66d9ef">new</span> IloOplModel(modelDefinition, cplex);
+	  opl.addDataSource(newData);
+	  opl.generate();
+	} 	
+ 	
+  opl.end();
+  extData.end();
+	modelDefinition.end(); 
+	cplex.end(); 
+	source.end(); 
+}  
+</code></pre></div><p>Results after 0.21 seconds:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">axe: 19330, lc: 0, ma: 0, serk: 0, ram: 250, strength: 870350, time: 21.52 days, food: 20580
+axe: 19346, lc: 0, ma: 0, serk: 0, ram: 250, strength: 871070, time: 21.54 days, food: 20596
+axe: 14276, lc: 0, ma: 0, serk: 845, ram: 250, strength: 896420, time: 28 days, food: 20596
+</code></pre></div><p>The benefit of using staticLexFull despite the massive hurdle of hunting for documentation is that it runs <strong>super fast: 0.21 seconds compared to nearly 2 minutes on the CP optimizer</strong> with sufficiently low weight step size of 0.1.</p>
+<h2 id="next-step-adding-game-knowledge-with-docplex-python-library">Next step: Adding game knowledge with DOcplex Python library<a href="#next-step-adding-game-knowledge-with-docplex-python-library" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>Our results thus far have a lot of axemen in them. As a quick summary,</p>
+<ul>
+<li>Spearmen counters light cavalry (LC)</li>
+<li>Swordmen counters axemen (axe)</li>
+<li>Archer counters mounted archers (MA)</li>
+<li>Trebuchets (treb) counters rams</li>
+<li>Heavy cavalry (HC) does everything, super expensive, built to quickly support other players</li>
+</ul>
+<p>Early game, smaller players tend to build lots of swordmen, which defends well against axemen. Sometimes, you want to focus on building mounted archers over other units as players don&rsquo;t tend to have archers. Adding LC and MA lowers the strength but MATLAB told me in 2015 there&rsquo;s an even faster recruitment time result.</p>
+<p>One line of code that bugs me quite a lot so far is the <code>goals[]</code> definition:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">dexpr <span style="color:#66d9ef">int</span> goals[i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1.</span>.<span style="color:#ae81ff">2</span>] = (i == <span style="color:#ae81ff">1</span>) ? totalNegativeAttackStrength : totalBuildTime;
+</code></pre></div><p>Imagine adding more than 2 goals and this line is going to expand into an ugly ternary. It feels like the CPLEX team decides to add a new feature but doesn&rsquo;t quite know how to define the syntax.</p>
+<p>On the other hand, looking at the <a href="http://ibmdecisionoptimization.github.io/docplex-doc/mp/nurses_multiobj.html">multi-objective nurse optimisation example in Python</a>, starting from line 450, it&rsquo;s positively clean!</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">setup_objective</span>(model):
+  model<span style="color:#f92672">.</span>add_kpi(model<span style="color:#f92672">.</span>total_salary_cost, <span style="color:#e6db74">&#34;Total salary cost&#34;</span>)
+  model<span style="color:#f92672">.</span>add_kpi(model<span style="color:#f92672">.</span>total_number_of_assignments, <span style="color:#e6db74">&#34;Total number of assignments&#34;</span>)
+  model<span style="color:#f92672">.</span>add_kpi(model<span style="color:#f92672">.</span>average_nurse_work_time, <span style="color:#e6db74">&#34;average work time&#34;</span>)
+
+  total_over_average_worktime <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>sum(model<span style="color:#f92672">.</span>nurse_over_average_time_vars[n] <span style="color:#66d9ef">for</span> n <span style="color:#f92672">in</span> model<span style="color:#f92672">.</span>nurses)
+  total_under_average_worktime <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>sum(model<span style="color:#f92672">.</span>nurse_under_average_time_vars[n] <span style="color:#66d9ef">for</span> n <span style="color:#f92672">in</span> model<span style="color:#f92672">.</span>nurses)
+  model<span style="color:#f92672">.</span>add_kpi(total_over_average_worktime, <span style="color:#e6db74">&#34;Total over-average worktime&#34;</span>)
+  model<span style="color:#f92672">.</span>add_kpi(total_under_average_worktime, <span style="color:#e6db74">&#34;Total under-average worktime&#34;</span>)
+  total_fairness <span style="color:#f92672">=</span> total_over_average_worktime <span style="color:#f92672">+</span> total_under_average_worktime
+  model<span style="color:#f92672">.</span>add_kpi(total_fairness, <span style="color:#e6db74">&#34;Total fairness&#34;</span>)
+
+  model<span style="color:#f92672">.</span>minimize_static_lex([model<span style="color:#f92672">.</span>total_salary_cost, total_fairness, model<span style="color:#f92672">.</span>total_number_of_assignments])
+</code></pre></div><p>I&rsquo;m going to migrate over to Python with DOcplex.MP. I think this language switch is a good place to end a rather long post. See you in the next post.</p>
+
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        
+        <span class="button next">
+            <a href="https://congx.dev/posts/custom-light-terminal-theme/">
+                <span class="button__text">Custom Light Theme for Hugo Terminal</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+
+</div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="https://congx.dev/assets/main.js"></script>
+<script src="https://congx.dev/assets/prism.js"></script>
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

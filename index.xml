@@ -6,7 +6,17 @@
     <description>Recent content on congx.dev</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-au</language>
-    <lastBuildDate>Sat, 02 Jan 2021 03:55:00 +1100</lastBuildDate><atom:link href="https://congx.dev/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 02 Jan 2021 14:45:00 +1100</lastBuildDate><atom:link href="https://congx.dev/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Multi-objective Optimisation with IBM ILOG CPLEX - Part 1</title>
+      <link>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/</link>
+      <pubDate>Sat, 02 Jan 2021 14:45:00 +1100</pubDate>
+      
+      <guid>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/</guid>
+      <description>Eons ago (2015), I played this online game called Tribal Wars 2 and create a report that summarises the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happens to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&amp;rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.
+In this first post, I&amp;rsquo;m going to:</description>
+    </item>
+    
     <item>
       <title>Custom Light Theme for Hugo Terminal</title>
       <link>https://congx.dev/posts/custom-light-terminal-theme/</link>
