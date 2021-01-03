@@ -6,7 +6,7 @@
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Eons ago (2015), I played this online game called Tribal Wars 2 and create a report that summarises the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happens to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&amp;rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.
+<meta name="description" content="Eons ago (2015), I played this online game called Tribal Wars 2 and created a report that summarised the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happened to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&amp;rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.
 In this first post, I&amp;rsquo;m going to:" />
 <meta name="keywords" content=", " />
 <meta name="robots" content="noodp" />
@@ -175,7 +175,7 @@ In this first post, I&amp;rsquo;m going to:" />
   
 
   <div class="post-content"><div>
-        <p>Eons ago (2015), I played this online game called Tribal Wars 2 and create a report that summarises the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happens to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.</p>
+        <p>Eons ago (2015), I played this online game called Tribal Wars 2 and created a report that summarised the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happened to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.</p>
 <p>In this first post, I&rsquo;m going to:</p>
 <ul>
 <li>Provide an overview of what the free desktop tool does</li>
@@ -640,7 +640,7 @@ axe: 14276, lc: 0, ma: 0, serk: 845, ram: 250, strength: 896420, time: 28 days, 
 </blockquote>
 <p>Absolute and relative tolerances documentation cannot be more vague about what values should be provided. They have a <a href="https://www.slideshare.net/xnodet/cplex-129-multiobjective">default value of 0 though</a>.</p>
 <p>Using <code>staticLexFull()</code> also means that we&rsquo;re now using CPLEX Optimizer instead of CP Optimizer to do the optimisation. Therefore, <code>using CP;</code> will be removed, and the code inside <code>main {}</code> needs to be re-written.</p>
-<p>After <code>generate()</code>, the OPL model becomes immutable. To vary the weights, I have to split the main code into a separate file and load the model explictly.</p>
+<p>After <code>generate()</code>, the OPL model becomes immutable. To vary the weights, I&rsquo;d split the main code into a separate file and reload the model.</p>
 <p><strong>staticLexFull.mod</strong></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#75715e">// Data
 </span><span style="color:#75715e"></span>{<span style="color:#66d9ef">string</span>} Units = {<span style="color:#e6db74">&#34;axe&#34;</span>, <span style="color:#e6db74">&#34;light cavalry&#34;</span>, <span style="color:#e6db74">&#34;mounted archer&#34;</span>, <span style="color:#e6db74">&#34;berserker&#34;</span>, <span style="color:#e6db74">&#34;ram&#34;</span>};
@@ -741,10 +741,10 @@ axe: 14276, lc: 0, ma: 0, serk: 845, ram: 250, strength: 896420, time: 28 days, 
 <li>Heavy cavalry (HC) does everything, super expensive, built to quickly support other players</li>
 </ul>
 <p>Early game, smaller players tend to build lots of swordmen, which defends well against axemen. Sometimes, you want to focus on building mounted archers over other units as players don&rsquo;t tend to have archers. Adding LC and MA lowers the strength but MATLAB told me in 2015 there&rsquo;s an even faster recruitment time result.</p>
-<p>One line of code that bugs me quite a lot so far is the <code>goals[]</code> definition:</p>
+<p>One line of code that bugged me quite a lot so far is the <code>goals[]</code> definition:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">dexpr <span style="color:#66d9ef">int</span> goals[i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1.</span>.<span style="color:#ae81ff">2</span>] = (i == <span style="color:#ae81ff">1</span>) ? totalNegativeAttackStrength : totalBuildTime;
-</code></pre></div><p>Imagine adding more than 2 goals and this line is going to expand into an ugly ternary. It feels like the CPLEX team decides to add a new feature but doesn&rsquo;t quite know how to define the syntax.</p>
-<p>On the other hand, looking at the <a href="http://ibmdecisionoptimization.github.io/docplex-doc/mp/nurses_multiobj.html">multi-objective nurse optimisation example in Python</a>, starting from line 450, it&rsquo;s positively clean!</p>
+</code></pre></div><p>Imagine adding more than 2 goals and this line is going to expand into an ugly ternary. It feels like the CPLEX team decides to add a new feature but doesn&rsquo;t quite know how to define the OPL syntax.</p>
+<p>On the other hand, looking at the <a href="http://ibmdecisionoptimization.github.io/docplex-doc/mp/nurses_multiobj.html">multi-objective nurse optimisation example in Python</a>, starting from line 450, it&rsquo;s positively clean! Here, <code>add_kpi</code> is equivalent to adding a goal or a decision expression.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">setup_objective</span>(model):
   model<span style="color:#f92672">.</span>add_kpi(model<span style="color:#f92672">.</span>total_salary_cost, <span style="color:#e6db74">&#34;Total salary cost&#34;</span>)
   model<span style="color:#f92672">.</span>add_kpi(model<span style="color:#f92672">.</span>total_number_of_assignments, <span style="color:#e6db74">&#34;Total number of assignments&#34;</span>)
@@ -758,7 +758,7 @@ axe: 14276, lc: 0, ma: 0, serk: 845, ram: 250, strength: 896420, time: 28 days, 
   model<span style="color:#f92672">.</span>add_kpi(total_fairness, <span style="color:#e6db74">&#34;Total fairness&#34;</span>)
 
   model<span style="color:#f92672">.</span>minimize_static_lex([model<span style="color:#f92672">.</span>total_salary_cost, total_fairness, model<span style="color:#f92672">.</span>total_number_of_assignments])
-</code></pre></div><p>I&rsquo;m going to migrate over to Python with DOcplex.MP. I think this language switch is a good place to end a rather long post. See you in the next post.</p>
+</code></pre></div><p>I&rsquo;m going to migrate over to Python with <code>DOcplex.MP</code>. I think this language switch is a good place to end a rather long post. See you in the next post.</p>
 
       </div></div>
 
