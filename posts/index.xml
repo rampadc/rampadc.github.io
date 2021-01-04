@@ -6,7 +6,17 @@
     <description>Recent content in Posts on congx.dev</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-au</language>
-    <lastBuildDate>Sun, 03 Jan 2021 23:33:00 +1100</lastBuildDate><atom:link href="https://congx.dev/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 04 Jan 2021 00:33:00 +1100</lastBuildDate><atom:link href="https://congx.dev/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Multi-objective Optimisation with IBM ILOG CPLEX - Part 2</title>
+      <link>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-2/</link>
+      <pubDate>Mon, 04 Jan 2021 00:33:00 +1100</pubDate>
+      
+      <guid>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-2/</guid>
+      <description>Recap In part 1, I created some multi-objective optimisation models with OPL using both the CP Optimiser and CPLEX Optimiser. However, I hit a no-documentation barrier when started using the staticLexFull() function and found the DOcplex.mp Python example to be a more readable.
+In this post, I&amp;rsquo;ll take a look at first converting the existing weighted model to Python, proceed with adding additional weights to the model and finally expose a nice web GUI to control different variables and view the results.</description>
+    </item>
+    
     <item>
       <title>Multi-objective Optimisation with IBM ILOG CPLEX - Part 1</title>
       <link>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/</link>
