@@ -6,7 +6,7 @@
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Recap In part 1, I created some multi-objective optimisation models with OPL using both the CP Optimiser and CPLEX Optimiser. However, I hit a no-documentation barrier when started using the staticLexFull() function and found the DOcplex.mp Python example to be a more readable.
+<meta name="description" content="Recap part 1 In part 1, I created some multi-objective optimisation models with OPL using both the CP Optimiser and CPLEX Optimiser. However, I hit a no-documentation barrier when started using the staticLexFull() function and found the DOcplex.mp Python example to be a more readable.
 In this post, I&amp;rsquo;ll take a look at first converting the existing weighted model to Python, proceed with adding additional weights to the model and finally expose a nice web GUI to control different variables and view the results." />
 <meta name="keywords" content=", " />
 <meta name="robots" content="noodp" />
@@ -167,17 +167,22 @@ if (!doNotTrack) {
       </h2>
       <nav id="TableOfContents">
   <ul>
-    <li><a href="#recap">Recap</a></li>
+    <li><a href="#recap-part-1">Recap part 1</a></li>
     <li><a href="#whats-docplex">What&rsquo;s DOcplex?</a></li>
     <li><a href="#code-sample">Code sample</a></li>
-    <li><a href="#rewrite-the-opl-model-in-python">Rewrite the OPL model in Python</a></li>
+    <li><a href="#journey-to-pythonic-cplex">Journey to Pythonic CPLEX</a>
+      <ul>
+        <li><a href="#rewrite-the-opl-model-in-python">Rewrite the OPL model in Python</a></li>
+        <li><a href="#add-weights-with-constraints-in-docplex">Add weights with constraints in docplex</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
     </div>
   
 
   <div class="post-content"><div>
-        <h2 id="recap">Recap<a href="#recap" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+        <h2 id="recap-part-1">Recap part 1<a href="#recap-part-1" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>In <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/">part 1</a>, I created some multi-objective optimisation models with OPL using both the CP Optimiser and CPLEX Optimiser. However, I hit a no-documentation barrier when started using the <code>staticLexFull()</code> function and found the <code>DOcplex.mp</code> Python example to be a more readable.</p>
 <p>In this post, I&rsquo;ll take a look at first converting the <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/#much-faster-model-with-weights-cplex-optimizer">existing weighted model</a> to Python, proceed with adding additional weights to the model and finally expose a nice web GUI to control different variables and view the results.</p>
 <h2 id="whats-docplex">What&rsquo;s DOcplex?<a href="#whats-docplex" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
@@ -190,8 +195,10 @@ if (!doNotTrack) {
 <p>As of January 4th 2021, <code>docplex</code> library package that comes with CPLEX Optimisation Studio v20.1.0 relies on a legacy <code>cplex</code> library that only works with Python 3.8 and below.</p>
 <h2 id="code-sample">Code sample<a href="#code-sample" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The complete code listing for this post will be available in <a href="https://github.com/rampadc/multi-obj-cplex-python">https://github.com/rampadc/multi-obj-cplex-python</a>.</p>
-<h2 id="rewrite-the-opl-model-in-python">Rewrite the OPL model in Python<a href="#rewrite-the-opl-model-in-python" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<p>If you&rsquo;re new to OPL and decide to skip part 1, the comments in the code sample below explains the different types of data in OPL. This is the same OPL model that we will rewrite in Python</p>
+<h2 id="journey-to-pythonic-cplex">Journey to Pythonic CPLEX<a href="#journey-to-pythonic-cplex" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>The Python code will make heavy use of Python&rsquo;s <a href="https://docs.python.org/3.8/tutorial/datastructures.html#list-comprehensions">List Comprehension</a> feature.</p>
+<h3 id="rewrite-the-opl-model-in-python">Rewrite the OPL model in Python<a href="#rewrite-the-opl-model-in-python" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>If you&rsquo;re new to OPL and decide to skip part 1, the comments in the code sample below explains the different types of data in OPL. This is the same OPL model that will be rewritten in Python.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#75715e">// Defines a set of string named Units. Sets are declared with the {&lt;type&gt;} syntax
 </span><span style="color:#75715e"></span>{<span style="color:#66d9ef">string</span>} Units = {<span style="color:#e6db74">&#34;axe&#34;</span>, <span style="color:#e6db74">&#34;light cavalry&#34;</span>, <span style="color:#e6db74">&#34;mounted archer&#34;</span>, <span style="color:#e6db74">&#34;berserker&#34;</span>, <span style="color:#e6db74">&#34;ram&#34;</span>};
 <span style="color:#75715e">// Define an array of key-value pairs, where the value is of type int.
@@ -251,7 +258,8 @@ if (!doNotTrack) {
 </span><span style="color:#75715e"></span>}
 </code></pre></div><p>In this exercise, I&rsquo;m using Jupyter Notebook to learn docplex. GitHub can format a IPython notebook much better than Hugo can. To see the result, visit <a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/01-minimize-staticLex.ipynb">01-minimize-staticLex.ipynb</a></p>
 <p><strong>GIF frasier wait a minute</strong></p>
-<p>&ldquo;<code>staticLex</code> in the filename? Not staticLexFull?&rdquo; you asked. Yea&hellip; doesn&rsquo;t look like docplex has the same capabilities as OPL, but the code sure does look nice doesn&rsquo;t it.</p>
+<p>&ldquo;<code>staticLex</code> in the filename? Not staticLexFull?&rdquo; Yea&hellip; doesn&rsquo;t look like docplex has the same capabilities as OPL, but the code sure does look nice doesn&rsquo;t it. I suppose we&rsquo;ll have to make these weights into constraints.</p>
+<h3 id="add-weights-with-constraints-in-docplex">Add weights with constraints in docplex<a href="#add-weights-with-constraints-in-docplex" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 
       </div></div>
 
