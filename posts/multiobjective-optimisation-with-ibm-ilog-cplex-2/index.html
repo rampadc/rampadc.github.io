@@ -202,7 +202,10 @@ if (!doNotTrack) {
 <p>Shout out to Nick Renotte&rsquo;s video <a href="https://youtu.be/ufYtueq2DCw">Solving Optimization Problems with Python Linear Programming</a>. It really helped me when I got stuck at converting the <code>sum()</code> from OPL to Python.</p>
 <h3 id="rewrite-the-opl-model-in-python">Rewrite the OPL model in Python<a href="#rewrite-the-opl-model-in-python" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>In this exercise, I&rsquo;m using Jupyter Notebook to learn docplex. GitHub can format a IPython notebook much better than Hugo can. To see the result, visit <a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/01-minimize-staticLex.ipynb">01-minimize-staticLex.ipynb</a></p>
-<p><strong>Wait a minute!</strong></p>
+
+  <img src="wait-a-minute.gif"  alt="Wait a minute!"  class="center"  style="border-radius: 8px;"  />
+
+
 <p>&ldquo;<code>staticLex</code> in the filename? Not staticLexFull?&rdquo; Yea&hellip; doesn&rsquo;t look like docplex has the same capabilities as OPL, but the code sure does look nice doesn&rsquo;t it. I suppose we&rsquo;ll have to make these weights into constraints.</p>
 <h3 id="bug-fix-incorrect-domain-data">Bug fix: incorrect domain data<a href="#bug-fix-incorrect-domain-data" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>I realised half way through working on adding weights that the build time decision expression is incorrect as berserkers are recruited in a different building - Hall of Order (<code>hoo</code>). So the total build time should be a maximum between those two times. Additionally, I&rsquo;m tightening down the number of seconds in a month as there can be <a href="https://www.quora.com/How-many-seconds-are-in-a-month">more than one value</a>.</p>
@@ -272,12 +275,14 @@ axe: 4807.0, lc: 1663.0, ma: 1441.0, serk: 111.0, ram: 250.0, food: 20580.0, tim
 <p>Any format can be used in your Python code, but to take advantage of data connectors, use the <code>.csv</code> format. To read and write input and output in Python, use the commands <code>get_input_stream(&quot;filename&quot;)</code> and <code>get_output_stream(&quot;filename&quot;)</code>. See <a href="https://cdn.rawgit.com/IBMDecisionOptimization/docplex-doc/master/docs/mp/docplex.util.environment.html">DOCPLEX API sum example</a>.</p>
 </blockquote>
 <p>So far so vague, what do I actually need to change? The <a href="https://dataplatform.cloud.ibm.com/docs/content/DO/WML_Deployment/DeployModelRest.html?context=wdp&amp;audience=wdp">REST API example doco</a> finally provides some code sample in an external Github <a href="https://github.com/IBMDecisionOptimization/DO-Samples/tree/watson_studio_cloud/deploy">repository</a>.</p>
-<p><code>diet.py</code> reads in set of CSVs and output a set of CSVs.</p>
+<p><code>diet.py</code> reads in set of CSVs and output a set of CSVs. More comments in the code samples below.</p>
 <ul>
 <li><a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/04-1-prep-for-wml.ipynb">04-1-prep-for-wml.ipynb</a> brings the last section&rsquo;s code and prepare inputs and outputs as the docs instruct</li>
 <li><a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/04-1-optimisation-params.csv">04-1-optimisation-params.csv</a> is the input CSV. <code>get_all_inputs()</code> reads all input CSVs. While testing locally with a local CPLEX runtime, this file lives in the same folder as the model code.</li>
 <li><a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/solution.csv">solution.csv</a> is the solution CSV</li>
 </ul>
+<h4 id="deploy-the-model-to-watson-machine-learning-service-with-python">Deploy the model to Watson Machine Learning service with Python<a href="#deploy-the-model-to-watson-machine-learning-service-with-python" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>Thankfully, the IBM team has created a <a href="https://ibm-wml-api-pyclient.mybluemix.net/#deployments">Python library</a> and <a href="https://dataplatform.cloud.ibm.com/exchange/public/entry/view/50fa9246181026cd7ae2a5bc7e4ac7bd?context=wdp&amp;audience=wdp">instructions</a> on how to deploy a DO model with Watson Machine Learning.</p>
 
       </div></div>
 
