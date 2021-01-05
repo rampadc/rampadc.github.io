@@ -173,7 +173,9 @@ if (!doNotTrack) {
     <li><a href="#journey-to-pythonic-cplex">Journey to Pythonic CPLEX</a>
       <ul>
         <li><a href="#rewrite-the-opl-model-in-python">Rewrite the OPL model in Python</a></li>
-        <li><a href="#add-weights-with-constraints-in-docplex">Add weights with constraints in docplex</a></li>
+        <li><a href="#bug-fix-incorrect-domain-data">Bug fix: incorrect domain data</a></li>
+        <li><a href="#adding-weights-using-constraints">Adding weights using constraints</a></li>
+        <li><a href="#shipping-the-model-to-the-cloud">Shipping the model to the cloud</a></li>
       </ul>
     </li>
   </ul>
@@ -197,69 +199,85 @@ if (!doNotTrack) {
 <p>The complete code listing for this post will be available in <a href="https://github.com/rampadc/multi-obj-cplex-python">https://github.com/rampadc/multi-obj-cplex-python</a>.</p>
 <h2 id="journey-to-pythonic-cplex">Journey to Pythonic CPLEX<a href="#journey-to-pythonic-cplex" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The Python code will make heavy use of Python&rsquo;s <a href="https://docs.python.org/3.8/tutorial/datastructures.html#list-comprehensions">List Comprehension</a> feature.</p>
+<p>Shout out to Nick Renotte&rsquo;s video <a href="https://youtu.be/ufYtueq2DCw">Solving Optimization Problems with Python Linear Programming</a>. It really helped me when I got stuck at converting the <code>sum()</code> from OPL to Python.</p>
 <h3 id="rewrite-the-opl-model-in-python">Rewrite the OPL model in Python<a href="#rewrite-the-opl-model-in-python" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
-<p>If you&rsquo;re new to OPL and decide to skip part 1, the comments in the code sample below explains the different types of data in OPL. This is the same OPL model that will be rewritten in Python.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#75715e">// Defines a set of string named Units. Sets are declared with the {&lt;type&gt;} syntax
-</span><span style="color:#75715e"></span>{<span style="color:#66d9ef">string</span>} Units = {<span style="color:#e6db74">&#34;axe&#34;</span>, <span style="color:#e6db74">&#34;light cavalry&#34;</span>, <span style="color:#e6db74">&#34;mounted archer&#34;</span>, <span style="color:#e6db74">&#34;berserker&#34;</span>, <span style="color:#e6db74">&#34;ram&#34;</span>};
-<span style="color:#75715e">// Define an array of key-value pairs, where the value is of type int.
-</span><span style="color:#75715e">// These are listed in the same order as the keys in Units, i.e., &#34;axe&#34; = 45, &#34;light cavalary&#34; = 130, ...
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> strengths[Units] = [<span style="color:#ae81ff">45</span>, <span style="color:#ae81ff">130</span>, <span style="color:#ae81ff">150</span>, <span style="color:#ae81ff">300</span>, <span style="color:#ae81ff">2</span>];
-<span style="color:#75715e">// Define an array of key-value pairs, where the value is of type int.
-</span><span style="color:#75715e">// These are listed in the same order as the keys in Units, i.e., &#34;axe&#34; = 90, &#34;light cavalary&#34; = 360, ...
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> recruitTimeInSeconds[Units] = [<span style="color:#ae81ff">90</span>, <span style="color:#ae81ff">360</span>, <span style="color:#ae81ff">450</span>, <span style="color:#ae81ff">1200</span>, <span style="color:#ae81ff">480</span>];
-<span style="color:#75715e">// Define an array of key-value pairs, where the value is of type int.
-</span><span style="color:#75715e">// These are listed in the same order as the keys in Units, i.e., &#34;axe&#34; = 1, &#34;light cavalary&#34; = 4, ...
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> foodPerUnit[Units] = [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">5</span>];
-
-<span style="color:#75715e">// Define an array of key-value pairs, where the value is of type int.
-</span><span style="color:#75715e">// `dvar` signifies this is a decision variable, i.e. the results of your optimisation
-</span><span style="color:#75715e">// `int+` signifies the number of units for each key can only be a postive integer
-</span><span style="color:#75715e"></span>dvar <span style="color:#66d9ef">int</span>+ numberOfUnits[Units];
-
-<span style="color:#75715e">// Decision Expressions is a way to name computing epxressions. It makes the code easier to read.
-</span><span style="color:#75715e">// total build time is an integer. sum(u in Units) is like a single-line foreach loop. 
-</span><span style="color:#75715e"></span>dexpr <span style="color:#66d9ef">int</span> totalBuildTime = sum(u <span style="color:#66d9ef">in</span> Units) (numberOfUnits[u] * recruitTimeInSeconds[u]);
-<span style="color:#75715e">// total negative attack strength time is an integer. 
-</span><span style="color:#75715e">// It&#39;s being negated because CPLEX can only maximise or minimise the computing expressions. 
-</span><span style="color:#75715e"></span>dexpr <span style="color:#66d9ef">int</span> totalNegativeAttackStrength = -(sum(u <span style="color:#66d9ef">in</span> Units) (numberOfUnits[u] * strengths[u]));
-<span style="color:#75715e">// total food is the sum of of all the provisions taken up by all the units
-</span><span style="color:#75715e"></span>dexpr <span style="color:#66d9ef">int</span> totalFood = sum(u <span style="color:#66d9ef">in</span> Units) (numberOfUnits[u] * foodPerUnit[u]);
-
-<span style="color:#75715e">// the goal defines a list of decision expressions we&#39;re optimising.
-</span><span style="color:#75715e">// in this definition, I&#39;m optimising for the negated total attack strength and the total build time
-</span><span style="color:#75715e">// 1..2 is a range from 1 to 2 inclusively
-</span><span style="color:#75715e">// int in the goals doesn&#39;t have any significance
-</span><span style="color:#75715e"></span>dexpr <span style="color:#66d9ef">int</span> goals[i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1.</span>.<span style="color:#ae81ff">2</span>] = (i == <span style="color:#ae81ff">1</span>) ? totalNegativeAttackStrength : totalBuildTime;
-<span style="color:#75715e">// while setting them to the same priority. This is also called a blended optimisation.
-</span><span style="color:#75715e">// the difference here is using CP Optimiser, you have to define the priorities of the goals
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> priorities[i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1.</span>.<span style="color:#ae81ff">2</span>] = <span style="color:#ae81ff">1</span>;
-
-<span style="color:#75715e">// the weight is an array of floating point numbers.
-</span><span style="color:#75715e">// the ... on the right means it&#39;s loading the data from an external data file.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">float</span> weights[<span style="color:#ae81ff">1.</span>.<span style="color:#ae81ff">2</span>] = ...; <span style="color:#75715e">// weight[1]: strength, weight[2]: time
-</span><span style="color:#75715e">// the absolute and relative tolerances - I have absolutely no idea what they do, but they are required
-</span><span style="color:#75715e">// Assigning abstol and reltol to 0 doesn&#39;t seem to have an impact on the solution
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">float</span> abstol[i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1.</span>.<span style="color:#ae81ff">2</span>] = <span style="color:#ae81ff">0</span>; 
-<span style="color:#66d9ef">float</span> reltol[i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1.</span>.<span style="color:#ae81ff">2</span>] = <span style="color:#ae81ff">0</span>; 
-
-<span style="color:#75715e">// Objective - always need to be placed before the constraints
-</span><span style="color:#75715e">// Minimising all objectives using the staticLexFull function, it requires CPLEX Optimiser to run
-</span><span style="color:#75715e"></span>minimize staticLexFull(goals, weights, priorities, abstol, reltol);
-
-<span style="color:#75715e">// Constraints
-</span><span style="color:#75715e">// and some constraints
-</span><span style="color:#75715e"></span>subject to {
-  <span style="color:#75715e">// this is where decision expressions come in handy
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// ctFoodNoChurch and ctMustHaveRams are constraints labels
-</span><span style="color:#75715e"></span>  ctFoodNoChurch: <span style="color:#ae81ff">20580</span> &lt;= totalFood &lt;= <span style="color:#ae81ff">20596</span>;
-  ctMustHaveRams: numberOfUnits[<span style="color:#e6db74">&#34;ram&#34;</span>] &gt;= <span style="color:#ae81ff">250</span>;
-  <span style="color:#75715e">// constraints don&#39;t need to have labels
-</span><span style="color:#75715e"></span>  <span style="color:#ae81ff">0</span> &lt; totalBuildTime &lt;= <span style="color:#ae81ff">4</span> * <span style="color:#ae81ff">7</span> * <span style="color:#ae81ff">24</span> * <span style="color:#ae81ff">3600</span>; <span style="color:#75715e">// recruit time is in seconds, 4 weeks, 7 days/week, 24 hours/day, 3600 seconds/hour
-</span><span style="color:#75715e"></span>}
-</code></pre></div><p>In this exercise, I&rsquo;m using Jupyter Notebook to learn docplex. GitHub can format a IPython notebook much better than Hugo can. To see the result, visit <a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/01-minimize-staticLex.ipynb">01-minimize-staticLex.ipynb</a></p>
-<p><strong>GIF frasier wait a minute</strong></p>
+<p>In this exercise, I&rsquo;m using Jupyter Notebook to learn docplex. GitHub can format a IPython notebook much better than Hugo can. To see the result, visit <a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/01-minimize-staticLex.ipynb">01-minimize-staticLex.ipynb</a></p>
+<p><strong>Wait a minute!</strong></p>
 <p>&ldquo;<code>staticLex</code> in the filename? Not staticLexFull?&rdquo; Yea&hellip; doesn&rsquo;t look like docplex has the same capabilities as OPL, but the code sure does look nice doesn&rsquo;t it. I suppose we&rsquo;ll have to make these weights into constraints.</p>
-<h3 id="add-weights-with-constraints-in-docplex">Add weights with constraints in docplex<a href="#add-weights-with-constraints-in-docplex" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<h3 id="bug-fix-incorrect-domain-data">Bug fix: incorrect domain data<a href="#bug-fix-incorrect-domain-data" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>I realised half way through working on adding weights that the build time decision expression is incorrect as berserkers are recruited in a different building - Hall of Order (<code>hoo</code>). So the total build time should be a maximum between those two times. Additionally, I&rsquo;m tightening down the number of seconds in a month as there can be <a href="https://www.quora.com/How-many-seconds-are-in-a-month">more than one value</a>.</p>
+<p>For this, I&rsquo;m splitting what units from which buildings into two arrays</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">units <span style="color:#f92672">=</span> [axe_unit, lc_unit, ma_unit, serk_unit, ram_unit]
+barracks_units <span style="color:#f92672">=</span> [axe_unit, lc_unit, ma_unit, ram_unit] <span style="color:#75715e"># new</span>
+hoo_units <span style="color:#f92672">=</span> [serk_unit] <span style="color:#75715e">#new</span>
+</code></pre></div><p>Splitting the build times into two decision expressions</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">m<span style="color:#f92672">.</span>barracks_build_time <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>sum([number_of_units[u<span style="color:#f92672">.</span>name] <span style="color:#f92672">*</span> u<span style="color:#f92672">.</span>recruit_time_in_seconds <span style="color:#66d9ef">for</span> u <span style="color:#f92672">in</span> barracks_units])
+m<span style="color:#f92672">.</span>hoo_build_time <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>sum([number_of_units[u<span style="color:#f92672">.</span>name] <span style="color:#f92672">*</span> u<span style="color:#f92672">.</span>recruit_time_in_seconds <span style="color:#66d9ef">for</span> u <span style="color:#f92672">in</span> hoo_units])
+</code></pre></div><p>In turn, split the time constraints in two as well.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">ct_build_time_less_than_4_weeks_barracks <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>add_constraints([<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;=</span> m<span style="color:#f92672">.</span>barracks_build_time, (m<span style="color:#f92672">.</span>barracks_build_time <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">7</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">24</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">3600</span>)])
+ct_build_time_less_than_4_weeks_hoo <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span>add_constraints([<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;=</span> m<span style="color:#f92672">.</span>hoo_build_time, (m<span style="color:#f92672">.</span>hoo_build_time <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">7</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">24</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">3600</span>)])
+</code></pre></div><p>Since there are new decision expressions, these need to come through as new KPIs</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">m<span style="color:#f92672">.</span>add_kpi(m<span style="color:#f92672">.</span>totalNegativeAttack, <span style="color:#e6db74">&#34;Total negative attack strength&#34;</span>)
+m<span style="color:#f92672">.</span>add_kpi(m<span style="color:#f92672">.</span>barracks_build_time, <span style="color:#e6db74">&#34;Barracks build time&#34;</span>) <span style="color:#75715e"># new</span>
+m<span style="color:#f92672">.</span>add_kpi(m<span style="color:#f92672">.</span>hoo_build_time, <span style="color:#e6db74">&#34;Hall of Order build time&#34;</span>) <span style="color:#75715e"># new</span>
+</code></pre></div><p>Having a Python interface really does make the modeling easier. The new model is at <a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/01-1-fix-build-times.ipynb">01-1-fix-build-times.ipynb</a>. Here are the new results.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">[&#39;totalNegativeAttack&#39;, &#39;hoo_build_time&#39;, &#39;barracks_build_time&#39;] - strength: 935870.0, food: 20596.0
+axe: 6386.0, lc: 0, ma: 0, serk: 2160.0, ram: 250.0, food: 20596.0, time: 38.04 days
+ 
+[&#39;totalNegativeAttack&#39;, &#39;barracks_build_time&#39;, &#39;hoo_build_time&#39;] - strength: 935870.0, food: 20596.0
+axe: 6386.0, lc: 0, ma: 0, serk: 2160.0, ram: 250.0, food: 20596.0, time: 38.04 days
+ 
+[&#39;hoo_build_time&#39;, &#39;totalNegativeAttack&#39;, &#39;barracks_build_time&#39;] - strength: 871100.0, food: 20596.0
+axe: 19340.0, lc: 0, ma: 0, serk: 1.0, ram: 250.0, food: 20596.0, time: 21.55 days
+ 
+[&#39;hoo_build_time&#39;, &#39;barracks_build_time&#39;, &#39;totalNegativeAttack&#39;] - strength: 870380.0, food: 20580.0
+axe: 19324.0, lc: 0, ma: 0, serk: 1.0, ram: 250.0, food: 20580.0, time: 21.53 days
+ 
+[&#39;barracks_build_time&#39;, &#39;totalNegativeAttack&#39;, &#39;hoo_build_time&#39;] - strength: 935150.0, food: 20580.0
+axe: 6370.0, lc: 0, ma: 0, serk: 2160.0, ram: 250.0, food: 20580.0, time: 38.02 days
+ 
+[&#39;barracks_build_time&#39;, &#39;hoo_build_time&#39;, &#39;totalNegativeAttack&#39;] - strength: 935150.0, food: 20580.0
+axe: 6370.0, lc: 0, ma: 0, serk: 2160.0, ram: 250.0, food: 20580.0, time: 38.02 days
+</code></pre></div><p>36.94 days? That&rsquo;s more than a month, how did it get through? Shouldn&rsquo;t this get filtered by the constraints? I&rsquo;m as perplexed as you are.</p>
+<h3 id="adding-weights-using-constraints">Adding weights using constraints<a href="#adding-weights-using-constraints" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>The <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/#next-step-adding-game-knowledge-with-docplex-python-library">current results</a> with this model gives me a lot of axemen and can be countered easily. Adding light cavalry and mounted archer will reduce the attack strength but increase the chances of the attack coming through.</p>
+<p>Because berserker is a special unit, the whole defending army is the counter. Therefore, I&rsquo;ll be only adding three new constraints specific to just axemen, light cavalries and mounted archers <code>axe_strength</code>, <code>lc_strength</code> and <code>ma_strength</code>. Each will be a decision expression with the following rough pseudo code: <code>number_of_units[u.name] * u.att_strength</code>, where <code>u</code> is the unit in question. In the next portion of the post, I&rsquo;ll externalise these strength weightings. For now, I&rsquo;ll make them all equal to one another, i.e., weight of 1.</p>
+<p>With the new model at <a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/02-fixed-equal-strength-weights.ipynb">02-fixed-equal-weights.ipynb</a>, the overall strength is about 200K lower. Remember, this is a compromise to counter the types of troops the defender has.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">strength ratio: [0.33333333 0.33333333 0.33333333]
+
+[&#39;totalNegativeAttack&#39;, &#39;hoo_build_time&#39;, &#39;barracks_build_time&#39;] - strength: 683050.0, food: 20596.0
+axe: 4814.0, lc: 1664.0, ma: 1442.0, serk: 111.0, ram: 250.0, food: 20596.0, time: 22.39 days
+ 
+[&#39;totalNegativeAttack&#39;, &#39;barracks_build_time&#39;, &#39;hoo_build_time&#39;] - strength: 683050.0, food: 20596.0
+axe: 4814.0, lc: 1664.0, ma: 1442.0, serk: 111.0, ram: 250.0, food: 20596.0, time: 22.39 days
+ 
+[&#39;hoo_build_time&#39;, &#39;totalNegativeAttack&#39;, &#39;barracks_build_time&#39;] - strength: 673025.0, food: 20596.0
+axe: 4985.0, lc: 1725.0, ma: 1491.0, serk: 1.0, ram: 250.0, food: 20596.0, time: 21.55 days
+ 
+[&#39;hoo_build_time&#39;, &#39;barracks_build_time&#39;, &#39;totalNegativeAttack&#39;] - strength: 672405.0, food: 20580.0
+axe: 4979.0, lc: 1720.0, ma: 1493.0, serk: 1.0, ram: 250.0, food: 20580.0, time: 21.53 days
+ 
+[&#39;barracks_build_time&#39;, &#39;totalNegativeAttack&#39;, &#39;hoo_build_time&#39;] - strength: 682455.0, food: 20580.0
+axe: 4807.0, lc: 1663.0, ma: 1441.0, serk: 111.0, ram: 250.0, food: 20580.0, time: 22.37 days
+ 
+[&#39;barracks_build_time&#39;, &#39;hoo_build_time&#39;, &#39;totalNegativeAttack&#39;] - strength: 682455.0, food: 20580.0
+axe: 4807.0, lc: 1663.0, ma: 1441.0, serk: 111.0, ram: 250.0, food: 20580.0, time: 22.37 days
+</code></pre></div><h3 id="shipping-the-model-to-the-cloud">Shipping the model to the cloud<a href="#shipping-the-model-to-the-cloud" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<p>At this point, I think we have a good enough base to start building a web interface to interact with the model. IBM Cloud&rsquo;s <a href="https://cloud.ibm.com/catalog/services/watson-studio">Watson Studio</a> has a <a href="https://dataplatform.cloud.ibm.com/docs/content/DO/DODS_Introduction/DOintro.html">Decision Optimiser environment that we can use to run the Jupyter notebook</a>.</p>
+<p>First, let&rsquo;s condense the model to just one big cell, and externalise all modifiable variables <a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/03-externalise.ipynb">03-externalise.ipynb</a>.</p>
+<p>All the documentation seems to be pointing me to use Decision Optmizer Model Builder, which lets me prepare a model, run some DO experiments and deploy it to Watson Machine Learning. I&rsquo;ve already got a model and a local environment, so instead, for this section, I&rsquo;m going to <a href="https://dataplatform.cloud.ibm.com/docs/content/DO/WML_Deployment/ModelDeploymentTaskCloud.html?context=wdp&amp;audience=wdp">deploy the model directly with Watson Machine Learning</a>.</p>
+<h4 id="prepare-input-and-output-formats">Prepare input and output formats<a href="#prepare-input-and-output-formats" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<p>For docplex models, IBM Cloud <a href="https://dataplatform.cloud.ibm.com/docs/content/DO/WML_Deployment/ModelIOFileFormats.html#topic_modelIOFileFormats?context=wdp&amp;audience=wdp">doc</a> suggests using an input file and an output file. I&rsquo;m not too sure at this point what <code>take advantage of data connectors</code> mean, but the <code>.csv</code> format is recommended for the input file.</p>
+<blockquote>
+<p>Any format can be used in your Python code, but to take advantage of data connectors, use the <code>.csv</code> format. To read and write input and output in Python, use the commands <code>get_input_stream(&quot;filename&quot;)</code> and <code>get_output_stream(&quot;filename&quot;)</code>. See <a href="https://cdn.rawgit.com/IBMDecisionOptimization/docplex-doc/master/docs/mp/docplex.util.environment.html">DOCPLEX API sum example</a>.</p>
+</blockquote>
+<p>So far so vague, what do I actually need to change? The <a href="https://dataplatform.cloud.ibm.com/docs/content/DO/WML_Deployment/DeployModelRest.html?context=wdp&amp;audience=wdp">REST API example doco</a> finally provides some code sample in an external Github <a href="https://github.com/IBMDecisionOptimization/DO-Samples/tree/watson_studio_cloud/deploy">repository</a>.</p>
+<p><code>diet.py</code> reads in set of CSVs and output a set of CSVs.</p>
+<ul>
+<li><a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/04-1-prep-for-wml.ipynb">04-1-prep-for-wml.ipynb</a> brings the last section&rsquo;s code and prepare inputs and outputs as the docs instruct</li>
+<li><a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/04-1-optimisation-params.csv">04-1-optimisation-params.csv</a> is the input CSV. <code>get_all_inputs()</code> reads all input CSVs. While testing locally with a local CPLEX runtime, this file lives in the same folder as the model code.</li>
+<li><a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/solution.csv">solution.csv</a> is the solution CSV</li>
+</ul>
 
       </div></div>
 
