@@ -14,7 +14,7 @@
       
       <guid>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-2/</guid>
       <description>Recap part 1 In part 1, I created some multi-objective optimisation models with OPL using both the CP Optimiser and CPLEX Optimiser. However, I hit a no-documentation barrier when started using the staticLexFull() function and found the DOcplex.mp Python example to be a more readable.
-In this post, I&amp;rsquo;ll take a look at first converting the existing weighted model to Python, proceed with adding additional weights to the model and finally expose a nice web GUI to control different variables and view the results.</description>
+In this post, I&amp;rsquo;ll take a look at first converting the existing weighted model to Python, proceed with adding additional weights to the model and finally deploy the model to run on IBM Cloud with Watson Machine Learning.</description>
     </item>
     
     <item>

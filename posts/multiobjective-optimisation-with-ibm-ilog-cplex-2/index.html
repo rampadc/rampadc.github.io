@@ -7,7 +7,7 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Recap part 1 In part 1, I created some multi-objective optimisation models with OPL using both the CP Optimiser and CPLEX Optimiser. However, I hit a no-documentation barrier when started using the staticLexFull() function and found the DOcplex.mp Python example to be a more readable.
-In this post, I&amp;rsquo;ll take a look at first converting the existing weighted model to Python, proceed with adding additional weights to the model and finally expose a nice web GUI to control different variables and view the results." />
+In this post, I&amp;rsquo;ll take a look at first converting the existing weighted model to Python, proceed with adding additional weights to the model and finally deploy the model to run on IBM Cloud with Watson Machine Learning." />
 <meta name="keywords" content=", " />
 <meta name="robots" content="noodp" />
 <link rel="canonical" href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-2/" />
@@ -50,7 +50,7 @@ if (!doNotTrack) {
 <meta property="og:locale" content="en" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="Multi-objective Optimisation with IBM ILOG CPLEX - Part 2">
-<meta property="og:description" content="In this post, I&#39;ll take a look at first converting the [existing weighted model](https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/#much-faster-model-with-weights-cplex-optimizer) in part 1 to Python, proceed with adding additional weights to the model and finally expose a nice web GUI to control different variables and view the results." />
+<meta property="og:description" content="In this post, I&#39;ll take a look at first converting the [existing weighted model](https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/#much-faster-model-with-weights-cplex-optimizer) in part 1 to Python, proceed with adding additional weights to the model and finally deploy the model to run on IBM Cloud with Watson Machine Learning" />
 <meta property="og:url" content="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-2/" />
 <meta property="og:site_name" content="congx.dev" />
 
@@ -178,6 +178,7 @@ if (!doNotTrack) {
         <li><a href="#shipping-the-model-to-the-cloud">Shipping the model to the cloud</a></li>
       </ul>
     </li>
+    <li><a href="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
     </div>
@@ -186,7 +187,7 @@ if (!doNotTrack) {
   <div class="post-content"><div>
         <h2 id="recap-part-1">Recap part 1<a href="#recap-part-1" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>In <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/">part 1</a>, I created some multi-objective optimisation models with OPL using both the CP Optimiser and CPLEX Optimiser. However, I hit a no-documentation barrier when started using the <code>staticLexFull()</code> function and found the <code>DOcplex.mp</code> Python example to be a more readable.</p>
-<p>In this post, I&rsquo;ll take a look at first converting the <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/#much-faster-model-with-weights-cplex-optimizer">existing weighted model</a> to Python, proceed with adding additional weights to the model and finally expose a nice web GUI to control different variables and view the results.</p>
+<p>In this post, I&rsquo;ll take a look at first converting the <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/#much-faster-model-with-weights-cplex-optimizer">existing weighted model</a> to Python, proceed with adding additional weights to the model and finally deploy the model to run on IBM Cloud with Watson Machine Learning. In part one, I did mention a full GUI but at this point but after some considerations, there&rsquo;s no use case for a UI at the moment.</p>
 <h2 id="whats-docplex">What&rsquo;s DOcplex?<a href="#whats-docplex" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>DOcplex <a href="https://www.ibm.com/support/knowledgecenter/SSSA5P_12.9.0/com.ibm.docplex.help/DOcplex/topics/DOcplex_home.html">stands for Decision Optimisation CPLEX</a>. It&rsquo;s a Python library composed of two modules:</p>
 <ul>
@@ -282,7 +283,14 @@ axe: 4807.0, lc: 1663.0, ma: 1441.0, serk: 111.0, ram: 250.0, food: 20580.0, tim
 <li><a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/solution.csv">solution.csv</a> is the solution CSV</li>
 </ul>
 <h4 id="deploy-the-model-to-watson-machine-learning-service-with-python">Deploy the model to Watson Machine Learning service with Python<a href="#deploy-the-model-to-watson-machine-learning-service-with-python" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
-<p>Thankfully, the IBM team has created a <a href="https://ibm-wml-api-pyclient.mybluemix.net/#deployments">Python library</a> and <a href="https://dataplatform.cloud.ibm.com/exchange/public/entry/view/50fa9246181026cd7ae2a5bc7e4ac7bd?context=wdp&amp;audience=wdp">instructions</a> on how to deploy a DO model with Watson Machine Learning.</p>
+<p>The IBM Cloud team has created a <a href="https://ibm-wml-api-pyclient.mybluemix.net/#deployments">Python library</a> and <a href="https://dataplatform.cloud.ibm.com/exchange/public/entry/view/50fa9246181026cd7ae2a5bc7e4ac7bd?context=wdp&amp;audience=wdp">instructions</a> on how to deploy a DO model with Watson Machine Learning. This is great and strange at the same time. While I&rsquo;m thankful for a code example, why did they create a separate Python library and not include Watson Machine Learning SDK in the <a href="https://github.com/watson-developer-cloud">official Watson SDK</a>? Instead, their Python SDK&rsquo;s documentation is hosted in a <a href="http://ibm-wml-api-pyclient.mybluemix.net">non-IBM domain</a>.</p>
+<p>For the sample code, the IBM team is using IBM Watson Machine Learning API v4. As the instructions are maintained by the IBM team and to protect my credentials, I won&rsquo;t be posting the deployment code. Instead a test job was run and this is the results: <a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/05-run-optimisation-job.ipynb">05-run-optimisation-job.ipynb</a>.</p>
+<h2 id="conclusion">Conclusion<a href="#conclusion" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<p>DOcplex not supporting <code>staticLexFull</code> was a bit of a bummer but there were work-arounds. With Python being a dynamic language, I found going through the docs a tad challenging since there were no examples of just the functions by themselves. The sample code were massive to navigate through.</p>
+<p>I honestly didn&rsquo;t think there would be so many hoops to jump through to deploy a DO model to Watson Machine Learning. I found it surprising that the Watson Machine Learning team maintain their own Python library seperated to the larger IBM Watson SDK teams. They also only maintain a Python library that my google-fu could find, i.e. not in any other mainstream languages.</p>
+<p>It was clear that the IBM Cloud &amp; Data Platform team wants me to use the Decision Optimization Model Builder (DOMB) inside Watson Studio to build a DO model and deploy it to Watson Machine Learning via Watson Studio.  Maybe this is the cloud version of Cloud Pak for Data and there are certain features not available. However, if this is the same for the full enterprise version of Cloud Pak for Data, I think there will be a lot of annoyed optimisation developers who prefer to work with the desktop CPLEX studio version and like myself, a local instance of Jupyter Lab, where everything is more responsive since there is no network latency.</p>
+<p>Once the model is deployed by uploading a ZIP file to the deployment space, I found out that I could not replace the model in Watson Studio, i.e., I could only use the REST API or the Python library to redeploy the model into another deployment space.</p>
+<p>The consumption side of Watson Machine Learning was great. It was smooth sailing from the moment the model was deployed. For this project, I did not dive into looking at logs, metrics and traces for each job as the focus was to get my feet wet with IBM Decision Optimization. As a whole, I could do everything from start to finish, yes there were bumps along the way and hills to climb but got there eventually. I think the platform will be even better if the user journey for a desktop user is more focused.</p>
 
       </div></div>
 
