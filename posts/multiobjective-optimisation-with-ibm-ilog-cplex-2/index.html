@@ -61,12 +61,11 @@
     #<a href="https://congx.dev/tags/ibm/">ibm</a>&nbsp;
     
   </span>
-  
-  
-  <h2 id="recap-part-1">Recap part 1</h2>
+  <div>
+      <h2 id="recap-part-1">Recap part 1<a href="#recap-part-1" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <p>In <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/">part 1</a>, I created some multi-objective optimisation models with OPL using both the CP Optimiser and CPLEX Optimiser. However, I hit a no-documentation barrier when started using the <code>staticLexFull()</code> function and found the <code>DOcplex.mp</code> Python example to be a more readable.</p>
 <p>In this post, I&rsquo;ll take a look at first converting the <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/#much-faster-model-with-weights-cplex-optimizer">existing weighted model</a> to Python, proceed with adding additional weights to the model and finally deploy the model to run on IBM Cloud with Watson Machine Learning. In part one, I did mention a full GUI but at this point but after some considerations, there&rsquo;s no use case for a UI at the moment.</p>
-<h2 id="whats-docplex">What&rsquo;s DOcplex?</h2>
+<h2 id="whats-docplex">What&rsquo;s DOcplex?<a href="#whats-docplex" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <p>DOcplex <a href="https://www.ibm.com/support/knowledgecenter/SSSA5P_12.9.0/com.ibm.docplex.help/DOcplex/topics/DOcplex_home.html">stands for Decision Optimisation CPLEX</a>. It&rsquo;s a Python library composed of two modules:</p>
 <ul>
 <li><code>docplex.mp</code>: taps into CPLEX Optimiser APIs, <code>mp</code> stands for mathematical programming</li>
@@ -74,16 +73,16 @@
 </ul>
 <p>The library is advertised to be compatible with panda and numpy. The official documentation for this library is located at <a href="https://ibmdecisionoptimization.github.io/docplex-doc/">IBM Decision Optimisation Github Page</a>. The documentation looks like it was written for someone who&rsquo;s already been using CPLEX, i.e. with a lot of assumed knowledge. Aside from the setup intructions, it goes straight to the examples, and there&rsquo;s only <a href="https://ibmdecisionoptimization.github.io/docplex-doc/mp/nurses_multiobj.html">one</a> multi-opjective optimisation example using the MP variant.</p>
 <p>As of January 4th 2021, <code>docplex</code> library package that comes with CPLEX Optimisation Studio v20.1.0 relies on a legacy <code>cplex</code> library that only works with Python 3.8 and below.</p>
-<h2 id="code-sample">Code sample</h2>
+<h2 id="code-sample">Code sample<a href="#code-sample" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <p>The complete code listing for this post will be available in <a href="https://github.com/rampadc/multi-obj-cplex-python">https://github.com/rampadc/multi-obj-cplex-python</a>.</p>
-<h2 id="journey-to-pythonic-cplex">Journey to Pythonic CPLEX</h2>
+<h2 id="journey-to-pythonic-cplex">Journey to Pythonic CPLEX<a href="#journey-to-pythonic-cplex" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <p>The Python code will make heavy use of Python&rsquo;s <a href="https://docs.python.org/3.8/tutorial/datastructures.html#list-comprehensions">List Comprehension</a> feature.</p>
 <p>Shout out to Nick Renotte&rsquo;s video <a href="https://youtu.be/ufYtueq2DCw">Solving Optimization Problems with Python Linear Programming</a>. It really helped me when I got stuck at converting the <code>sum()</code> from OPL to Python.</p>
-<h3 id="rewrite-the-opl-model-in-python">Rewrite the OPL model in Python</h3>
+<h3 id="rewrite-the-opl-model-in-python">Rewrite the OPL model in Python<a href="#rewrite-the-opl-model-in-python" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
 <p>In this exercise, I&rsquo;m using Jupyter Notebook to learn docplex. GitHub can format a IPython notebook much better than Hugo can. To see the result, visit <a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/01-minimize-staticLex.ipynb">01-minimize-staticLex.ipynb</a></p>
 <p><img src="wait-a-minute-60pc.gif" alt="Wait a minute!"></p>
 <p>&ldquo;<code>staticLex</code> in the filename? Not staticLexFull?&rdquo; Yea&hellip; doesn&rsquo;t look like docplex has the same capabilities as OPL, but the code sure does look nice doesn&rsquo;t it. I suppose we&rsquo;ll have to make these weights into constraints.</p>
-<h3 id="bug-fix-incorrect-domain-data">Bug fix: incorrect domain data</h3>
+<h3 id="bug-fix-incorrect-domain-data">Bug fix: incorrect domain data<a href="#bug-fix-incorrect-domain-data" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
 <p>I realised half way through working on adding weights that the build time decision expression is incorrect as berserkers are recruited in a different building - Hall of Order (<code>hoo</code>). So the total build time should be a maximum between those two times. Additionally, I&rsquo;m tightening down the number of seconds in a month as there can be <a href="https://www.quora.com/How-many-seconds-are-in-a-month">more than one value</a>.</p>
 <p>For this, I&rsquo;m splitting what units from which buildings into two arrays</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">units <span style="color:#f92672">=</span> [axe_unit, lc_unit, ma_unit, serk_unit, ram_unit]
@@ -118,7 +117,7 @@ axe: 6370.0, lc: 0, ma: 0, serk: 2160.0, ram: 250.0, food: 20580.0, time: 38.02 
 [&#39;barracks_build_time&#39;, &#39;hoo_build_time&#39;, &#39;totalNegativeAttack&#39;] - strength: 935150.0, food: 20580.0
 axe: 6370.0, lc: 0, ma: 0, serk: 2160.0, ram: 250.0, food: 20580.0, time: 38.02 days
 </code></pre></div><p>36.94 days? That&rsquo;s more than a month, how did it get through? Shouldn&rsquo;t this get filtered by the constraints? I&rsquo;m as perplexed as you are.</p>
-<h3 id="adding-weights-using-constraints">Adding weights using constraints</h3>
+<h3 id="adding-weights-using-constraints">Adding weights using constraints<a href="#adding-weights-using-constraints" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
 <p>The <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/#next-step-adding-game-knowledge-with-docplex-python-library">current results</a> with this model gives me a lot of axemen and can be countered easily. Adding light cavalry and mounted archer will reduce the attack strength but increase the chances of the attack coming through.</p>
 <p>Because berserker is a special unit, the whole defending army is the counter. Therefore, I&rsquo;ll be only adding three new constraints specific to just axemen, light cavalries and mounted archers <code>axe_strength</code>, <code>lc_strength</code> and <code>ma_strength</code>. Each will be a decision expression with the following rough pseudo code: <code>number_of_units[u.name] * u.att_strength</code>, where <code>u</code> is the unit in question. In the next portion of the post, I&rsquo;ll externalise these strength weightings. For now, I&rsquo;ll make them all equal to one another, i.e., weight of 1.</p>
 <p>With the new model at <a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/02-fixed-equal-strength-weights.ipynb">02-fixed-equal-weights.ipynb</a>, the overall strength is about 200K lower. Remember, this is a compromise to counter the types of troops the defender has.</p>
@@ -141,11 +140,11 @@ axe: 4807.0, lc: 1663.0, ma: 1441.0, serk: 111.0, ram: 250.0, food: 20580.0, tim
  
 [&#39;barracks_build_time&#39;, &#39;hoo_build_time&#39;, &#39;totalNegativeAttack&#39;] - strength: 682455.0, food: 20580.0
 axe: 4807.0, lc: 1663.0, ma: 1441.0, serk: 111.0, ram: 250.0, food: 20580.0, time: 22.37 days
-</code></pre></div><h3 id="shipping-the-model-to-the-cloud">Shipping the model to the cloud</h3>
+</code></pre></div><h3 id="shipping-the-model-to-the-cloud">Shipping the model to the cloud<a href="#shipping-the-model-to-the-cloud" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
 <p>At this point, I think we have a good enough base to start building a web interface to interact with the model. IBM Cloud&rsquo;s <a href="https://cloud.ibm.com/catalog/services/watson-studio">Watson Studio</a> has a <a href="https://dataplatform.cloud.ibm.com/docs/content/DO/DODS_Introduction/DOintro.html">Decision Optimiser environment that we can use to run the Jupyter notebook</a>.</p>
 <p>First, let&rsquo;s condense the model to just one big cell, and externalise all modifiable variables <a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/03-externalise.ipynb">03-externalise.ipynb</a>.</p>
 <p>All the documentation seems to be pointing me to use Decision Optmizer Model Builder, which lets me prepare a model, run some DO experiments and deploy it to Watson Machine Learning. I&rsquo;ve already got a model and a local environment, so instead, for this section, I&rsquo;m going to <a href="https://dataplatform.cloud.ibm.com/docs/content/DO/WML_Deployment/ModelDeploymentTaskCloud.html?context=wdp&amp;audience=wdp">deploy the model directly with Watson Machine Learning</a>.</p>
-<h4 id="prepare-input-and-output-formats">Prepare input and output formats</h4>
+<h4 id="prepare-input-and-output-formats">Prepare input and output formats<a href="#prepare-input-and-output-formats" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h4>
 <p>For docplex models, IBM Cloud <a href="https://dataplatform.cloud.ibm.com/docs/content/DO/WML_Deployment/ModelIOFileFormats.html#topic_modelIOFileFormats?context=wdp&amp;audience=wdp">doc</a> suggests using an input file and an output file. I&rsquo;m not too sure at this point what <code>take advantage of data connectors</code> mean, but the <code>.csv</code> format is recommended for the input file.</p>
 <blockquote>
 <p>Any format can be used in your Python code, but to take advantage of data connectors, use the <code>.csv</code> format. To read and write input and output in Python, use the commands <code>get_input_stream(&quot;filename&quot;)</code> and <code>get_output_stream(&quot;filename&quot;)</code>. See <a href="https://cdn.rawgit.com/IBMDecisionOptimization/docplex-doc/master/docs/mp/docplex.util.environment.html">DOCPLEX API sum example</a>.</p>
@@ -157,17 +156,17 @@ axe: 4807.0, lc: 1663.0, ma: 1441.0, serk: 111.0, ram: 250.0, food: 20580.0, tim
 <li><a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/04-1-optimisation-params.csv">04-1-optimisation-params.csv</a> is the input CSV. <code>get_all_inputs()</code> reads all input CSVs. While testing locally with a local CPLEX runtime, this file lives in the same folder as the model code.</li>
 <li><a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/solution.csv">solution.csv</a> is the solution CSV</li>
 </ul>
-<h4 id="deploy-the-model-to-watson-machine-learning-service-with-python">Deploy the model to Watson Machine Learning service with Python</h4>
+<h4 id="deploy-the-model-to-watson-machine-learning-service-with-python">Deploy the model to Watson Machine Learning service with Python<a href="#deploy-the-model-to-watson-machine-learning-service-with-python" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h4>
 <p>The IBM Cloud team has created a <a href="https://ibm-wml-api-pyclient.mybluemix.net/#deployments">Python library</a> and <a href="https://dataplatform.cloud.ibm.com/exchange/public/entry/view/50fa9246181026cd7ae2a5bc7e4ac7bd?context=wdp&amp;audience=wdp">instructions</a> on how to deploy a DO model with Watson Machine Learning. This is great and strange at the same time. While I&rsquo;m thankful for a code example, why did they create a separate Python library and not include Watson Machine Learning SDK in the <a href="https://github.com/watson-developer-cloud">official Watson SDK</a>? Instead, their Python SDK&rsquo;s documentation is hosted in a <a href="http://ibm-wml-api-pyclient.mybluemix.net">non-IBM domain</a>.</p>
 <p>For the sample code, the IBM team is using IBM Watson Machine Learning API v4. As the instructions are maintained by the IBM team and to protect my credentials, I won&rsquo;t be posting the deployment code. Instead a test job was run and this is the results: <a href="https://github.com/rampadc/multi-obj-cplex-python/blob/master/05-run-optimisation-job.ipynb">05-run-optimisation-job.ipynb</a>.</p>
-<h2 id="conclusion">Conclusion</h2>
+<h2 id="conclusion">Conclusion<a href="#conclusion" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <p>DOcplex not supporting <code>staticLexFull</code> was a bit of a bummer but there were work-arounds. With Python being a dynamic language, I found going through the docs a tad challenging since there were no examples of just the functions by themselves. The sample code were massive to navigate through.</p>
 <p>I honestly didn&rsquo;t think there would be so many hoops to jump through to deploy a DO model to Watson Machine Learning. I found it surprising that the Watson Machine Learning team maintain their own Python library seperated to the larger IBM Watson SDK teams. They also only maintain a Python library that my google-fu could find, i.e. not in any other mainstream languages.</p>
 <p>It was clear that the IBM Cloud &amp; Data Platform team wants me to use the Decision Optimization Model Builder (DOMB) inside Watson Studio to build a DO model and deploy it to Watson Machine Learning via Watson Studio.  Maybe this is the cloud version of Cloud Pak for Data and there are certain features not available. However, if this is the same for the full enterprise version of Cloud Pak for Data, I think there will be a lot of annoyed optimisation developers who prefer to work with the desktop CPLEX studio version and like myself, a local instance of Jupyter Lab, where everything is more responsive since there is no network latency.</p>
 <p>Once the model is deployed by uploading a ZIP file to the deployment space, I found out that I could not replace the model in Watson Studio, i.e., I could only use the REST API or the Python library to redeploy the model into another deployment space.</p>
 <p>The consumption side of Watson Machine Learning was great. It was smooth sailing from the moment the model was deployed. For this project, I did not dive into looking at logs, metrics and traces for each job as the focus was to get my feet wet with IBM Decision Optimization. As a whole, I could do everything from start to finish, yes there were bumps along the way and hills to climb but got there eventually. I think the platform will be even better if the user journey for a desktop user is more focused.</p>
 
-</div>
+    </div></div>
 
 
     </main>

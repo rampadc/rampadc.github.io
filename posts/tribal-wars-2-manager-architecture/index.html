@@ -59,11 +59,10 @@
     #<a href="https://congx.dev/tags/toddler/">toddler</a>&nbsp;
     
   </span>
-  
-  
-  <p>Earlier this year, I developed a single process NodeJS application for all the services in this manager (shown down below) and it started to raise out-of-memory errors due to Node&rsquo;s limitation. This project aims to eliminate this problem by splitting the manager into multiple services.</p>
+  <div>
+      <p>Earlier this year, I developed a single process NodeJS application for all the services in this manager (shown down below) and it started to raise out-of-memory errors due to Node&rsquo;s limitation. This project aims to eliminate this problem by splitting the manager into multiple services.</p>
 <p>This blog post serves a documentation for the high-level design of my Tribal Wars 2 manager. The development for this project is not about cheating in Tribal Wars 2 but using the game as a motivator to learn new technologies. As of the published date of this post, this project is not open-source as it is still in development.</p>
-<h2 id="how-the-game-works">How the game works</h2>
+<h2 id="how-the-game-works">How the game works<a href="#how-the-game-works" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <p>Behind the scenes, Tribal Wars 2, henceforth referred to as TW2, uses a web socket implementation Socket.IO to communicate between the game GUI and server. At the time of this post December 2018, the game is using <a href="http://socket.io">Socket.IO</a> version 2.0. To connect to the game, I am using <a href="https://www.npmjs.com/package/socket.io-client">socket.io-client</a> for Javascript as other implementations of the library is not as up-to-date.</p>
 <p>The sequence to establish a connection to the game is as follows:</p>
 <ol>
@@ -101,7 +100,7 @@
         }
     });
 }
-</code></pre></div><h2 id="project-high-level-design">Project high-level design</h2>
+</code></pre></div><h2 id="project-high-level-design">Project high-level design<a href="#project-high-level-design" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <p>Now, with the basics out of the way, there are a couple of technologies that I want to play with in this project. These include:</p>
 <ol>
 <li>RabbitMQ - originally, I was going with Apache ArtemisMQ since I was learning Kotlin and was going to do a full Spring microservices thing. However, one of my mates was looking for a tech project to try out Jenkins and he&rsquo;s only Ruby proficient. We went with RabbitMQ for its range of client library support in multiple languages.</li>
@@ -116,7 +115,7 @@
 <p>The following diagram illustrates how services would work with each other. All services will likely to live on a single Docker node, while RabbitMQ and Elastic stack lives on their own separate nodes. I look forward to using Kubernetes to orchestrate the stack.</p>
 <p><img src="components.png" alt="Manager&rsquo;s components"></p>
 
-</div>
+    </div></div>
 
 
     </main>

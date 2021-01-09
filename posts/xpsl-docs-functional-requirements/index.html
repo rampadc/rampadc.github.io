@@ -59,10 +59,9 @@
     #<a href="https://congx.dev/tags/xpsl/">xpsl</a>&nbsp;
     
   </span>
-  
-  
-  <p>There are 4 types in XPSL: user, room, track, playlist. This blog post lists the functional requirements for each of these types.</p>
-<h2 id="xpsl-user">XPSL User</h2>
+  <div>
+      <p>There are 4 types in XPSL: user, room, track, playlist. This blog post lists the functional requirements for each of these types.</p>
+<h2 id="xpsl-user">XPSL User<a href="#xpsl-user" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <ul>
 <li>A user must have access to either Spotify or Apple Music</li>
 <li>A user must authorise XPSL for their Spotify and/or Apple Music account</li>
@@ -74,7 +73,7 @@
 <li>A user could have a short name</li>
 <li>XPSL user client is a NATS client that subscribe to a XPSL Room (NATS Topic)</li>
 </ul>
-<h2 id="xpsl-room">XPSL Room</h2>
+<h2 id="xpsl-room">XPSL Room<a href="#xpsl-room" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <ul>
 <li>Each room has a group of users who manage a shared playlist</li>
 <li>Room is a NATS topic that multiple users can subscribe to</li>
@@ -87,20 +86,20 @@
 <li>Users can input share link from Spotify and Apple Music</li>
 <li>Users can search for songs. Only shared results from Spotify and Apple Music are shown.</li>
 </ul>
-<h2 id="xpsl-track">XPSL Track</h2>
+<h2 id="xpsl-track">XPSL Track<a href="#xpsl-track" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <ul>
 <li>Track has a unique ISRC</li>
 <li>Track has a name, album, artists, a single ISRC, Spotify and/or Apple Music links</li>
 <li>Track can belong to multiple playlists</li>
 </ul>
-<h2 id="xpsl-playlist">XPSL Playlist</h2>
+<h2 id="xpsl-playlist">XPSL Playlist<a href="#xpsl-playlist" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <ul>
 <li>A playlist can belong to only 1 room</li>
 <li>A playlist can contain multiple tracks</li>
 <li>Playlists emit track <em>add</em> and <em>remove</em> events</li>
 <li>Playlists emit <em>play, pause, next, previous</em> events, each of this event must contain the track ISRC, Spotify link and/or Apple Music link</li>
 </ul>
-<h2 id="getting-track-information-from-spotify--apple-music">Getting track information from Spotify / Apple Music</h2>
+<h2 id="getting-track-information-from-spotify--apple-music">Getting track information from Spotify / Apple Music<a href="#getting-track-information-from-spotify--apple-music" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <ul>
 <li>XPSL stores Spotify access token from the user</li>
 <li>XPSL stores Apple Music access token from the developer</li>
@@ -111,7 +110,7 @@
 </ul>
 <p><strong>Note</strong>: <a href="http://NATS.io">NATS.io</a> is not a hard requirement</p>
 
-</div>
+    </div></div>
 
 
     </main>

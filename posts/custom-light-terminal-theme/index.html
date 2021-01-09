@@ -59,10 +59,9 @@
     #<a href="https://congx.dev/tags/hugo/">hugo</a>&nbsp;
     
   </span>
-  
-  
-  <p>I really like <a href="https://github.com/panr/hugo-theme-terminal">Panr&rsquo;s Hugo theme Terminal</a>. It&rsquo;s beautiful. For long texts, however, the contrast can make texts a bit hard to read. This post outlines the files I made customisations to, to create a light theme with a dark blue accent. This is in no way a complete customisation of the Terminal theme, just enough of it that fits my current needs.</p>
-<h2 id="create-a-new-theme-variant">Create a new theme variant</h2>
+  <div>
+      <p>I really like <a href="https://github.com/panr/hugo-theme-terminal">Panr&rsquo;s Hugo theme Terminal</a>. It&rsquo;s beautiful. For long texts, however, the contrast can make texts a bit hard to read. This post outlines the files I made customisations to, to create a light theme with a dark blue accent. This is in no way a complete customisation of the Terminal theme, just enough of it that fits my current needs.</p>
+<h2 id="create-a-new-theme-variant">Create a new theme variant<a href="#create-a-new-theme-variant" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <p>To begin creating a new theme variant, I use my existing blog <a href="https://congx.dev">https://congx.dev</a> and edit the theme in <code>themes/terminal</code> directory directly. This approach is <a href="https://github.com/panr/hugo-theme-terminal#how-to-edit">recommended</a> by panr in the source GitHub repository.</p>
 <p>A new theme variant file <code>themes/terminal/assets/css/color/light_blue.css</code> is then created.</p>
 <p>It seems like Panr has built in enough switches into the source code so you could build variants relatively easiy. <code>webpack.config.js</code> was modified to add a variant to the build pipeline:</p>
@@ -76,14 +75,14 @@
 <li><code>hugo server</code> to get live preview.</li>
 </ul>
 <p>Throughout the following post, you&rsquo;ll encounter the word <code>destructive</code>. If a change to the underlying code might break other themes' appearances, it is deemed destructive.</p>
-<h2 id="fixing-the-details">Fixing the details</h2>
+<h2 id="fixing-the-details">Fixing the details<a href="#fixing-the-details" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <p>Creating a new variant, change text colour to white and the background only did so much. When I started this process, the background remained a tint of the accent colour. The border to the right of the text and the code block&rsquo;s border needed to be changed, plus a few other text colour mods outlined in this section.</p>
-<h3 id="border-colours">Border colours</h3>
+<h3 id="border-colours">Border colours<a href="#border-colours" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
 <p>Since it&rsquo;s my blog, an executive decision was made to make the right border a lighter version of the accent colour. This is changed in <code>main.css</code> on <a href="https://github.com/rampadc/hugo-theme-terminal/blob/master/assets/css/main.css#L295">line 295</a>.</p>
-<h3 id="background-not-taking-modified-value">Background not taking modified value</h3>
+<h3 id="background-not-taking-modified-value">Background not taking modified value<a href="#background-not-taking-modified-value" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
 <p>After the initial change, the style for background was still blend with a transparent black. Panr&rsquo;s original source code has the value <code>--background: color-mod(var(--accent) blend(#1D1E28 98%));</code>. On <a href="https://github.com/panr/hugo-theme-terminal/blob/master/assets/css/main.css#L18">line 18 of main.css of the original code</a>, it seems like this computed value is repeated, which means regardless of the value set in the variant theme, the actual background will never update. I think this is a bug. For my purpose, I changed it to reflect the variant&rsquo;s to my variant&rsquo;s variable value (<code>main.css</code> <a href="https://github.com/rampadc/hugo-theme-terminal/blob/master/assets/css/main.css#L18">line 18</a>).</p>
 <p>This should not be a destructive change as it uses the background colour of the variant.</p>
-<h3 id="modding-prismjs">Modding Prismjs</h3>
+<h3 id="modding-prismjs">Modding Prismjs<a href="#modding-prismjs" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span> <span style="color:#75715e"># for versions before 1.9.0 use apps/v1beta2</span>
 <span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
 <span style="color:#f92672">metadata</span>:
@@ -103,30 +102,30 @@
         <span style="color:#f92672">image</span>: <span style="color:#ae81ff">nginx:1.14.2</span>
         <span style="color:#f92672">ports</span>:
         - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">80</span>
-</code></pre></div><h4 id="code-outline">Code outline</h4>
+</code></pre></div><h4 id="code-outline">Code outline<a href="#code-outline" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h4>
 <p>Changed the outline to a solid 1px border with the accent colour:</p>
 <p><code>themes/terminal/assets/css/prism.css</code> added modified <a href="https://github.com/rampadc/hugo-theme-terminal/blob/master/assets/css/prism.css#L102">line 102</a>.</p>
 <p>This is a destructive change as it changes the underlying CSS.</p>
-<h4 id="syntax-colour-changes">Syntax colour changes</h4>
+<h4 id="syntax-colour-changes">Syntax colour changes<a href="#syntax-colour-changes" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h4>
 <p>Personally, I have not used enough of the features offered by Terminal and PrismJS to effectively cover all cases for code highlighting. Therefore, I only changed the text colour from <code>white</code> to the text colour in the variant where I find them.</p>
 <p>Modifying token punctuation values: <code>themes/terminal/assets/css/syntax.css</code> at <a href="https://github.com/rampadc/hugo-theme-terminal/blob/master/assets/css/syntax.css#L44">line 44</a>.</p>
 <p>This should not be a destructive change as it reuses the colour defined in the variant CSS.</p>
 <p>All other accent colours blends are darkened to make them readable on the screen. This is a destructive change.</p>
-<h3 id="read-other-posts-text-font-modded-to-white-font">Read other posts text font modded to white font</h3>
+<h3 id="read-other-posts-text-font-modded-to-white-font">Read other posts text font modded to white font<a href="#read-other-posts-text-font-modded-to-white-font" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
 <p>Added in variant file <a href="https://github.com/rampadc/hugo-theme-terminal/blob/master/assets/css/color/light_blue.css#L16">under <code>.pagination</code></a>.</p>
 <p>This is a non-destructive change as it only occurs in the variant theme.</p>
-<h3 id="title-block-text-fonts-modified-for-dark-accents">Title block text fonts modified for dark accents</h3>
+<h3 id="title-block-text-fonts-modified-for-dark-accents">Title block text fonts modified for dark accents<a href="#title-block-text-fonts-modified-for-dark-accents" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
 <p>Added in variant file <a href="https://github.com/rampadc/hugo-theme-terminal/blob/master/assets/css/color/light_blue.css#L20">under <code>.logo</code></a>.</p>
 <p>This is a non-destructive change as it only occurs in the variant theme.</p>
-<h3 id="favicon">favicon</h3>
+<h3 id="favicon">favicon<a href="#favicon" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
 <p>A new favicon was added to <code>themes/terminal/static/img/favicon</code>. I duplicated an existing block, renamed it to <code>light_blue.png</code> to reflect the variant&rsquo;s name and changed the colour.</p>
 <p>This is a non-destructive change as it only occurs in the variant theme.</p>
-<h2 id="added-a-warm-background-colour">Added a warm background colour</h2>
+<h2 id="added-a-warm-background-colour">Added a warm background colour<a href="#added-a-warm-background-colour" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <p>Lastly, I added a warm background colour that corresponds to a slightly warmer white temperature:</p>
 <p><a href="http://planetpixelemporium.com/tutorialpages/light.html">Halogen colour temp</a>: <code>rgb(255, 241, 224)</code> for background.</p>
 <p>This is a non-destructive change as it only occurs in the variant theme.</p>
 
-</div>
+    </div></div>
 
 
     </main>

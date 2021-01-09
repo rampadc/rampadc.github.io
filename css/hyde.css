@@ -305,3 +305,27 @@ a.sidebar-nav-item:focus {
 .post-title a:hover {
   color: #ff6900;
 }
+
+.theme-base-navy a:hover {
+  color: #ff6900;
+}
+
+.hanchor {
+  color: #ff6900 !important;
+  text-decoration: none !important;
+  visibility: hidden;
+}
+
+
+.post h1:hover a,
+.post h2:hover a,
+.post h3:hover a,
+.post h4:hover a,
+.post h5:hover a,
+.post h6:hover a,
+.post h7:hover a,
+.post h8:hover a,
+.post h9:hover a
+{
+  visibility: visible;
+}

@@ -61,9 +61,8 @@
     #<a href="https://congx.dev/tags/ibm/">IBM</a>&nbsp;
     
   </span>
-  
-  
-  <p>IBM Cloud is deprecating Kibana as a method to view Cloud Foundry logs. Moving forward, they are recommending LogDNA as a 3rd-party service. That&rsquo;s cool. The process of logging Cloud Foundry is simple enough anyway.</p>
+  <div>
+      <p>IBM Cloud is deprecating Kibana as a method to view Cloud Foundry logs. Moving forward, they are recommending LogDNA as a 3rd-party service. That&rsquo;s cool. The process of logging Cloud Foundry is simple enough anyway.</p>
 <p><a href="https://docs.cloudfoundry.org/devguide/services/log-management.html#step2">With the general CF CLI</a>, you would:</p>
 <ol>
 <li>Create a user-provided service with <code>cf cups DRAIN-NAME -l SYSLOG-URL</code>.</li>
@@ -73,7 +72,7 @@
 <p>A Google Search revealed Papertrail. Their free plan gives you live preview, 7-day archive, 48-hour search and alerting. Compared to LogDNA on IBM Cloud, that sort of deal starts at $1.50USD/GB-month. That&rsquo;s insanely good with Papertrail!</p>
 <p>Setting up with Papertrail was simple and straightforward. Those 2 commands above; Cloud Foundry on IBM Cloud, Papertrail receiving the logs with no fuss!</p>
 
-</div>
+    </div></div>
 
 
     </main>

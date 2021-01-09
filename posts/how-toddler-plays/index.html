@@ -59,9 +59,8 @@
     #<a href="https://congx.dev/tags/toddler/">toddler</a>&nbsp;
     
   </span>
-  
-  
-  <p>Back when I first started looking into making the manager (like 4 years ago), looking through Github&rsquo;s projects on automating Tribal Wars 2, I found most, if not all, of the projects relies on automating the browser instead of utilising the the game&rsquo;s WebSocket connection. Therefore, I think it&rsquo;s worthwhile to capture the essence of how the game client talks to the game server. Hopefully, this blog post may be helpful to those looking to automate this game.</p>
+  <div>
+      <p>Back when I first started looking into making the manager (like 4 years ago), looking through Github&rsquo;s projects on automating Tribal Wars 2, I found most, if not all, of the projects relies on automating the browser instead of utilising the the game&rsquo;s WebSocket connection. Therefore, I think it&rsquo;s worthwhile to capture the essence of how the game client talks to the game server. Hopefully, this blog post may be helpful to those looking to automate this game.</p>
 <p>When Tribal Wars 2 website is loaded, a websocket is connected using Socket.io 2.0.</p>
 <p><img src="./socket-io-connection.png" alt="socketiO connection"></p>
 <p>Messages sent between the game client (browser or mobile) and server includes metadata from Socket.io 2.0 library and looks something like the screenshot below. In the screenshot shown, green arrows denote messages sent to the server from the browser, and red arrows denote messages received from the server.</p>
@@ -77,7 +76,7 @@
 <p>You can visit this <a href="https://gist.github.com/rampadc/d719d60a2e359670808f862712bcb9ae">Gist</a> to look at what some captured messages look like, and <a href="https://gist.github.com/rampadc/6b76bc3c00d94d7ac2cfad9999de737b">examples of report JSONs</a>.</p>
 <p>For a Javascript example of how the authentication sequence work, have a look at the <a href="https://github.com/rampadc/toddler-auth">toddler-auth</a> project.</p>
 
-</div>
+    </div></div>
 
 
     </main>
