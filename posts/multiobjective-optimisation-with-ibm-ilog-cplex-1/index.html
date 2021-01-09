@@ -1,150 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-au" lang="en-au">
 <head>
-  
-    <title>Multi-objective Optimisation with IBM ILOG CPLEX - Part 1 :: congx.dev</title>
-  
+  <link href="https://gmpg.org/xfn/11" rel="profile">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Eons ago (2015), I played this online game called Tribal Wars 2 and created a report that summarised the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happened to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&amp;rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.
-In this first post, I&amp;rsquo;m going to:" />
-<meta name="keywords" content=", " />
-<meta name="robots" content="noodp" />
-<link rel="canonical" href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/" />
+  <meta name="generator" content="Hugo 0.79.0" />
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Multi-objective Optimisation with IBM ILOG CPLEX - Part 1 &middot; congx.dev</title>
+  <meta name="description" content="Eons ago, I played this online game called Tribal Wars 2. Recently, Innogames wiped their online forums to its pre-historic ages, which happens to include my report on army sizes to build. Back then, I used MATLAB Optimization Toolbox. Now I&#39;m going to give IBM ILOG CPLEX a try and see how it goes." />
+
+  
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/print.css" media="print">
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/poole.css">
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/syntax.css">
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/hyde.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700">
 
 
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-35148726-3', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.png">
 
-
-
-<link rel="stylesheet" href="https://congx.dev/assets/style.css">
-
-  <link rel="stylesheet" href="https://congx.dev/assets/light_blue.css">
-
-
-
-
-
-
-<link rel="apple-touch-icon" href="https://congx.dev/img/apple-touch-icon-192x192.png">
-
-  <link rel="shortcut icon" href="https://congx.dev/img/favicon/light_blue.png">
-
-
-
-<meta name="twitter:card" content="summary" />
-
-
-
-<meta property="og:locale" content="en" />
-<meta property="og:type" content="article" />
-<meta property="og:title" content="Multi-objective Optimisation with IBM ILOG CPLEX - Part 1">
-<meta property="og:description" content="Eons ago, I played this online game called Tribal Wars 2. Recently, Innogames wiped their online forums to its pre-historic ages, which happens to include my report on army sizes to build. Back then, I used MATLAB Optimization Toolbox. Now I&#39;m going to give IBM ILOG CPLEX a try and see how it goes." />
-<meta property="og:url" content="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/" />
-<meta property="og:site_name" content="congx.dev" />
-
-  <meta property="og:image" content="https://congx.dev/uploads/multiobjective-optimisation-part1.png">
-
-<meta property="og:image:width" content="2048">
-<meta property="og:image:height" content="1024">
-
-
-  <meta property="article:published_time" content="2021-01-03 23:33:00 &#43;1100 &#43;1100" />
-
-
-
-
-
-
-
-
-
-
-
-
+  
+  
 </head>
-<body class="light_blue">
 
-
-<div class="container headings--one-size">
-
-  <header class="header">
-  <div class="header__inner">
-    <div class="header__logo">
-      <a href="/">
-  <div class="logo">
-    Cong&#39;s little blog
-  </div>
-</a>
-
+  <body class="theme-base-navy ">
+  <aside class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <a href="https://congx.dev/"><h1>congx.dev</h1></a>
+      <p class="lead">
+       An archive of things that are worth posting 
+      </p>
     </div>
-    
-      <div class="menu-trigger">menu</div>
-    
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li><a href="https://congx.dev//readme">README</a> </li>
+        <li><a href="https://github.com/rampadc/"> Github </a></li><li><a href="https://www.linkedin.com/in/cong-ng/"> LinkedIn </a></li><li><a href="https://www.twitter.com/congxdev/"> Twitter </a></li>
+      </ul>
+    </nav>
+
+    <p>&copy; 2021. All rights reserved. </p>
   </div>
-  
-    <nav class="menu">
-  <ul class="menu__inner menu__inner--desktop">
-    
-      
-        
-          <li><a href="/readme">README</a></li>
-        
-      
-        
-          <li><a href="/toc">T.O.C</a></li>
-        
-      
-      
-    
+</aside>
 
-    
-  </ul>
-
-  <ul class="menu__inner menu__inner--mobile">
-    
-      
-        <li><a href="/readme">README</a></li>
-      
-    
-      
-        <li><a href="/toc">T.O.C</a></li>
-      
-    
-    
-  </ul>
-</nav>
-
-  
-</header>
-
-
-  <div class="content">
-    
-<div class="post">
-  <h1 class="post-title">
-    <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/">Multi-objective Optimisation with IBM ILOG CPLEX - Part 1</a></h1>
-  <div class="post-meta">
-    
-      <span class="post-date">
-        2021-01-03 
-      </span>
-    
-    
-    <span class="post-author">:: Cong Nguyen</span>
-    
-  </div>
+    <main class="content container">
+    <div class="post">
+  <h1>Multi-objective Optimisation with IBM ILOG CPLEX - Part 1</h1>
+  <time datetime=2021-01-03T23:33:00&#43;1100 class="post-date">Sun, Jan 3, 2021</time>
 
   
   <span class="post-tags">
@@ -155,40 +62,8 @@ if (!doNotTrack) {
     
   </span>
   
-
   
-    <img src="https://congx.dev/uploads/multiobjective-optimisation-part1.png" class="post-cover" alt="Multi-objective Optimisation with IBM ILOG CPLEX - Part 1" />
-  
-
-  
-    <div class="table-of-contents">
-      <h2>
-        
-          Table of Contents
-        
-      </h2>
-      <nav id="TableOfContents">
-  <ul>
-    <li><a href="#what-is-ibm-ilog-cplex">What is IBM ILOG CPLEX?</a></li>
-    <li><a href="#what-does-opl-optimisation-programming-language-look-like">What does OPL (Optimisation Programming Language) look like?</a></li>
-    <li><a href="#modeling-the-game">Modeling the game</a>
-      <ul>
-        <li><a href="#problem">Problem</a></li>
-        <li><a href="#constraints">Constraints</a></li>
-        <li><a href="#just-get-it-to-work-model-cp-optimizer">&ldquo;Just get it to work&rdquo; model (CP optimizer)</a></li>
-        <li><a href="#refactored--looking-pretty-model-cp-optimizer">&ldquo;Refactored &amp; Looking pretty&rdquo; model (CP optimizer)</a></li>
-        <li><a href="#let-the-optimiser-do-more-with-more-constraints-model-cp-optimizer">&ldquo;Let the optimiser do more with more constraints&rdquo; model (CP optimizer)</a></li>
-        <li><a href="#much-faster-model-with-weights-cplex-optimizer">&ldquo;Much faster&rdquo; model with weights (CPLEX optimizer)</a></li>
-      </ul>
-    </li>
-    <li><a href="#next-step-adding-game-knowledge-with-docplex-python-library">Next step: Adding game knowledge with DOcplex Python library</a></li>
-  </ul>
-</nav>
-    </div>
-  
-
-  <div class="post-content"><div>
-        <p>Eons ago (2015), I played this online game called Tribal Wars 2 and created a report that summarised the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happened to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.</p>
+  <p>Eons ago (2015), I played this online game called Tribal Wars 2 and created a report that summarised the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happened to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.</p>
 <p>In this first post, I&rsquo;m going to:</p>
 <ul>
 <li>Provide an overview of IBM ILOG CPLEX</li>
@@ -197,7 +72,7 @@ if (!doNotTrack) {
 </ul>
 <p>The code for this post is hosted at <a href="https://github.com/rampadc/multi-obj-optim-prob1">https://github.com/rampadc/multi-obj-optim-prob1</a>.</p>
 <p>Part 2 will touch on adding customisations into the model with Python. If that&rsquo;s not too long, I&rsquo;ll go ahead and deploy that to IBM Cloud somehow as well. Otherwise, that will be a separate post.</p>
-<h2 id="what-is-ibm-ilog-cplex">What is IBM ILOG CPLEX?<a href="#what-is-ibm-ilog-cplex" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h2 id="what-is-ibm-ilog-cplex">What is IBM ILOG CPLEX?</h2>
 <p>IBM ILOG CPLEX consists of a modeling language, two optimisation engines to solve the models, and an IDE to test and debug the models.</p>
 <ul>
 <li>The modeling language is OPL (optimisation programming language)</li>
@@ -213,7 +88,7 @@ if (!doNotTrack) {
 <p>After optimising a model, you can find a statistics tab in the bottom panel, and it&rsquo;s pretty cool to look at. <a href="http://yetanothermathprogrammingconsultant.blogspot.com/2018/03/mip-gap-artifacts.html">The gap number refers to the percentage between the best possible solution and the best found integer solution</a>. CPLEX works to minimise this gap value over time.</p>
 <p><img src="ilog-chart-bottom-right.png" alt=""></p>
 <p>The code in the screenshot is of the third model in this post.</p>
-<h2 id="what-does-opl-optimisation-programming-language-look-like">What does OPL (Optimisation Programming Language) look like?<a href="#what-does-opl-optimisation-programming-language-look-like" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h2 id="what-does-opl-optimisation-programming-language-look-like">What does OPL (Optimisation Programming Language) look like?</h2>
 <p>The following is the sample code listed in OPL&rsquo;s <a href="https://www.ibm.com/support/knowledgecenter/en/SSSA5P_20.1.0/ilog.odms.studio.help/Optimization_Studio/orientation_guide/topics/analyze_model.html">orientation guide</a>. It is contained in a file called <code>production.mod</code>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">{<span style="color:#66d9ef">string</span>} Products = ...;
 {<span style="color:#66d9ef">string</span>} Resources = ...;
@@ -272,8 +147,8 @@ point p2=...;
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#">p1=<span style="color:#960050;background-color:#1e0010">#</span>&lt;y:<span style="color:#ae81ff">1</span>, x:<span style="color:#ae81ff">2</span>&gt;<span style="color:#960050;background-color:#1e0010">#</span>;
 p2=&lt;<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>&gt;;
 </code></pre></div><p><a href="https://www.ibm.com/support/knowledgecenter/en/SSSA5P_20.1.0/ilog.odms.ide.help/OPL_Studio/opllangref/topics/opl_langref_constraints_modeling.html">OPL&rsquo;s reference manual</a> is a good start to learn about OPL.</p>
-<h2 id="modeling-the-game">Modeling the game<a href="#modeling-the-game" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
-<h3 id="problem">Problem<a href="#problem" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<h2 id="modeling-the-game">Modeling the game</h2>
+<h3 id="problem">Problem</h3>
 <p>The win condition of Tribal Wars 2 is for a tribe (a group of players) to control 80% of the entire world&rsquo;s villages. To achieve this, each player needs to conquer as many villages as possible by attacking other players, reducing their troop count, and eventually taking over the opposition&rsquo;s villages.</p>
 <p>To build large armies to conquer other villages, each player needs to continuously recruit troops in their respective villages.</p>
 <p>Each village can have a maximum <a href="https://en.wiki.tribalwars2.com/index.php?title=Basics#Provisions">provision</a> of 24_000 units. <a href="https://en.wiki.tribalwars2.com/index.php?title=Buildings">Buildings</a> take up provisions, upgrades to buildings take up provisions. For example, the headquarter&rsquo;s upgrade costs are listed in the <a href="https://en.wiki.tribalwars2.com/index.php?title=Headquarters#Building_levels">HQ&rsquo;s overview table</a>. Different <a href="https://en.wiki.tribalwars2.com/index.php?title=Units">units</a> also take up different provisions. Upgrades to the barracks use up provisions but also make recruiting troops faster.</p>
@@ -285,10 +160,10 @@ p2=&lt;<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span
 <li>Maximise the number of wall levels reduced (described below) for a successful attack, while minimising the time taken to build the army.</li>
 </ol>
 <p>This post addresses the first problem.</p>
-<h4 id="known-trends">Known trends<a href="#known-trends" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<h4 id="known-trends">Known trends</h4>
 <p>From my MATLAB report in 2015, the most effective army is built around 1778 light cavalry, 1652 mounted archer, 250 rams and 771 berserkers, taking a total of 16.7 days to recruit. This has a very high iron cost. On the other hand, a slower but more resource-effective build is around 2217 light cavalry, 2176 mounted archer and 250 rams.</p>
 <p>The 250 rams is an assumed number of rams taken to reduce a level 20 wall to rubbles for a successful attacks. This isn&rsquo;t a hard and fast number, however. More rams results in more wall levels deduction. In the event of a failed attack, i.e. all attacker troops are lost, greater number of rams reduces more wall levels.</p>
-<h3 id="constraints">Constraints<a href="#constraints" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<h3 id="constraints">Constraints</h3>
 <p>Provision (or food) is the first constraint. For this problem, I assume that buildings are built to the following configurations:</p>
 <table>
 <thead>
@@ -416,7 +291,7 @@ p2=&lt;<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span
 <li><code>ctFoodChurch1</code>: <code>&lt;= 15596</code></li>
 </ul>
 <p><code>ct</code> stands for constraint. I see this as a convention in IBM ILOG CPLEX&rsquo;s documentation thus I&rsquo;m using it here as well.</p>
-<h3 id="just-get-it-to-work-model-cp-optimizer">&ldquo;Just get it to work&rdquo; model (CP optimizer)<a href="#just-get-it-to-work-model-cp-optimizer" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<h3 id="just-get-it-to-work-model-cp-optimizer">&ldquo;Just get it to work&rdquo; model (CP optimizer)</h3>
 <p>In this model, I&rsquo;m writing every variable out as is. I wonder if there are any performance impacts with no matrix operations involved like MATLAB would have.</p>
 <p>Multi-objectives or multi-criteria optimisation requires the use of <a href="https://www.ibm.com/support/knowledgecenter/SSSA5P_12.10.0/ilog.odms.ide.help/OPL_Studio/opllang_quickref/topics/tlr_oplf_staticLex.html"><code>staticLex()</code></a> using the CP Optimizer engine. In this code, it prioritises the attack strength first and then the build time. Since OPL can only optimise in one direction, i.e. <code>minimize</code> or <code>maximize</code>, I&rsquo;m negating the total attack strength, so both build time and &ldquo;negated attack strength&rdquo; can be minimised.</p>
 <p>It&rsquo;s pretty cool that ILOG scripting (in <code>main</code> block) is essentially ES5 JavaScript.</p>
@@ -502,7 +377,7 @@ axe: 4, lc: 1, ma: 0, ram: 250, serk: 3223, strength: 967210, time: 46.16 days
 axe: 8, lc: 0, ma: 0, ram: 250, serk: 3223, strength: 967260, time: 46.16 days
 axe: 2, lc: 0, ma: 0, ram: 250, serk: 3224, strength: 967290, time: 46.17 days
 </code></pre></div><p>The optimal compromise seems to be 19346 axes, 250 rams would take 21.54 days with strength 870570. But I <strong>know</strong> from the MATLAB optimisation solution in 2015 that mixing in light cavalry (LC) and mounted archer (MA) would give a lower recruitment time. The difference here is back then, I used varying <em>weights</em> between the two priorties.</p>
-<h3 id="refactored--looking-pretty-model-cp-optimizer">&ldquo;Refactored &amp; Looking pretty&rdquo; model (CP optimizer)<a href="#refactored--looking-pretty-model-cp-optimizer" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<h3 id="refactored--looking-pretty-model-cp-optimizer">&ldquo;Refactored &amp; Looking pretty&rdquo; model (CP optimizer)</h3>
 <p>Let&rsquo;s refactor the data code to use arrays and see if we get any performance improvements. It&rsquo;s interesting that the <code>numberOfUnits</code> array in OPL turned into a Javascript object in the ILOG script <code>main</code> block.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c#" data-lang="c#"><span style="color:#66d9ef">using</span> CP; 
 
@@ -570,7 +445,7 @@ axe: 0, lc: 0, ma: 0, serk: 3224, ram: 250, strength: 967200, time: 46.17 days
 axe: 4, lc: 1, ma: 0, serk: 3223, ram: 250, strength: 967210, time: 46.16 days
 axe: 8, lc: 0, ma: 0, serk: 3223, ram: 250, strength: 967260, time: 46.16 days
 axe: 2, lc: 0, ma: 0, serk: 3224, ram: 250, strength: 967290, time: 46.17 days
-</code></pre></div><h3 id="let-the-optimiser-do-more-with-more-constraints-model-cp-optimizer">&ldquo;Let the optimiser do more with more constraints&rdquo; model (CP optimizer)<a href="#let-the-optimiser-do-more-with-more-constraints-model-cp-optimizer" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+</code></pre></div><h3 id="let-the-optimiser-do-more-with-more-constraints-model-cp-optimizer">&ldquo;Let the optimiser do more with more constraints&rdquo; model (CP optimizer)</h3>
 <p>Before moving onto adding weights, let&rsquo;s generalise and try having the optimiser determines how many rams we should build for maximum attack strength. For this, I&rsquo;m adding a constraint that the army must have at least 250 rams since we&rsquo;re assuming the defender will have a level 20 wall.</p>
 <p>Furthermore, I realised at this point I forgot to add in a minimum provision (food) constraint, which explains why we&rsquo;re getting the 1.39 days value. I&rsquo;m going to throw in an arbitary minimum threshold.</p>
 <p>Lastly, 45 days is a really long time. Ideally, we want to have a fresh new army in less than a month. OPL supports <code>lowerbound &lt;= X &lt;= upperbound</code> syntax. I&rsquo;m going to further constraint the totalBuildTime to be less than 4 weeks.</p>
@@ -637,7 +512,7 @@ axe: 14324, lc: 0, ma: 0, serk: 837, ram: 250, strength: 896180, time: 27.93 day
 axe: 14306, lc: 0, ma: 0, serk: 840, ram: 250, strength: 896270, time: 27.96 days, food: 20596
 axe: 14288, lc: 0, ma: 0, serk: 843, ram: 250, strength: 896360, time: 27.98 days, food: 20596
 axe: 14276, lc: 0, ma: 0, serk: 845, ram: 250, strength: 896420, time: 28 days, food: 20596
-</code></pre></div><h3 id="much-faster-model-with-weights-cplex-optimizer">&ldquo;Much faster&rdquo; model with weights (CPLEX optimizer)<a href="#much-faster-model-with-weights-cplex-optimizer" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+</code></pre></div><h3 id="much-faster-model-with-weights-cplex-optimizer">&ldquo;Much faster&rdquo; model with weights (CPLEX optimizer)</h3>
 <p>To add weights, <a href="https://www.ibm.com/support/knowledgecenter/SSSA5P_12.10.0/ilog.odms.ide.help/OPL_Studio/opllang_quickref/topics/tlr_oplf_staticLexFull.html"><code>staticLexFull()</code></a> needs to be used. <a href="https://www.ibm.com/support/knowledgecenter/SSSA5P_12.9.0/ilog.odms.cplex.help/CPLEX/UsrMan/topics/multiobj/multiobj_intro.html">Adding weights is also known as <strong>blended objectives</strong></a>. Thus far, what I have done refers to a lexicographic objective, where priorties are assigned to each objective.</p>
 <p>It&rsquo;s strange that the list of examples for multi-objective optimisation in IBM documentation <a href="https://www.ibm.com/support/knowledgecenter/SSSA5P_12.9.0/ilog.odms.cplex.help/CPLEX/UsrMan/topics/multiobj/multiobj_examples.html">doesn&rsquo;t include OPL</a>, while they do have <code>staticLexFull()</code> usage in the example code that comes with the studio installation.</p>
 <p><code>staticLexFull()</code> accepts 5 parameters:</p>
@@ -746,7 +621,7 @@ dexpr <span style="color:#66d9ef">int</span> goals[i <span style="color:#66d9ef"
 axe: 19346, lc: 0, ma: 0, serk: 0, ram: 250, strength: 871070, time: 21.54 days, food: 20596
 axe: 14276, lc: 0, ma: 0, serk: 845, ram: 250, strength: 896420, time: 28 days, food: 20596
 </code></pre></div><p>The benefit of using staticLexFull despite the massive hurdle of hunting for documentation is that it runs <strong>super fast: 0.21 seconds compared to nearly 2 minutes on the CP optimizer</strong> with sufficiently low weight step size of 0.1.</p>
-<h2 id="next-step-adding-game-knowledge-with-docplex-python-library">Next step: Adding game knowledge with DOcplex Python library<a href="#next-step-adding-game-knowledge-with-docplex-python-library" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h2 id="next-step-adding-game-knowledge-with-docplex-python-library">Next step: Adding game knowledge with DOcplex Python library</h2>
 <p>Our results thus far have a lot of axemen in them. As a quick summary,</p>
 <ul>
 <li>Spearmen counters light cavalry (LC)</li>
@@ -775,66 +650,24 @@ axe: 14276, lc: 0, ma: 0, serk: 845, ram: 250, strength: 896420, time: 28 days, 
   model<span style="color:#f92672">.</span>minimize_static_lex([model<span style="color:#f92672">.</span>total_salary_cost, total_fairness, model<span style="color:#f92672">.</span>total_number_of_assignments])
 </code></pre></div><p>I&rsquo;m going to migrate over to Python with <code>DOcplex.MP</code>. I think this language switch is a good place to end a rather long post. See you in the next post.</p>
 
-      </div></div>
-
-  
-  
-<div class="pagination">
-    <div class="pagination__title">
-        <span class="pagination__title-h">Read other posts</span>
-        <hr />
-    </div>
-    <div class="pagination__buttons">
-        
-        <span class="button previous">
-            <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-2/">
-                <span class="button__icon">←</span>
-                <span class="button__text">Multi-objective Optimisation with IBM ILOG CPLEX - Part 2</span>
-            </a>
-        </span>
-        
-        
-        <span class="button next">
-            <a href="https://congx.dev/posts/custom-light-terminal-theme/">
-                <span class="button__text">Custom Light Theme for Hugo Terminal</span>
-                <span class="button__icon">→</span>
-            </a>
-        </span>
-        
-    </div>
 </div>
 
-  
 
-  
+    </main>
 
-</div>
-
-  </div>
-
-  
-    <footer class="footer">
-  <div class="footer__inner">
     
-      <div class="copyright">
-        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-35148726-3', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
     
-        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
-      </div>
-  </div>
-</footer>
-
-<script src="https://congx.dev/assets/main.js"></script>
-<script src="https://congx.dev/assets/prism.js"></script>
-
-
-
-
-
-
-
-  
-</div>
-
-</body>
+  </body>
 </html>

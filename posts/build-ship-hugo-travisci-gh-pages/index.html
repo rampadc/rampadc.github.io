@@ -1,152 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-au" lang="en-au">
 <head>
-  
-    <title>Building and shipping Hugo posts with Travis CI for Github Pages :: congx.dev</title>
-  
+  <link href="https://gmpg.org/xfn/11" rel="profile">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Since my blog source code is private, this blog post contains snippets of how I set up Travis CI to build and push Hugo&amp;rsquo;s public folder to another repository that hosts my public Github Pages.
-It&amp;rsquo;s a simple solution, yet the top Google results only feature custom scripts 🤷🤷‍♀️🤷‍♂️.
-Configuring Travis CI .travis.yml
---- install: - curl -LO https://github.com/gohugoio/hugo/releases/download/v0.59.1/hugo_0.59.1_Linux-64bit.deb - sudo dpkg -i hugo_0.59.1_Linux-64bit.deb script: - git submodule init - git submodule update - hugo - rm -Rf ." />
-<meta name="keywords" content="hugo, cicd, travis-ci, travis, github pages, gh-pages" />
-<meta name="robots" content="noodp" />
-<link rel="canonical" href="https://congx.dev/posts/build-ship-hugo-travisci-gh-pages/" />
+  <meta name="generator" content="Hugo 0.79.0" />
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Building and shipping Hugo posts with Travis CI for Github Pages &middot; congx.dev</title>
+  <meta name="description" content="Some notes on how I set up Travis-CI to build and ship content to another Github Pages repository" />
+
+  
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/print.css" media="print">
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/poole.css">
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/syntax.css">
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/hyde.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700">
 
 
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-35148726-3', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.png">
 
-
-
-<link rel="stylesheet" href="https://congx.dev/assets/style.css">
-
-  <link rel="stylesheet" href="https://congx.dev/assets/light_blue.css">
-
-
-
-
-
-
-<link rel="apple-touch-icon" href="https://congx.dev/img/apple-touch-icon-192x192.png">
-
-  <link rel="shortcut icon" href="https://congx.dev/img/favicon/light_blue.png">
-
-
-
-<meta name="twitter:card" content="summary" />
-
-
-
-<meta property="og:locale" content="en" />
-<meta property="og:type" content="article" />
-<meta property="og:title" content="Building and shipping Hugo posts with Travis CI for Github Pages">
-<meta property="og:description" content="Some notes on how I set up Travis-CI to build and ship content to another Github Pages repository" />
-<meta property="og:url" content="https://congx.dev/posts/build-ship-hugo-travisci-gh-pages/" />
-<meta property="og:site_name" content="congx.dev" />
-
-  <meta property="og:image" content="https://congx.dev/">
-
-<meta property="og:image:width" content="2048">
-<meta property="og:image:height" content="1024">
-
-
-  <meta property="article:published_time" content="2019-12-10 14:40:00 &#43;0000 UTC" />
-
-
-
-
-
-
-
-
-
-
-
-
+  
+  
 </head>
-<body class="light_blue">
 
-
-<div class="container headings--one-size">
-
-  <header class="header">
-  <div class="header__inner">
-    <div class="header__logo">
-      <a href="/">
-  <div class="logo">
-    Cong&#39;s little blog
-  </div>
-</a>
-
+  <body class="theme-base-navy ">
+  <aside class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <a href="https://congx.dev/"><h1>congx.dev</h1></a>
+      <p class="lead">
+       An archive of things that are worth posting 
+      </p>
     </div>
-    
-      <div class="menu-trigger">menu</div>
-    
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li><a href="https://congx.dev//readme">README</a> </li>
+        <li><a href="https://github.com/rampadc/"> Github </a></li><li><a href="https://www.linkedin.com/in/cong-ng/"> LinkedIn </a></li><li><a href="https://www.twitter.com/congxdev/"> Twitter </a></li>
+      </ul>
+    </nav>
+
+    <p>&copy; 2021. All rights reserved. </p>
   </div>
-  
-    <nav class="menu">
-  <ul class="menu__inner menu__inner--desktop">
-    
-      
-        
-          <li><a href="/readme">README</a></li>
-        
-      
-        
-          <li><a href="/toc">T.O.C</a></li>
-        
-      
-      
-    
+</aside>
 
-    
-  </ul>
-
-  <ul class="menu__inner menu__inner--mobile">
-    
-      
-        <li><a href="/readme">README</a></li>
-      
-    
-      
-        <li><a href="/toc">T.O.C</a></li>
-      
-    
-    
-  </ul>
-</nav>
-
-  
-</header>
-
-
-  <div class="content">
-    
-<div class="post">
-  <h1 class="post-title">
-    <a href="https://congx.dev/posts/build-ship-hugo-travisci-gh-pages/">Building and shipping Hugo posts with Travis CI for Github Pages</a></h1>
-  <div class="post-meta">
-    
-      <span class="post-date">
-        2019-12-10 
-      </span>
-    
-    
-    <span class="post-author">:: Cong Nguyen</span>
-    
-  </div>
+    <main class="content container">
+    <div class="post">
+  <h1>Building and shipping Hugo posts with Travis CI for Github Pages</h1>
+  <time datetime=2019-12-10T14:40:00Z class="post-date">Tue, Dec 10, 2019</time>
 
   
   <span class="post-tags">
@@ -155,28 +60,10 @@ if (!doNotTrack) {
     
   </span>
   
-
   
-
-  
-    <div class="table-of-contents">
-      <h2>
-        
-          Table of Contents
-        
-      </h2>
-      <nav id="TableOfContents">
-  <ul>
-    <li><a href="#configuring-travis-ci">Configuring Travis CI</a></li>
-  </ul>
-</nav>
-    </div>
-  
-
-  <div class="post-content"><div>
-        <p>Since my blog source code is private, this blog post contains snippets of how I set up Travis CI to build and push Hugo&rsquo;s <code>public</code> folder to another <a href="https://github.com/rampadc/rampadc.github.io">repository</a> that hosts my public Github Pages.</p>
+  <p>Since my blog source code is private, this blog post contains snippets of how I set up Travis CI to build and push Hugo&rsquo;s <code>public</code> folder to another <a href="https://github.com/rampadc/rampadc.github.io">repository</a> that hosts my public Github Pages.</p>
 <p>It&rsquo;s a simple solution, yet the top Google results only feature custom scripts 🤷🤷‍♀️🤷‍♂️.</p>
-<h2 id="configuring-travis-ci">Configuring Travis CI<a href="#configuring-travis-ci" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<h2 id="configuring-travis-ci">Configuring Travis CI</h2>
 <p><code>.travis.yml</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
 <span style="color:#f92672">install</span>:
@@ -203,66 +90,24 @@ if (!doNotTrack) {
 <p><code>https://GITHUB_PERSONAL_TOKEN@github.com/&lt;user&gt;/&lt;repo&gt;</code></p>
 <p>The personal Github token is configured to have access to <code>public_repo</code>. Update line 3 as needed if you&rsquo;re using a newer Hugo release.</p>
 
-      </div></div>
-
-  
-  
-<div class="pagination">
-    <div class="pagination__title">
-        <span class="pagination__title-h">Read other posts</span>
-        <hr />
-    </div>
-    <div class="pagination__buttons">
-        
-        <span class="button previous">
-            <a href="https://congx.dev/posts/xpsl-docs-functional-requirements/">
-                <span class="button__icon">←</span>
-                <span class="button__text">XPSL Docs: Functional requirements</span>
-            </a>
-        </span>
-        
-        
-        <span class="button next">
-            <a href="https://congx.dev/posts/xpsl-docs-motivation-overview/xpsl-docs-overview-and-motivation/">
-                <span class="button__text">XPSL Docs: Motivation and Overview</span>
-                <span class="button__icon">→</span>
-            </a>
-        </span>
-        
-    </div>
 </div>
 
-  
 
-  
+    </main>
 
-</div>
-
-  </div>
-
-  
-    <footer class="footer">
-  <div class="footer__inner">
     
-      <div class="copyright">
-        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-35148726-3', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
     
-        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
-      </div>
-  </div>
-</footer>
-
-<script src="https://congx.dev/assets/main.js"></script>
-<script src="https://congx.dev/assets/prism.js"></script>
-
-
-
-
-
-
-
-  
-</div>
-
-</body>
+  </body>
 </html>

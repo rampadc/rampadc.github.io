@@ -1,151 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-au" lang="en-au">
 <head>
-  
-    <title>Logging with Papertrail :: congx.dev</title>
-  
+  <link href="https://gmpg.org/xfn/11" rel="profile">
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="IBM Cloud is deprecating Kibana as a method to view Cloud Foundry logs. Moving forward, they are recommending LogDNA as a 3rd-party service. That&amp;rsquo;s cool. The process of logging Cloud Foundry is simple enough anyway.
-With the general CF CLI, you would:
- Create a user-provided service with cf cups DRAIN-NAME -l SYSLOG-URL. Bind an app to the created service instance with name DRAIN-NAME as follows cf bind-service APP-NAME DRAIN-NAME.  Simple right?" />
-<meta name="keywords" content=", " />
-<meta name="robots" content="noodp" />
-<link rel="canonical" href="https://congx.dev/posts/logging-with-papertrail/" />
+  <meta name="generator" content="Hugo 0.79.0" />
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Logging with Papertrail &middot; congx.dev</title>
+  <meta name="description" content="LogDNA on IBM Cloud could be better" />
+
+  
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/print.css" media="print">
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/poole.css">
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/syntax.css">
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/hyde.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans:400,400i,700">
 
 
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-	ga('create', 'UA-35148726-3', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.png">
 
-
-
-<link rel="stylesheet" href="https://congx.dev/assets/style.css">
-
-  <link rel="stylesheet" href="https://congx.dev/assets/light_blue.css">
-
-
-
-
-
-
-<link rel="apple-touch-icon" href="https://congx.dev/img/apple-touch-icon-192x192.png">
-
-  <link rel="shortcut icon" href="https://congx.dev/img/favicon/light_blue.png">
-
-
-
-<meta name="twitter:card" content="summary" />
-
-
-
-<meta property="og:locale" content="en" />
-<meta property="og:type" content="article" />
-<meta property="og:title" content="Logging with Papertrail">
-<meta property="og:description" content="LogDNA on IBM Cloud could be better" />
-<meta property="og:url" content="https://congx.dev/posts/logging-with-papertrail/" />
-<meta property="og:site_name" content="congx.dev" />
-
-  <meta property="og:image" content="https://congx.dev/">
-
-<meta property="og:image:width" content="2048">
-<meta property="og:image:height" content="1024">
-
-
-  <meta property="article:published_time" content="2019-06-23 16:44:00 &#43;1100 &#43;1100" />
-
-
-
-
-
-
-
-
-
-
-
-
+  
+  
 </head>
-<body class="light_blue">
 
-
-<div class="container headings--one-size">
-
-  <header class="header">
-  <div class="header__inner">
-    <div class="header__logo">
-      <a href="/">
-  <div class="logo">
-    Cong&#39;s little blog
-  </div>
-</a>
-
+  <body class="theme-base-navy ">
+  <aside class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <a href="https://congx.dev/"><h1>congx.dev</h1></a>
+      <p class="lead">
+       An archive of things that are worth posting 
+      </p>
     </div>
-    
-      <div class="menu-trigger">menu</div>
-    
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li><a href="https://congx.dev//readme">README</a> </li>
+        <li><a href="https://github.com/rampadc/"> Github </a></li><li><a href="https://www.linkedin.com/in/cong-ng/"> LinkedIn </a></li><li><a href="https://www.twitter.com/congxdev/"> Twitter </a></li>
+      </ul>
+    </nav>
+
+    <p>&copy; 2021. All rights reserved. </p>
   </div>
-  
-    <nav class="menu">
-  <ul class="menu__inner menu__inner--desktop">
-    
-      
-        
-          <li><a href="/readme">README</a></li>
-        
-      
-        
-          <li><a href="/toc">T.O.C</a></li>
-        
-      
-      
-    
+</aside>
 
-    
-  </ul>
-
-  <ul class="menu__inner menu__inner--mobile">
-    
-      
-        <li><a href="/readme">README</a></li>
-      
-    
-      
-        <li><a href="/toc">T.O.C</a></li>
-      
-    
-    
-  </ul>
-</nav>
-
-  
-</header>
-
-
-  <div class="content">
-    
-<div class="post">
-  <h1 class="post-title">
-    <a href="https://congx.dev/posts/logging-with-papertrail/">Logging with Papertrail</a></h1>
-  <div class="post-meta">
-    
-      <span class="post-date">
-        2019-06-23 
-      </span>
-    
-    
-    <span class="post-author">:: Cong Nguyen</span>
-    
-  </div>
+    <main class="content container">
+    <div class="post">
+  <h1>Logging with Papertrail</h1>
+  <time datetime=2019-06-23T16:44:00&#43;1100 class="post-date">Sun, Jun 23, 2019</time>
 
   
   <span class="post-tags">
@@ -156,13 +62,8 @@ if (!doNotTrack) {
     
   </span>
   
-
   
-
-  
-
-  <div class="post-content"><div>
-        <p>IBM Cloud is deprecating Kibana as a method to view Cloud Foundry logs. Moving forward, they are recommending LogDNA as a 3rd-party service. That&rsquo;s cool. The process of logging Cloud Foundry is simple enough anyway.</p>
+  <p>IBM Cloud is deprecating Kibana as a method to view Cloud Foundry logs. Moving forward, they are recommending LogDNA as a 3rd-party service. That&rsquo;s cool. The process of logging Cloud Foundry is simple enough anyway.</p>
 <p><a href="https://docs.cloudfoundry.org/devguide/services/log-management.html#step2">With the general CF CLI</a>, you would:</p>
 <ol>
 <li>Create a user-provided service with <code>cf cups DRAIN-NAME -l SYSLOG-URL</code>.</li>
@@ -172,66 +73,24 @@ if (!doNotTrack) {
 <p>A Google Search revealed Papertrail. Their free plan gives you live preview, 7-day archive, 48-hour search and alerting. Compared to LogDNA on IBM Cloud, that sort of deal starts at $1.50USD/GB-month. That&rsquo;s insanely good with Papertrail!</p>
 <p>Setting up with Papertrail was simple and straightforward. Those 2 commands above; Cloud Foundry on IBM Cloud, Papertrail receiving the logs with no fuss!</p>
 
-      </div></div>
-
-  
-  
-<div class="pagination">
-    <div class="pagination__title">
-        <span class="pagination__title-h">Read other posts</span>
-        <hr />
-    </div>
-    <div class="pagination__buttons">
-        
-        <span class="button previous">
-            <a href="https://congx.dev/posts/how-toddler-plays/">
-                <span class="button__icon">←</span>
-                <span class="button__text">How Toddler plays</span>
-            </a>
-        </span>
-        
-        
-        <span class="button next">
-            <a href="https://congx.dev/posts/birth-of-toddler/">
-                <span class="button__text">Birth of Toddler</span>
-                <span class="button__icon">→</span>
-            </a>
-        </span>
-        
-    </div>
 </div>
 
-  
 
-  
+    </main>
 
-</div>
-
-  </div>
-
-  
-    <footer class="footer">
-  <div class="footer__inner">
     
-      <div class="copyright">
-        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-35148726-3', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
     
-        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
-      </div>
-  </div>
-</footer>
-
-<script src="https://congx.dev/assets/main.js"></script>
-<script src="https://congx.dev/assets/prism.js"></script>
-
-
-
-
-
-
-
-  
-</div>
-
-</body>
+  </body>
 </html>
