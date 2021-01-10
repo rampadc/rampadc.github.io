@@ -61,8 +61,38 @@
     #<a href="https://congx.dev/tags/ibm/">ibm</a>&nbsp;
     
   </span>
-  <div>
-      <h2 id="recap-part-1">Recap part 1<a href="#recap-part-1" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
+  
+  
+  
+
+  
+    <div class="table-of-contents">
+      <h2>
+        
+          Table of Contents
+        
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#recap-part-1">Recap part 1</a></li>
+    <li><a href="#whats-docplex">What&rsquo;s DOcplex?</a></li>
+    <li><a href="#code-sample">Code sample</a></li>
+    <li><a href="#journey-to-pythonic-cplex">Journey to Pythonic CPLEX</a>
+      <ul>
+        <li><a href="#rewrite-the-opl-model-in-python">Rewrite the OPL model in Python</a></li>
+        <li><a href="#bug-fix-incorrect-domain-data">Bug fix: incorrect domain data</a></li>
+        <li><a href="#adding-weights-using-constraints">Adding weights using constraints</a></li>
+        <li><a href="#shipping-the-model-to-the-cloud">Shipping the model to the cloud</a></li>
+      </ul>
+    </li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
+  
+
+  <div class="post-content"><div>
+        <h2 id="recap-part-1">Recap part 1<a href="#recap-part-1" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
 <p>In <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/">part 1</a>, I created some multi-objective optimisation models with OPL using both the CP Optimiser and CPLEX Optimiser. However, I hit a no-documentation barrier when started using the <code>staticLexFull()</code> function and found the <code>DOcplex.mp</code> Python example to be a more readable.</p>
 <p>In this post, I&rsquo;ll take a look at first converting the <a href="https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/#much-faster-model-with-weights-cplex-optimizer">existing weighted model</a> to Python, proceed with adding additional weights to the model and finally deploy the model to run on IBM Cloud with Watson Machine Learning. In part one, I did mention a full GUI but at this point but after some considerations, there&rsquo;s no use case for a UI at the moment.</p>
 <h2 id="whats-docplex">What&rsquo;s DOcplex?<a href="#whats-docplex" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
@@ -166,7 +196,10 @@ axe: 4807.0, lc: 1663.0, ma: 1441.0, serk: 111.0, ram: 250.0, food: 20580.0, tim
 <p>Once the model is deployed by uploading a ZIP file to the deployment space, I found out that I could not replace the model in Watson Studio, i.e., I could only use the REST API or the Python library to redeploy the model into another deployment space.</p>
 <p>The consumption side of Watson Machine Learning was great. It was smooth sailing from the moment the model was deployed. For this project, I did not dive into looking at logs, metrics and traces for each job as the focus was to get my feet wet with IBM Decision Optimization. As a whole, I could do everything from start to finish, yes there were bumps along the way and hills to climb but got there eventually. I think the platform will be even better if the user journey for a desktop user is more focused.</p>
 
-    </div>
+      </div></div>
+  
+
+  
     <div class="pagination">
         <div class="pagination__title">
             <span class="pagination__title-h">READ OTHER POSTS</span>

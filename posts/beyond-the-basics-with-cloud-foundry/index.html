@@ -63,8 +63,37 @@
     #<a href="https://congx.dev/tags/toddler/">toddler</a>&nbsp;
     
   </span>
-  <div>
-      <p>The advent of Docker changed the way we develop applications. Once you had written a Dockerfile and built the image, your application will run (almost) anywhere, regardless of the underlying operating system, and best of all, it just works. You can then expose ports, map volumes to persist data and deploy your image in Docker Swarm or Kubernetes (K8s). With great flexibility, however, comes greater costs, whether that is increased developer&rsquo;s skillset requirements and time spent on writing multiple K8s YAML config files, or pricier services on your favourite cloud provider.</p>
+  
+  
+  
+
+  
+    <div class="table-of-contents">
+      <h2>
+        
+          Table of Contents
+        
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#which-cf-cli-to-use">Which CF CLI to use</a></li>
+    <li><a href="#developing-locally-with-cf-local">Developing locally with CF Local</a></li>
+    <li><a href="#deploying-docker-images-into-cf-containers">Deploying Docker images into CF containers</a></li>
+    <li><a href="#sequencing-applications-start-up">Sequencing applications start-up</a></li>
+    <li><a href="#configuring-container-to-container-networking">Configuring container-to-container networking</a>
+      <ul>
+        <li><a href="#what-i-need-is-tcp-routing">What I need is TCP routing</a></li>
+        <li><a href="#actually-configuring-c2c-networking">Actually configuring C2C networking</a></li>
+      </ul>
+    </li>
+    <li><a href="#summary">Summary</a></li>
+  </ul>
+</nav>
+    </div>
+  
+
+  <div class="post-content"><div>
+        <p>The advent of Docker changed the way we develop applications. Once you had written a Dockerfile and built the image, your application will run (almost) anywhere, regardless of the underlying operating system, and best of all, it just works. You can then expose ports, map volumes to persist data and deploy your image in Docker Swarm or Kubernetes (K8s). With great flexibility, however, comes greater costs, whether that is increased developer&rsquo;s skillset requirements and time spent on writing multiple K8s YAML config files, or pricier services on your favourite cloud provider.</p>
 <p>This blog post presents the usage of different tools and interesting tidbits to ease development with Cloud Foundry (CF), similar to the likes of Docker. These include:</p>
 <ul>
 <li>Developing and testing CF applications locally</li>
@@ -139,7 +168,10 @@
 <li>Sequencing application start-up was a good-to-know.</li>
 </ul>
 
-    </div>
+      </div></div>
+  
+
+  
     <div class="pagination">
         <div class="pagination__title">
             <span class="pagination__title-h">READ OTHER POSTS</span>

@@ -61,8 +61,41 @@
     #<a href="https://congx.dev/tags/ibm/">ibm</a>&nbsp;
     
   </span>
-  <div>
-      <p>Eons ago (2015), I played this online game called Tribal Wars 2 and created a report that summarised the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happened to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.</p>
+  
+  
+  
+    <img src="https://congx.dev/uploads/multiobjective-optimisation-part1.png" class="post-cover" alt="Multi-objective Optimisation with IBM ILOG CPLEX - Part 1" />
+  
+
+  
+    <div class="table-of-contents">
+      <h2>
+        
+          Table of Contents
+        
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#what-is-ibm-ilog-cplex">What is IBM ILOG CPLEX?</a></li>
+    <li><a href="#what-does-opl-optimisation-programming-language-look-like">What does OPL (Optimisation Programming Language) look like?</a></li>
+    <li><a href="#modeling-the-game">Modeling the game</a>
+      <ul>
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#constraints">Constraints</a></li>
+        <li><a href="#just-get-it-to-work-model-cp-optimizer">&ldquo;Just get it to work&rdquo; model (CP optimizer)</a></li>
+        <li><a href="#refactored--looking-pretty-model-cp-optimizer">&ldquo;Refactored &amp; Looking pretty&rdquo; model (CP optimizer)</a></li>
+        <li><a href="#let-the-optimiser-do-more-with-more-constraints-model-cp-optimizer">&ldquo;Let the optimiser do more with more constraints&rdquo; model (CP optimizer)</a></li>
+        <li><a href="#much-faster-model-with-weights-cplex-optimizer">&ldquo;Much faster&rdquo; model with weights (CPLEX optimizer)</a></li>
+      </ul>
+    </li>
+    <li><a href="#next-step-adding-game-knowledge-with-docplex-python-library">Next step: Adding game knowledge with DOcplex Python library</a></li>
+  </ul>
+</nav>
+    </div>
+  
+
+  <div class="post-content"><div>
+        <p>Eons ago (2015), I played this online game called Tribal Wars 2 and created a report that summarised the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happened to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.</p>
 <p>In this first post, I&rsquo;m going to:</p>
 <ul>
 <li>Provide an overview of IBM ILOG CPLEX</li>
@@ -649,7 +682,10 @@ axe: 14276, lc: 0, ma: 0, serk: 845, ram: 250, strength: 896420, time: 28 days, 
   model<span style="color:#f92672">.</span>minimize_static_lex([model<span style="color:#f92672">.</span>total_salary_cost, total_fairness, model<span style="color:#f92672">.</span>total_number_of_assignments])
 </code></pre></div><p>I&rsquo;m going to migrate over to Python with <code>DOcplex.MP</code>. I think this language switch is a good place to end a rather long post. See you in the next post.</p>
 
-    </div>
+      </div></div>
+  
+
+  
     <div class="pagination">
         <div class="pagination__title">
             <span class="pagination__title-h">READ OTHER POSTS</span>
