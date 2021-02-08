@@ -6,7 +6,16 @@
     <description>Recent content in Posts on congx.dev</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-au</language>
-    <lastBuildDate>Mon, 04 Jan 2021 00:33:00 +1100</lastBuildDate><atom:link href="https://congx.dev/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 08 Feb 2021 00:33:00 +1100</lastBuildDate><atom:link href="https://congx.dev/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>NDI &#43; Swift &#43; UIKit = 📡 🎥 (&#43; 🔥📱)</title>
+      <link>https://congx.dev/posts/ndi-swift-uikit/</link>
+      <pubDate>Mon, 08 Feb 2021 00:33:00 +1100</pubDate>
+      
+      <guid>https://congx.dev/posts/ndi-swift-uikit/</guid>
+      <description>Motivation NDI (ndi.tv) makes video over LAN possible. NDI HX Camera is an iOS app that lets you send the camera feed from your iPhone over IP to any devices listening on the NDI protocol. Once upon a time, this app was free. Now a whooping $30. It&amp;rsquo;s a great demo to NDI&amp;rsquo;s capability but it could be better. Imagine if you could add video processing to the feed before sending it.</description>
+    </item>
+    
     <item>
       <title>Multi-objective Optimisation with IBM ILOG CPLEX - Part 2</title>
       <link>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-2/</link>
