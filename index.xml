@@ -6,7 +6,18 @@
     <description>Recent content on congx.dev</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-au</language>
-    <lastBuildDate>Mon, 04 Jan 2021 00:33:00 +1100</lastBuildDate><atom:link href="https://congx.dev/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 06 May 2021 00:33:00 +1100</lastBuildDate><atom:link href="https://congx.dev/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Demysitifying the Cognitive Enterprise - What is it?</title>
+      <link>https://congx.dev/posts/cognitive-enterprise-what-is-it/</link>
+      <pubDate>Thu, 06 May 2021 00:33:00 +1100</pubDate>
+      
+      <guid>https://congx.dev/posts/cognitive-enterprise-what-is-it/</guid>
+      <description>This article was original posted on LinkedIn.
+ This article is co-authored with Kevin Nguyen. The opinions shared in this article are our own and do not reflect those of our employer(s).
+What is a cognitive enterprise? The short version Cognitive enterprise is a data-driven organisation that has a thorough understanding of the technology between different business units and why they exist, i.e., what they can do for their users and their customers.</description>
+    </item>
+    
     <item>
       <title>Multi-objective Optimisation with IBM ILOG CPLEX - Part 2</title>
       <link>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-2/</link>
