@@ -1,33 +1,5 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>hugo on congx.dev</title>
-    <link>https://congx.dev/tags/hugo/</link>
-    <description>Recent content in hugo on congx.dev</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-au</language>
-    <lastBuildDate>Sat, 02 Jan 2021 03:55:00 +1100</lastBuildDate><atom:link href="https://congx.dev/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Custom Light Theme for Hugo Terminal</title>
-      <link>https://congx.dev/posts/custom-light-terminal-theme/</link>
-      <pubDate>Sat, 02 Jan 2021 03:55:00 +1100</pubDate>
-      
-      <guid>https://congx.dev/posts/custom-light-terminal-theme/</guid>
-      <description>I really like Panr&amp;rsquo;s Hugo theme Terminal. It&amp;rsquo;s beautiful. For long texts, however, the contrast can make texts a bit hard to read. This post outlines the files I made customisations to, to create a light theme with a dark blue accent. This is in no way a complete customisation of the Terminal theme, just enough of it that fits my current needs.
-Create a new theme variant To begin creating a new theme variant, I use my existing blog https://congx.</description>
-    </item>
-    
-    <item>
-      <title>Building and shipping Hugo posts with Travis CI for Github Pages</title>
-      <link>https://congx.dev/posts/build-ship-hugo-travisci-gh-pages/</link>
-      <pubDate>Tue, 10 Dec 2019 14:40:00 +0000</pubDate>
-      
-      <guid>https://congx.dev/posts/build-ship-hugo-travisci-gh-pages/</guid>
-      <description>Since my blog source code is private, this blog post contains snippets of how I set up Travis CI to build and push Hugo&amp;rsquo;s public folder to another repository that hosts my public Github Pages.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>hugo on congx.dev</title><link>https://congx.dev/tags/hugo/</link><description>Recent content in hugo on congx.dev</description><generator>Hugo -- gohugo.io</generator><language>en-au</language><lastBuildDate>Sat, 02 Jan 2021 03:55:00 +1100</lastBuildDate><atom:link href="https://congx.dev/tags/hugo/index.xml" rel="self" type="application/rss+xml"/><item><title>Custom Light Theme for Hugo Terminal</title><link>https://congx.dev/posts/custom-light-terminal-theme/</link><pubDate>Sat, 02 Jan 2021 03:55:00 +1100</pubDate><guid>https://congx.dev/posts/custom-light-terminal-theme/</guid><description>I really like Panr&amp;rsquo;s Hugo theme Terminal. It&amp;rsquo;s beautiful. For long texts, however, the contrast can make texts a bit hard to read. This post outlines the files I made customisations to, to create a light theme with a dark blue accent. This is in no way a complete customisation of the Terminal theme, just enough of it that fits my current needs.
+Create a new theme variant To begin creating a new theme variant, I use my existing blog https://congx.</description></item><item><title>Building and shipping Hugo posts with Travis CI for Github Pages</title><link>https://congx.dev/posts/build-ship-hugo-travisci-gh-pages/</link><pubDate>Tue, 10 Dec 2019 14:40:00 +0000</pubDate><guid>https://congx.dev/posts/build-ship-hugo-travisci-gh-pages/</guid><description>Since my blog source code is private, this blog post contains snippets of how I set up Travis CI to build and push Hugo&amp;rsquo;s public folder to another repository that hosts my public Github Pages.
 It&amp;rsquo;s a simple solution, yet the top Google results only feature custom scripts 🤷🤷‍♀️🤷‍♂️.
 Configuring Travis CI .travis.yml
---- install: - curl -LO https://github.com/gohugoio/hugo/releases/download/v0.59.1/hugo_0.59.1_Linux-64bit.deb - sudo dpkg -i hugo_0.59.1_Linux-64bit.deb script: - git submodule init - git submodule update - hugo - rm -Rf .</description>
-    </item>
-    
-  </channel>
-</rss>
+--- install: - curl -LO https://github.com/gohugoio/hugo/releases/download/v0.59.1/hugo_0.59.1_Linux-64bit.deb - sudo dpkg -i hugo_0.59.1_Linux-64bit.deb script: - git submodule init - git submodule update - hugo - rm -Rf .</description></item></channel></rss>

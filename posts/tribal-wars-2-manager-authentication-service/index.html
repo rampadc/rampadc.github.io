@@ -1,245 +1,27 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-au" lang="en-au">
-<head>
-  <link href="https://gmpg.org/xfn/11" rel="profile">
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="generator" content="Hugo 0.79.0" />
-
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Tribal Wars 2 Manager - Authentication Service &middot; congx.dev</title>
-  <meta name="description" content="" />
-
-  
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/print.css" media="print">
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/poole.css">
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/syntax.css">
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/hyde.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700">
-
-
-  
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
-  <link rel="shortcut icon" href="/favicon.png">
-
-  
-  
-</head>
-
-  <body class="theme-base-navy ">
-  <aside class="sidebar">
-  <div class="container sidebar-sticky">
-    <div class="sidebar-about">
-      <a href="https://congx.dev/"><h1>congx.dev</h1></a>
-      <p class="lead">
-       An archive of things that are worth posting 
-      </p>
-    </div>
-
-    <nav>
-      <ul class="sidebar-nav">
-        <li><a href="https://congx.dev//readme">README</a> </li>
-        <li><a href="https://github.com/rampadc/"> Github </a></li><li><a href="https://www.linkedin.com/in/cong-ng/"> LinkedIn </a></li><li><a href="https://www.twitter.com/congxdev/"> Twitter </a></li>
-      </ul>
-    </nav>
-
-    <p>&copy; 2021. All rights reserved. </p>
-  </div>
-</aside>
-
-    <main class="content container">
-    <div class="post">
-  <h1>Tribal Wars 2 Manager - Authentication Service</h1>
-  <time datetime=2018-12-31T21:32:00&#43;1100 class="post-date">Mon, Dec 31, 2018</time>
-
-  
-  <span class="post-tags">
-    
-    #<a href="https://congx.dev/tags/toddler/">toddler</a>&nbsp;
-    
-  </span>
-  
-  
-  
-
-  
-    <div class="table-of-contents">
-      <h2>
-        
-          Table of Contents
-        
-      </h2>
-      <nav id="TableOfContents">
-  <ul>
-    <li><a href="#core-service-overview">Core service overview</a></li>
-    <li><a href="#socket-client">Socket Client</a></li>
-    <li><a href="#authenticator">Authenticator</a></li>
-    <li><a href="#mq-components">MQ components</a></li>
-    <li><a href="#log-builder">Log Builder</a></li>
-    <li><a href="#secrets">Secrets</a></li>
-    <li><a href="#changes-to-technology-choices">Changes to technology choices</a></li>
-    <li><a href="#putting-in-the-elastic-stack">Putting in the Elastic Stack</a></li>
-    <li><a href="#results">Results</a>
-      <ul>
-        <li><a href="#the-source-code">The source code</a></li>
-        <li><a href="#the-screens">The screens</a></li>
-      </ul>
-    </li>
-    <li><a href="#whats-next">What&rsquo;s next?</a></li>
-  </ul>
-</nav>
-    </div>
-  
-
-  <div class="post-content"><div>
-        <p>In the previous post, I mentioned the 6 services essential to wrap up the Tribal Wars 2 manager: data collection, alert, farm, ops and build-recruit services. Before that to happen however, we need to figure out a way to talk to the game i.e. the authentication service.</p>
-<h2 id="core-service-overview">Core service overview<a href="#core-service-overview" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p><img src="auth-svc-overview.png" alt="Core services"></p>
-<p>The source code for this service is hosted at <a href="https://bitbucket.org/cn-d/auth-service">https://bitbucket.org/cn-d/auth-service</a>.</p>
-<p>The authentication service is sandwiched between the 6 services and the game server. Its purpose is to manage authentication and the message flows to and from the game. At its core, the service has 6 components: socket client, authenticator, log builder and 3 MQ (message queue) components. Each of these components are developed as singletons to:</p>
-<ul>
-<li>Limit the number of queues and exchanges created on RabbitMQ for MQ components.</li>
-<li>Limit access points to disk (logs) and game server in case an object is called twice during initialization.</li>
-</ul>
-<p>The following sections describes each component in more detail with links to the source code. Please note that the source can change in the future and you should always have a look for the code in the <code>master</code> branch.</p>
-<h2 id="socket-client">Socket Client<a href="#socket-client" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>SocketClient (src) is a singleton class, responsible for managing a connection to the game server and handles messages in-and-out of the game to the Authenticator component. To use this class, request for an instance by calling <code>SocketClient.shared</code>.</p>
-<p>This class has 2 message handling features: fire-and-forget messaging to the game with <code>fire(message: ISocketMessage)</code>, and asynchronous request/reply messaging with <code>request(message: ISocketMessage, reply: (replyMsg: ISocketMessage) =&gt; void)</code> and <code>reply(message: ISocketMessage)</code>.</p>
-<p>To ensure that messages are matched to the request, the game employs an <code>id</code> field. For example, when a request is sent with</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-  <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;Authentication/login&#34;</span>,
-  <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#ae81ff">2</span>,
-  <span style="color:#960050;background-color:#1e0010">//...</span> <span style="color:#960050;background-color:#1e0010">other</span> <span style="color:#960050;background-color:#1e0010">data</span>
-}
-</code></pre></div><p>The game would respond with either of the following:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">Valid</span> <span style="color:#960050;background-color:#1e0010">credentials</span>
-{
-  <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;Login/success&#34;</span>,
-  <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#ae81ff">2</span>,
-  <span style="color:#960050;background-color:#1e0010">//...</span> <span style="color:#960050;background-color:#1e0010">other</span> <span style="color:#960050;background-color:#1e0010">data</span>
-}
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">Invalid</span> <span style="color:#960050;background-color:#1e0010">credentials</span>
-{
-  <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;System/error&#34;</span> <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">or</span> <span style="color:#960050;background-color:#1e0010">something</span> <span style="color:#960050;background-color:#1e0010">else</span>, <span style="color:#960050;background-color:#1e0010">I</span> <span style="color:#960050;background-color:#1e0010">can&#39;t</span> <span style="color:#960050;background-color:#1e0010">remember</span>
-  <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#ae81ff">2</span>,
-  <span style="color:#960050;background-color:#1e0010">//...</span> <span style="color:#960050;background-color:#1e0010">other</span> <span style="color:#960050;background-color:#1e0010">data</span>
-}
-</code></pre></div><p>Either way, there&rsquo;s a match of id of 2 in the response field. Internally, SocketClient uses a private <code>_msgId</code> field and an array <code>_replyQueue</code> to keep track of requested IDs to match for responses when they come in.</p>
-<p>SocketClient extends node&rsquo;s EventEmitter class. A list of events can be found in <code>SocketClientEvent</code> enum.</p>
-<h2 id="authenticator">Authenticator<a href="#authenticator" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>Authenticator is a singleton class, responsible for managing the client sessions and connections to both the game via SocketClient and RabbitMQ via the 3 MQ components. To use this class, request for an instance with <code>Authenticator.shared</code>.</p>
-<p>Tribal Wars 2 login message requires a username field of <code>name</code> in the message but does not specify how the password is passed in. This is done either with a pass field with raw password text or <code>token</code>, a generated hash which I have no idea how they get it. In this application, I opted with using <code>pass</code>.</p>
-<p>The authenticator starts and ensures the player is authenticated with the game using SocketClient before starting MQ components to ensure that the queued messages will not be processed before the game is connected.</p>
-<p>The sequence of data to be sent and received for authenticating a player is shown in the Kibana logs for game-messages.log in the Results section.</p>
-<h2 id="mq-components">MQ components<a href="#mq-components" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>The auth-svc has 3 MQ classes as singleton-classes. Each of these are responsible for a different category of messaging to-and-from the game.</p>
-<p>Messages sent to and from the game can be divided into 3 categories: request for information (villages on the map, player data), notification from the game (incomings, building/recruit task is completed) and changing a configuration (enable notifications). Due to this nature, the authentication service includes 3 MQ components as mentioned. This is similar to how the game&rsquo;s socket service works behind the scene.</p>
-<p><code>MQProducer</code> and <code>MQConsumer</code> are topic exchanges. When receiving a message through <code>MQProducer.send(message: ISocketMessage)</code> (not a static method), the topic key is created by replacing <code>/</code> with <code>.</code> and send to <code>from.game.exchange</code> to be distributed to interested services. The socket message is sent as a whole. MQConsumer is a queue listening to the <code>to.game.exchange</code>. It listens to everything <code>#</code> and forwards the messages to Authenticator for processing. Currently, the Authenticator class does not attempt to verify the messages.</p>
-<p><code>MQRpcServer</code> implements the RPC pattern. It listens to <code>game.rpc_server</code> queue and sends messages to Authenticator by emitting an event. Aside from the game message, <code>MQRpcServer</code> also passes along the MQ message to be stored in Authenticator to async callback can be achieved.</p>
-<h2 id="log-builder">Log Builder<a href="#log-builder" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>The service includes 2 log files stored at <code>/var/log/</code> in a Node container: <code>game-messages.log</code> and <code>services/auth-svc.log</code>. These are created and written to by the LogBuilder built with WinstonJS. Type and direction of data flows are separated by colours in the diagram above.</p>
-<p>FileBeat is configured to monitor <code>/var/log/game-messages.log</code> and <code>/var/log/services/*.log </code>for log files. New log files from other services will be placed in <code>/var/log/services/</code>. This is accomplished by sharing a volume between multiple services.</p>
-<h2 id="secrets">Secrets<a href="#secrets" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>Throughout the development cycle, I have been using environment variables to load in the player&rsquo;s username, password and world ID. For deployment, these will be replaced with Docker <a href="https://docs.docker.com/engine/swarm/secrets/">secrets</a> in Docker Swarm.</p>
-<h2 id="changes-to-technology-choices">Changes to technology choices<a href="#changes-to-technology-choices" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>From developing this service, I am going to change the deployment technology to Docker Swarm and proxy tool to Traefik.</p>
-<p>Kubernetes has a lot of baggage. You don&rsquo;t just use Kubernetes, you use all the tools that makes it better like Helm and Istio. There&rsquo;s a whole new set of commands and languages you gotta master. Docker Swarm&rsquo;s learning curve is less steep. Once you knew Docker CLI, getting the hang of Swarm is easier. Orchestration is a big topic, but the tools shouldn&rsquo;t make it harder.</p>
-<p>Next up is Traefik. After using it to configure this blog thanks to Ghost, I don&rsquo;t think that it&rsquo;s the right fit for microservices. For new services and end-points, NGINX needs you to edit and confgure a conf file. These files need to be curated and version-controlled. Traefik&rsquo;s way of configuration by enabling a flag in the docker-compose file is a god-send. The Traefik guys have got to do more marketing to compete.</p>
-<h2 id="putting-in-the-elastic-stack">Putting in the Elastic Stack<a href="#putting-in-the-elastic-stack" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>This section is more of a rant. If you want to have a look at the code that makes up the stack for this project, head over to <a href="https://bitbucket.org/cn-d/elastic-stack">https://bitbucket.org/cn-d/elastic-stack</a>.</p>
-<p>In this project, I wanted to setup Elasticsearch, Kibana and Beats on Docker containers. Elastic Co has a reference <a href="https://github.com/elastic/stack-docker">Elastic stack Docker repository</a>.</p>
-<p>The repository sets the default password, create keystores to store passwords and install dashboards, index patterns for beats and apm. That&rsquo;s great and all but the free Elastic stack <a href="https://www.elastic.co/subscriptions">doesn&rsquo;t</a> have authentication built-in. No security ticks in the Free tier. The LICENSE (Apache 2.0) is no help either. Is this a trial? <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html">Yes it is</a>. That was a lot of clicks to find out what&rsquo;s the T&amp;Cs huh.</p>
-<p>I don&rsquo;t want my centralised logging service to stop working after 30 days, plus I have mixed feelings about the security feature for this project. Every services are going to be run on the player&rsquo;s machine. Adding security and secrets increase the complexity for development, so at worst when the players want to have some authentication, they could have the services sit behind a proxy like NGINX or Apache and put in authentication. The repository was definitely helpful however, I find their <a href="https://github.com/elastic/stack-docker/blob/master/scripts/setup-beat.sh">setup-beat.sh</a> helpful in configuring and setting up Elasticsearch and Filebeat.</p>
-<p>Spinning up Elasticsearch, Kibana and Filebeat on their own containers was simple enough. For this first step, I chose not to use Logstash and instead use Elasticsearch&rsquo;s <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/ingest.html">ingest nodes</a> to talk to Filebeat. I ran into a wall when trying to configure Elasticsearch&rsquo;s pipelines however.</p>
-<p>Firstly, Compose&rsquo;s <code>depends_on</code> and <code>links</code> controls the start-up order of services, <a href="https://docs.docker.com/compose/startup-order/">not</a> checking and polling the dependencies' health before starting the service of interest. In my case, I wanted to run a shell script to POST custom pipelines into Elasticsearch once it&rsquo;s healthy. In my case, I went with creating a separate container with a script that keeps waiting until Elasticsearch is ready, similar to how setup-beat.sh works.</p>
-<p>Secondly, Elastic&rsquo;s documentation is not noob-friendly. <em>Run the Filebeat setup</em> section in Filebeat on Docker <a href="https://www.elastic.co/guide/en/beats/filebeat/current/running-on-docker.html">documentation</a> includes the setup command which is not explained. Further down the page where the volume-mounted configuration code was shown, <code>setup</code> was removed.</p>
-<p>What was it for?</p>
-<p>The <code>setup</code> command is used to set up the initial environment, including index template, Kibana dashboard (when available) and machine learning (when available). This statement makes it seem all well and good to run setup. This command however, caused my Filebeat container to crash and exit with status code 1, claiming that Machine Learning is not available even when I turn off ML in Elasticsearch&rsquo;s configuration. Leaving out the command in the Docker compose file starts Filebeat and all is well.</p>
-<p>Lastly, Elasticsearch skips log lines when there are more than one pipeline processor. For my game-messages.log, each line contains date, log level and the message received from or sent to the game. It looks a bit like this:</p>
-<pre><code>2018-12-01T13:06:35.120Z info: {&quot;type&quot;:&quot;System/welcome&quot;,&quot;data&quot;:{&quot;message&quot;:&quot;Connection established using transport websocket&quot;,&quot;transport&quot;:&quot;websocket&quot;,&quot;host&quot;:&quot;en0w3.twx.ig.local&quot;,&quot;maintenance&quot;:false}}
-</code></pre><p>By chaining a Grok processor and a JSON processor, I hope to have the final result in Elasticsearch looking a bit like</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-  <span style="color:#f92672">&#34;@timestamp&#34;</span>: <span style="color:#960050;background-color:#1e0010">&lt;date&gt;</span>,
-  <span style="color:#f92672">&#34;message.type&#34;</span>: <span style="color:#e6db74">&#34;System/welcome&#34;</span>,
-  <span style="color:#f92672">&#34;message.data&#34;</span>: <span style="color:#960050;background-color:#1e0010">&lt;data</span> <span style="color:#960050;background-color:#1e0010">value</span> <span style="color:#960050;background-color:#1e0010">in</span> <span style="color:#960050;background-color:#1e0010">JSON</span> <span style="color:#960050;background-color:#1e0010">block</span> <span style="color:#960050;background-color:#1e0010">above</span> <span style="color:#960050;background-color:#1e0010">in</span> <span style="color:#960050;background-color:#1e0010">JSON</span> <span style="color:#960050;background-color:#1e0010">format&gt;</span>
-}
-</code></pre></div><p>It worked on the first message received but decides to not process random messages down the line. I could have tried writing a Grok expression to split out the JSON string above but the order of type, data, id, etc. could change for each message. As it is not a high-priority task right now, I plan to look into this further down the line to improve game messages logging.</p>
-<h2 id="results">Results<a href="#results" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<h3 id="the-source-code">The source code<a href="#the-source-code" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
-<p>For this project, I am using Bitbucket to share the source code as it allows me to have private repositories for in-development services. The source code for the authentication service and ready-for-public projects can be found at <a href="https://bitbucket.org/account/user/cn-d/projects/TW2MAN">https://bitbucket.org/account/user/cn-d/projects/TW2MAN</a>.</p>
-<p>Inside, there are currently 3 folders: <code>auth-service</code>, <code>compose</code> and <code>elastic-stack</code>. To build and run the services described in this post, you need to be run a Unix-based machine. This is due to a dependency in <code>es-init</code> (service used to configure Elasticsearch once it&rsquo;s healthy) which I have yet to iron out. Clone all 3 repositories and put them into the same folder. Once that&rsquo;s completed, follow the steps below:</p>
-<ol>
-<li>Install Typescript if not installed.</li>
-<li>Head into auth-service folder and run tsc -w to build the source code. This puts the code into the dist folder for Docker to pick up during the Docker build process.</li>
-<li>Navigate into compose folder and run docker-compose -f compose-elastic-stack.yml -f compose-auth-svc.yml up -d &ndash;build. This command builds and sets up the services.</li>
-<li>After a bit of time, navigate to localhost:5601 for the Kibana&rsquo;s dashboard. You can run watch docker ps to view the service statuses as they come up.</li>
-<li>Choose to Explore on your own.</li>
-<li>Head to Management and create an index pattern of filebeat* and select the time filter field name to be @timestamp.</li>
-<li>Head back to Discover and you should see a screen similar to below.</li>
-</ol>
-<h3 id="the-screens">The screens<a href="#the-screens" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
-<p>Kibana up and running</p>
-<p><img src="./kibana-up-running.jpg" alt="Kibana up and running"></p>
-<p>Add a filter on the top left under the search bar to limit the source to <code>/var/log/game-messages.log</code> shows you the authentication sequence.</p>
-<p><img src="./game-logs.png" alt="Game logs"></p>
-<p>I think I have those credentials in version control though&hellip; I make them just for this project so all is well 😊. Change the username, password and world ID for your own need.</p>
-<p>If you want to have a look at RabbitMQ, the management dashboard is located at <code>localhost:15672</code> with the default <code>guest</code>/<code>guest</code> credentials. In Exchanges tab, you should see <code>from.game.exchange</code> and <code>to.game.exchange</code>. In the Queues tab, <code>game.rpc_server</code> like the following images.</p>
-<p><img src="./rabbit-mq-1.png" alt="Exchanges"></p>
-<p><img src="./rabbit-mq-2.png" alt="Queues"></p>
-<p>That&rsquo;s it! All is configured and we are ready to proceed.</p>
-<h2 id="whats-next">What&rsquo;s next?<a href="#whats-next" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>I&rsquo;d like to setup a CI server with Jenkins Evergreen to build, bring up and down Docker compose services, configure BlueOcean for an easy-to-use visual method for players to deploy a Docker stack for the final release.</p>
-<p>Alongside that, I&rsquo;ll be learning Ruby and collaborating with one of my mates to work on the data collection service and make a pretty Kibana Canvas to view the game data.</p>
-<p>I hope you guys have had a good read and Happy New Year!</p>
-
-      </div></div>
-  
-
-  
-    <div class="pagination">
-        <div class="pagination__title">
-            <span class="pagination__title-h">READ OTHER POSTS</span>
-            <hr />
-        </div>
-        <div class="pagination__buttons">
-            
-            <div class="button previous">
-                <a href="https://congx.dev/posts/thinkpad-keyboards-controllers/">
-                    <span class="button__icon">←</span>
-                    <span class="button__text">There will be ThinkPad keyboard controllers</span>
-                </a>
-            </div>
-            
-            
-            <div class="button next">
-                <a href="https://congx.dev/posts/tribal-wars-2-manager-services-overview/">
-                    <span class="button__text">Tribal Wars 2 Manager - Services Overview</span>
-                    <span class="button__icon">→</span>
-                </a>
-            </div>
-            
-        </div>
-    </div>
-  
-</div>
-
-
-    </main>
-
-    
-      
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-35148726-3', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-    
-  </body>
-</html>
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en-au lang=en-au><head><link href=https://gmpg.org/xfn/11 rel=profile><meta charset=utf-8><meta name=generator content="Hugo 0.111.3"><meta name=viewport content="width=device-width,initial-scale=1"><title>Tribal Wars 2 Manager - Authentication Service &#183; congx.dev</title><meta name=description content><link type=text/css rel=stylesheet href=https://congx.dev/css/print.css media=print><link type=text/css rel=stylesheet href=https://congx.dev/css/poole.css><link type=text/css rel=stylesheet href=https://congx.dev/css/syntax.css><link type=text/css rel=stylesheet href=https://congx.dev/css/hyde.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700"><link rel=apple-touch-icon-precomposed sizes=144x144 href=/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=/favicon.png></head><body class=theme-base-navy><aside class=sidebar><div class="container sidebar-sticky"><div class=sidebar-about><a href=https://congx.dev/><h1>congx.dev</h1></a><p class=lead>An archive of things that are worth posting</p></div><nav><ul class=sidebar-nav><li><a href=https://congx.dev//readme>README</a></li><li><a href=https://github.com/rampadc/>Github</a></li><li><a href=https://www.linkedin.com/in/cong-ng/>LinkedIn</a></li><li><a href=https://www.twitter.com/congxdev/>Twitter</a></li></ul></nav><p>&copy; 2023. All rights reserved.</p></div></aside><main class="content container"><div class=post><h1>Tribal Wars 2 Manager - Authentication Service</h1><time datetime=2018-12-31T21:32:00+1100 class=post-date>Mon, Dec 31, 2018</time>
+<span class=post-tags>#<a href=https://congx.dev/tags/toddler/>toddler</a>&nbsp;</span><div class=table-of-contents><h2>Table of Contents</h2><nav id=TableOfContents><ul><li><a href=#core-service-overview>Core service overview</a></li><li><a href=#socket-client>Socket Client</a></li><li><a href=#authenticator>Authenticator</a></li><li><a href=#mq-components>MQ components</a></li><li><a href=#log-builder>Log Builder</a></li><li><a href=#secrets>Secrets</a></li><li><a href=#changes-to-technology-choices>Changes to technology choices</a></li><li><a href=#putting-in-the-elastic-stack>Putting in the Elastic Stack</a></li><li><a href=#results>Results</a><ul><li><a href=#the-source-code>The source code</a></li><li><a href=#the-screens>The screens</a></li></ul></li><li><a href=#whats-next>What&rsquo;s next?</a></li></ul></nav></div><div class=post-content><div><p>In the previous post, I mentioned the 6 services essential to wrap up the Tribal Wars 2 manager: data collection, alert, farm, ops and build-recruit services. Before that to happen however, we need to figure out a way to talk to the game i.e. the authentication service.</p><h2 id=core-service-overview>Core service overview<a href=#core-service-overview class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p><img src=auth-svc-overview.png alt="Core services"></p><p>The source code for this service is hosted at <a href=https://bitbucket.org/cn-d/auth-service>https://bitbucket.org/cn-d/auth-service</a>.</p><p>The authentication service is sandwiched between the 6 services and the game server. Its purpose is to manage authentication and the message flows to and from the game. At its core, the service has 6 components: socket client, authenticator, log builder and 3 MQ (message queue) components. Each of these components are developed as singletons to:</p><ul><li>Limit the number of queues and exchanges created on RabbitMQ for MQ components.</li><li>Limit access points to disk (logs) and game server in case an object is called twice during initialization.</li></ul><p>The following sections describes each component in more detail with links to the source code. Please note that the source can change in the future and you should always have a look for the code in the <code>master</code> branch.</p><h2 id=socket-client>Socket Client<a href=#socket-client class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>SocketClient (src) is a singleton class, responsible for managing a connection to the game server and handles messages in-and-out of the game to the Authenticator component. To use this class, request for an instance by calling <code>SocketClient.shared</code>.</p><p>This class has 2 message handling features: fire-and-forget messaging to the game with <code>fire(message: ISocketMessage)</code>, and asynchronous request/reply messaging with <code>request(message: ISocketMessage, reply: (replyMsg: ISocketMessage) => void)</code> and <code>reply(message: ISocketMessage)</code>.</p><p>To ensure that messages are matched to the request, the game employs an <code>id</code> field. For example, when a request is sent with</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;Authentication/login&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;id&#34;</span>: <span style=color:#ae81ff>2</span>,
+</span></span><span style=display:flex><span>  <span style=color:#75715e>//... other data
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}
+</span></span></code></pre></div><p>The game would respond with either of the following:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span><span style=color:#75715e>// Valid credentials
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>{
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;Login/success&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;id&#34;</span>: <span style=color:#ae81ff>2</span>,
+</span></span><span style=display:flex><span>  <span style=color:#75715e>//... other data
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span><span style=color:#75715e>// Invalid credentials
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>{
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;System/error&#34;</span> <span style=color:#75715e>// or something else, I can&#39;t remember
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  <span style=color:#e6db74>&#34;id&#34;</span>: <span style=color:#ae81ff>2</span>,
+</span></span><span style=display:flex><span>  <span style=color:#75715e>//... other data
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>}
+</span></span></code></pre></div><p>Either way, there&rsquo;s a match of id of 2 in the response field. Internally, SocketClient uses a private <code>_msgId</code> field and an array <code>_replyQueue</code> to keep track of requested IDs to match for responses when they come in.</p><p>SocketClient extends node&rsquo;s EventEmitter class. A list of events can be found in <code>SocketClientEvent</code> enum.</p><h2 id=authenticator>Authenticator<a href=#authenticator class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>Authenticator is a singleton class, responsible for managing the client sessions and connections to both the game via SocketClient and RabbitMQ via the 3 MQ components. To use this class, request for an instance with <code>Authenticator.shared</code>.</p><p>Tribal Wars 2 login message requires a username field of <code>name</code> in the message but does not specify how the password is passed in. This is done either with a pass field with raw password text or <code>token</code>, a generated hash which I have no idea how they get it. In this application, I opted with using <code>pass</code>.</p><p>The authenticator starts and ensures the player is authenticated with the game using SocketClient before starting MQ components to ensure that the queued messages will not be processed before the game is connected.</p><p>The sequence of data to be sent and received for authenticating a player is shown in the Kibana logs for game-messages.log in the Results section.</p><h2 id=mq-components>MQ components<a href=#mq-components class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>The auth-svc has 3 MQ classes as singleton-classes. Each of these are responsible for a different category of messaging to-and-from the game.</p><p>Messages sent to and from the game can be divided into 3 categories: request for information (villages on the map, player data), notification from the game (incomings, building/recruit task is completed) and changing a configuration (enable notifications). Due to this nature, the authentication service includes 3 MQ components as mentioned. This is similar to how the game&rsquo;s socket service works behind the scene.</p><p><code>MQProducer</code> and <code>MQConsumer</code> are topic exchanges. When receiving a message through <code>MQProducer.send(message: ISocketMessage)</code> (not a static method), the topic key is created by replacing <code>/</code> with <code>.</code> and send to <code>from.game.exchange</code> to be distributed to interested services. The socket message is sent as a whole. MQConsumer is a queue listening to the <code>to.game.exchange</code>. It listens to everything <code>#</code> and forwards the messages to Authenticator for processing. Currently, the Authenticator class does not attempt to verify the messages.</p><p><code>MQRpcServer</code> implements the RPC pattern. It listens to <code>game.rpc_server</code> queue and sends messages to Authenticator by emitting an event. Aside from the game message, <code>MQRpcServer</code> also passes along the MQ message to be stored in Authenticator to async callback can be achieved.</p><h2 id=log-builder>Log Builder<a href=#log-builder class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>The service includes 2 log files stored at <code>/var/log/</code> in a Node container: <code>game-messages.log</code> and <code>services/auth-svc.log</code>. These are created and written to by the LogBuilder built with WinstonJS. Type and direction of data flows are separated by colours in the diagram above.</p><p>FileBeat is configured to monitor <code>/var/log/game-messages.log</code> and <code>/var/log/services/*.log </code>for log files. New log files from other services will be placed in <code>/var/log/services/</code>. This is accomplished by sharing a volume between multiple services.</p><h2 id=secrets>Secrets<a href=#secrets class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>Throughout the development cycle, I have been using environment variables to load in the player&rsquo;s username, password and world ID. For deployment, these will be replaced with Docker <a href=https://docs.docker.com/engine/swarm/secrets/>secrets</a> in Docker Swarm.</p><h2 id=changes-to-technology-choices>Changes to technology choices<a href=#changes-to-technology-choices class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>From developing this service, I am going to change the deployment technology to Docker Swarm and proxy tool to Traefik.</p><p>Kubernetes has a lot of baggage. You don&rsquo;t just use Kubernetes, you use all the tools that makes it better like Helm and Istio. There&rsquo;s a whole new set of commands and languages you gotta master. Docker Swarm&rsquo;s learning curve is less steep. Once you knew Docker CLI, getting the hang of Swarm is easier. Orchestration is a big topic, but the tools shouldn&rsquo;t make it harder.</p><p>Next up is Traefik. After using it to configure this blog thanks to Ghost, I don&rsquo;t think that it&rsquo;s the right fit for microservices. For new services and end-points, NGINX needs you to edit and confgure a conf file. These files need to be curated and version-controlled. Traefik&rsquo;s way of configuration by enabling a flag in the docker-compose file is a god-send. The Traefik guys have got to do more marketing to compete.</p><h2 id=putting-in-the-elastic-stack>Putting in the Elastic Stack<a href=#putting-in-the-elastic-stack class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>This section is more of a rant. If you want to have a look at the code that makes up the stack for this project, head over to <a href=https://bitbucket.org/cn-d/elastic-stack>https://bitbucket.org/cn-d/elastic-stack</a>.</p><p>In this project, I wanted to setup Elasticsearch, Kibana and Beats on Docker containers. Elastic Co has a reference <a href=https://github.com/elastic/stack-docker>Elastic stack Docker repository</a>.</p><p>The repository sets the default password, create keystores to store passwords and install dashboards, index patterns for beats and apm. That&rsquo;s great and all but the free Elastic stack <a href=https://www.elastic.co/subscriptions>doesn&rsquo;t</a> have authentication built-in. No security ticks in the Free tier. The LICENSE (Apache 2.0) is no help either. Is this a trial? <a href=https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html>Yes it is</a>. That was a lot of clicks to find out what&rsquo;s the T&amp;Cs huh.</p><p>I don&rsquo;t want my centralised logging service to stop working after 30 days, plus I have mixed feelings about the security feature for this project. Every services are going to be run on the player&rsquo;s machine. Adding security and secrets increase the complexity for development, so at worst when the players want to have some authentication, they could have the services sit behind a proxy like NGINX or Apache and put in authentication. The repository was definitely helpful however, I find their <a href=https://github.com/elastic/stack-docker/blob/master/scripts/setup-beat.sh>setup-beat.sh</a> helpful in configuring and setting up Elasticsearch and Filebeat.</p><p>Spinning up Elasticsearch, Kibana and Filebeat on their own containers was simple enough. For this first step, I chose not to use Logstash and instead use Elasticsearch&rsquo;s <a href=https://www.elastic.co/guide/en/elasticsearch/reference/current/ingest.html>ingest nodes</a> to talk to Filebeat. I ran into a wall when trying to configure Elasticsearch&rsquo;s pipelines however.</p><p>Firstly, Compose&rsquo;s <code>depends_on</code> and <code>links</code> controls the start-up order of services, <a href=https://docs.docker.com/compose/startup-order/>not</a> checking and polling the dependencies&rsquo; health before starting the service of interest. In my case, I wanted to run a shell script to POST custom pipelines into Elasticsearch once it&rsquo;s healthy. In my case, I went with creating a separate container with a script that keeps waiting until Elasticsearch is ready, similar to how setup-beat.sh works.</p><p>Secondly, Elastic&rsquo;s documentation is not noob-friendly. <em>Run the Filebeat setup</em> section in Filebeat on Docker <a href=https://www.elastic.co/guide/en/beats/filebeat/current/running-on-docker.html>documentation</a> includes the setup command which is not explained. Further down the page where the volume-mounted configuration code was shown, <code>setup</code> was removed.</p><p>What was it for?</p><p>The <code>setup</code> command is used to set up the initial environment, including index template, Kibana dashboard (when available) and machine learning (when available). This statement makes it seem all well and good to run setup. This command however, caused my Filebeat container to crash and exit with status code 1, claiming that Machine Learning is not available even when I turn off ML in Elasticsearch&rsquo;s configuration. Leaving out the command in the Docker compose file starts Filebeat and all is well.</p><p>Lastly, Elasticsearch skips log lines when there are more than one pipeline processor. For my game-messages.log, each line contains date, log level and the message received from or sent to the game. It looks a bit like this:</p><pre tabindex=0><code>2018-12-01T13:06:35.120Z info: {&#34;type&#34;:&#34;System/welcome&#34;,&#34;data&#34;:{&#34;message&#34;:&#34;Connection established using transport websocket&#34;,&#34;transport&#34;:&#34;websocket&#34;,&#34;host&#34;:&#34;en0w3.twx.ig.local&#34;,&#34;maintenance&#34;:false}}
+</code></pre><p>By chaining a Grok processor and a JSON processor, I hope to have the final result in Elasticsearch looking a bit like</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;@timestamp&#34;</span>: <span style=color:#960050;background-color:#1e0010>&lt;date&gt;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;message.type&#34;</span>: <span style=color:#e6db74>&#34;System/welcome&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;message.data&#34;</span>: <span style=color:#960050;background-color:#1e0010>&lt;data</span> <span style=color:#960050;background-color:#1e0010>value</span> <span style=color:#960050;background-color:#1e0010>in</span> <span style=color:#960050;background-color:#1e0010>JSON</span> <span style=color:#960050;background-color:#1e0010>block</span> <span style=color:#960050;background-color:#1e0010>above</span> <span style=color:#960050;background-color:#1e0010>in</span> <span style=color:#960050;background-color:#1e0010>JSON</span> <span style=color:#960050;background-color:#1e0010>format&gt;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>It worked on the first message received but decides to not process random messages down the line. I could have tried writing a Grok expression to split out the JSON string above but the order of type, data, id, etc. could change for each message. As it is not a high-priority task right now, I plan to look into this further down the line to improve game messages logging.</p><h2 id=results>Results<a href=#results class=hanchor arialabel=Anchor>&nbsp;#</a></h2><h3 id=the-source-code>The source code<a href=#the-source-code class=hanchor arialabel=Anchor>&nbsp;#</a></h3><p>For this project, I am using Bitbucket to share the source code as it allows me to have private repositories for in-development services. The source code for the authentication service and ready-for-public projects can be found at <a href=https://bitbucket.org/account/user/cn-d/projects/TW2MAN>https://bitbucket.org/account/user/cn-d/projects/TW2MAN</a>.</p><p>Inside, there are currently 3 folders: <code>auth-service</code>, <code>compose</code> and <code>elastic-stack</code>. To build and run the services described in this post, you need to be run a Unix-based machine. This is due to a dependency in <code>es-init</code> (service used to configure Elasticsearch once it&rsquo;s healthy) which I have yet to iron out. Clone all 3 repositories and put them into the same folder. Once that&rsquo;s completed, follow the steps below:</p><ol><li>Install Typescript if not installed.</li><li>Head into auth-service folder and run tsc -w to build the source code. This puts the code into the dist folder for Docker to pick up during the Docker build process.</li><li>Navigate into compose folder and run docker-compose -f compose-elastic-stack.yml -f compose-auth-svc.yml up -d &ndash;build. This command builds and sets up the services.</li><li>After a bit of time, navigate to localhost:5601 for the Kibana&rsquo;s dashboard. You can run watch docker ps to view the service statuses as they come up.</li><li>Choose to Explore on your own.</li><li>Head to Management and create an index pattern of filebeat* and select the time filter field name to be @timestamp.</li><li>Head back to Discover and you should see a screen similar to below.</li></ol><h3 id=the-screens>The screens<a href=#the-screens class=hanchor arialabel=Anchor>&nbsp;#</a></h3><p>Kibana up and running</p><p><img src=./kibana-up-running.jpg alt="Kibana up and running"></p><p>Add a filter on the top left under the search bar to limit the source to <code>/var/log/game-messages.log</code> shows you the authentication sequence.</p><p><img src=./game-logs.png alt="Game logs"></p><p>I think I have those credentials in version control though&mldr; I make them just for this project so all is well 😊. Change the username, password and world ID for your own need.</p><p>If you want to have a look at RabbitMQ, the management dashboard is located at <code>localhost:15672</code> with the default <code>guest</code>/<code>guest</code> credentials. In Exchanges tab, you should see <code>from.game.exchange</code> and <code>to.game.exchange</code>. In the Queues tab, <code>game.rpc_server</code> like the following images.</p><p><img src=./rabbit-mq-1.png alt=Exchanges></p><p><img src=./rabbit-mq-2.png alt=Queues></p><p>That&rsquo;s it! All is configured and we are ready to proceed.</p><h2 id=whats-next>What&rsquo;s next?<a href=#whats-next class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>I&rsquo;d like to setup a CI server with Jenkins Evergreen to build, bring up and down Docker compose services, configure BlueOcean for an easy-to-use visual method for players to deploy a Docker stack for the final release.</p><p>Alongside that, I&rsquo;ll be learning Ruby and collaborating with one of my mates to work on the data collection service and make a pretty Kibana Canvas to view the game data.</p><p>I hope you guys have had a good read and Happy New Year!</p></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>READ OTHER POSTS</span><hr></div><div class=pagination__buttons><div class="button previous"><a href=https://congx.dev/posts/thinkpad-keyboards-controllers/><span class=button__icon>←</span>
+<span class=button__text>There will be ThinkPad keyboard controllers</span></a></div><div class="button next"><a href=https://congx.dev/posts/tribal-wars-2-manager-services-overview/><span class=button__text>Tribal Wars 2 Manager - Services Overview</span>
+<span class=button__icon>→</span></a></div></div></div></div><h2>Comments</h2><script src=https://utteranc.es/client.js repo=rampadc/rampadc.github.io issue-term=pathname label=blog theme=github-light crossorigin=anonymous async></script></main><script type=application/javascript>var doNotTrack=!1;doNotTrack||(function(e,t,n,s,o,i,a){e.GoogleAnalyticsObject=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=1*new Date,i=t.createElement(n),a=t.getElementsByTagName(n)[0],i.async=1,i.src=s,a.parentNode.insertBefore(i,a)}(window,document,"script","https://www.google-analytics.com/analytics.js","ga"),ga("create","UA-35148726-3","auto"),ga("send","pageview"))</script></body></html>

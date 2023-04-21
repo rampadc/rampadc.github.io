@@ -1,21 +1,2 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>keyboard on congx.dev</title>
-    <link>https://congx.dev/tags/keyboard/</link>
-    <description>Recent content in keyboard on congx.dev</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-au</language>
-    <lastBuildDate>Sun, 31 Mar 2019 12:25:00 +1100</lastBuildDate><atom:link href="https://congx.dev/tags/keyboard/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>There will be ThinkPad keyboard controllers</title>
-      <link>https://congx.dev/posts/thinkpad-keyboards-controllers/</link>
-      <pubDate>Sun, 31 Mar 2019 12:25:00 +1100</pubDate>
-      
-      <guid>https://congx.dev/posts/thinkpad-keyboards-controllers/</guid>
-      <description>A long long long time ago, finding an absence of projects on the internet to re-use a ThinkPad T60 keyboard to be used as a USB keyboard, I set out to research, make USB adapter kits and write documentation to this project. It was a success! I learned how to:
- Hunt down ThinkPad laptop schematics Design circuits in Eagle and eventually Altium Designer 3D modelling in Autodesk Inventor and rendering in Autodesk Showcase Send out PCB gerbers to abroad board houses for prototyping Write firmware for my first ever first USB microcontroller MSP430F5510 Develop a HID bridge firmware for Bluetooth 4.</description>
-    </item>
-    
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>keyboard on congx.dev</title><link>https://congx.dev/tags/keyboard/</link><description>Recent content in keyboard on congx.dev</description><generator>Hugo -- gohugo.io</generator><language>en-au</language><lastBuildDate>Sun, 31 Mar 2019 12:25:00 +1100</lastBuildDate><atom:link href="https://congx.dev/tags/keyboard/index.xml" rel="self" type="application/rss+xml"/><item><title>There will be ThinkPad keyboard controllers</title><link>https://congx.dev/posts/thinkpad-keyboards-controllers/</link><pubDate>Sun, 31 Mar 2019 12:25:00 +1100</pubDate><guid>https://congx.dev/posts/thinkpad-keyboards-controllers/</guid><description>A long long long time ago, finding an absence of projects on the internet to re-use a ThinkPad T60 keyboard to be used as a USB keyboard, I set out to research, make USB adapter kits and write documentation to this project. It was a success! I learned how to:
+Hunt down ThinkPad laptop schematics Design circuits in Eagle and eventually Altium Designer 3D modelling in Autodesk Inventor and rendering in Autodesk Showcase Send out PCB gerbers to abroad board houses for prototyping Write firmware for my first ever first USB microcontroller MSP430F5510 Develop a HID bridge firmware for Bluetooth 4.</description></item></channel></rss>

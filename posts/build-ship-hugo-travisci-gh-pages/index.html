@@ -1,160 +1,20 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-au" lang="en-au">
-<head>
-  <link href="https://gmpg.org/xfn/11" rel="profile">
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="generator" content="Hugo 0.79.0" />
-
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Building and shipping Hugo posts with Travis CI for Github Pages &middot; congx.dev</title>
-  <meta name="description" content="Some notes on how I set up Travis-CI to build and ship content to another Github Pages repository" />
-
-  
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/print.css" media="print">
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/poole.css">
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/syntax.css">
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/hyde.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700">
-
-
-  
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
-  <link rel="shortcut icon" href="/favicon.png">
-
-  
-  
-</head>
-
-  <body class="theme-base-navy ">
-  <aside class="sidebar">
-  <div class="container sidebar-sticky">
-    <div class="sidebar-about">
-      <a href="https://congx.dev/"><h1>congx.dev</h1></a>
-      <p class="lead">
-       An archive of things that are worth posting 
-      </p>
-    </div>
-
-    <nav>
-      <ul class="sidebar-nav">
-        <li><a href="https://congx.dev//readme">README</a> </li>
-        <li><a href="https://github.com/rampadc/"> Github </a></li><li><a href="https://www.linkedin.com/in/cong-ng/"> LinkedIn </a></li><li><a href="https://www.twitter.com/congxdev/"> Twitter </a></li>
-      </ul>
-    </nav>
-
-    <p>&copy; 2021. All rights reserved. </p>
-  </div>
-</aside>
-
-    <main class="content container">
-    <div class="post">
-  <h1>Building and shipping Hugo posts with Travis CI for Github Pages</h1>
-  <time datetime=2019-12-10T14:40:00Z class="post-date">Tue, Dec 10, 2019</time>
-
-  
-  <span class="post-tags">
-    
-    #<a href="https://congx.dev/tags/hugo/">hugo</a>&nbsp;
-    
-  </span>
-  
-  
-  
-
-  
-    <div class="table-of-contents">
-      <h2>
-        
-          Table of Contents
-        
-      </h2>
-      <nav id="TableOfContents">
-  <ul>
-    <li><a href="#configuring-travis-ci">Configuring Travis CI</a></li>
-  </ul>
-</nav>
-    </div>
-  
-
-  <div class="post-content"><div>
-        <p>Since my blog source code is private, this blog post contains snippets of how I set up Travis CI to build and push Hugo&rsquo;s <code>public</code> folder to another <a href="https://github.com/rampadc/rampadc.github.io">repository</a> that hosts my public Github Pages.</p>
-<p>It&rsquo;s a simple solution, yet the top Google results only feature custom scripts 🤷🤷‍♀️🤷‍♂️.</p>
-<h2 id="configuring-travis-ci">Configuring Travis CI<a href="#configuring-travis-ci" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p><code>.travis.yml</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
-<span style="color:#f92672">install</span>:
-  - <span style="color:#ae81ff">curl -LO https://github.com/gohugoio/hugo/releases/download/v0.59.1/hugo_0.59.1_Linux-64bit.deb</span>
-  - <span style="color:#ae81ff">sudo dpkg -i hugo_0.59.1_Linux-64bit.deb</span>
-
-<span style="color:#f92672">script</span>:
-  - <span style="color:#ae81ff">git submodule init</span>
-  - <span style="color:#ae81ff">git submodule update</span>
-  - <span style="color:#ae81ff">hugo</span>
-  - <span style="color:#ae81ff">rm -Rf .git</span>
-  - <span style="color:#ae81ff">git clone $REMOTE_REPO remote_repo</span>
-  - <span style="color:#ae81ff">cp -TR public remote_repo</span>
-  - <span style="color:#ae81ff">cd remote_repo</span>
-  - <span style="color:#ae81ff">git add .</span>
-  - <span style="color:#ae81ff">git commit -m &#34;🚀 CI Updating blog 🎁&#34;</span>
-  - <span style="color:#ae81ff">git push</span>
-</code></pre></div><ul>
-<li>Line 10 removes the existing <code>.git</code> folder  in order to clone another git folder inside it and push that one instead</li>
-<li>Line 12 clones an existing git repository into a folder called <code>remote_repo</code></li>
-<li>Line 13 copies all the content from <code>public</code> into <code>remote_repo</code></li>
-</ul>
-<p>On line 12, the REMOTE_REPO is configured as a secure Travis environment variable. It contains the a link to a remote repository in the format of</p>
-<p><code>https://GITHUB_PERSONAL_TOKEN@github.com/&lt;user&gt;/&lt;repo&gt;</code></p>
-<p>The personal Github token is configured to have access to <code>public_repo</code>. Update line 3 as needed if you&rsquo;re using a newer Hugo release.</p>
-
-      </div></div>
-  
-
-  
-    <div class="pagination">
-        <div class="pagination__title">
-            <span class="pagination__title-h">READ OTHER POSTS</span>
-            <hr />
-        </div>
-        <div class="pagination__buttons">
-            
-            <div class="button previous">
-                <a href="https://congx.dev/posts/xpsl-docs-functional-requirements/">
-                    <span class="button__icon">←</span>
-                    <span class="button__text">XPSL Docs: Functional requirements</span>
-                </a>
-            </div>
-            
-            
-            <div class="button next">
-                <a href="https://congx.dev/posts/xpsl-docs-motivation-overview/xpsl-docs-overview-and-motivation/">
-                    <span class="button__text">XPSL Docs: Motivation and Overview</span>
-                    <span class="button__icon">→</span>
-                </a>
-            </div>
-            
-        </div>
-    </div>
-  
-</div>
-
-
-    </main>
-
-    
-      
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-35148726-3', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-    
-  </body>
-</html>
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en-au lang=en-au><head><link href=https://gmpg.org/xfn/11 rel=profile><meta charset=utf-8><meta name=generator content="Hugo 0.111.3"><meta name=viewport content="width=device-width,initial-scale=1"><title>Building and shipping Hugo posts with Travis CI for Github Pages &#183; congx.dev</title><meta name=description content="Some notes on how I set up Travis-CI to build and ship content to another Github Pages repository"><link type=text/css rel=stylesheet href=https://congx.dev/css/print.css media=print><link type=text/css rel=stylesheet href=https://congx.dev/css/poole.css><link type=text/css rel=stylesheet href=https://congx.dev/css/syntax.css><link type=text/css rel=stylesheet href=https://congx.dev/css/hyde.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700"><link rel=apple-touch-icon-precomposed sizes=144x144 href=/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=/favicon.png></head><body class=theme-base-navy><aside class=sidebar><div class="container sidebar-sticky"><div class=sidebar-about><a href=https://congx.dev/><h1>congx.dev</h1></a><p class=lead>An archive of things that are worth posting</p></div><nav><ul class=sidebar-nav><li><a href=https://congx.dev//readme>README</a></li><li><a href=https://github.com/rampadc/>Github</a></li><li><a href=https://www.linkedin.com/in/cong-ng/>LinkedIn</a></li><li><a href=https://www.twitter.com/congxdev/>Twitter</a></li></ul></nav><p>&copy; 2023. All rights reserved.</p></div></aside><main class="content container"><div class=post><h1>Building and shipping Hugo posts with Travis CI for Github Pages</h1><time datetime=2019-12-10T14:40:00Z class=post-date>Tue, Dec 10, 2019</time>
+<span class=post-tags>#<a href=https://congx.dev/tags/hugo/>hugo</a>&nbsp;</span><div class=table-of-contents><h2>Table of Contents</h2><nav id=TableOfContents><ul><li><a href=#configuring-travis-ci>Configuring Travis CI</a></li></ul></nav></div><div class=post-content><div><p>Since my blog source code is private, this blog post contains snippets of how I set up Travis CI to build and push Hugo&rsquo;s <code>public</code> folder to another <a href=https://github.com/rampadc/rampadc.github.io>repository</a> that hosts my public Github Pages.</p><p>It&rsquo;s a simple solution, yet the top Google results only feature custom scripts 🤷🤷‍♀️🤷‍♂️.</p><h2 id=configuring-travis-ci>Configuring Travis CI<a href=#configuring-travis-ci class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p><code>.travis.yml</code></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:#f92672>install</span>:
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>curl -LO https://github.com/gohugoio/hugo/releases/download/v0.59.1/hugo_0.59.1_Linux-64bit.deb</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>sudo dpkg -i hugo_0.59.1_Linux-64bit.deb</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>script</span>:
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>git submodule init</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>git submodule update</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>hugo</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>rm -Rf .git</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>git clone $REMOTE_REPO remote_repo</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>cp -TR public remote_repo</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>cd remote_repo</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>git add .</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>git commit -m &#34;🚀 CI Updating blog 🎁&#34;</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>git push</span>
+</span></span></code></pre></div><ul><li>Line 10 removes the existing <code>.git</code> folder in order to clone another git folder inside it and push that one instead</li><li>Line 12 clones an existing git repository into a folder called <code>remote_repo</code></li><li>Line 13 copies all the content from <code>public</code> into <code>remote_repo</code></li></ul><p>On line 12, the REMOTE_REPO is configured as a secure Travis environment variable. It contains the a link to a remote repository in the format of</p><p><code>https://GITHUB_PERSONAL_TOKEN@github.com/&lt;user>/&lt;repo></code></p><p>The personal Github token is configured to have access to <code>public_repo</code>. Update line 3 as needed if you&rsquo;re using a newer Hugo release.</p></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>READ OTHER POSTS</span><hr></div><div class=pagination__buttons><div class="button previous"><a href=https://congx.dev/posts/xpsl-docs-functional-requirements/><span class=button__icon>←</span>
+<span class=button__text>XPSL Docs: Functional requirements</span></a></div><div class="button next"><a href=https://congx.dev/posts/xpsl-docs-motivation-overview/xpsl-docs-overview-and-motivation/><span class=button__text>XPSL Docs: Motivation and Overview</span>
+<span class=button__icon>→</span></a></div></div></div></div><h2>Comments</h2><script src=https://utteranc.es/client.js repo=rampadc/rampadc.github.io issue-term=pathname label=blog theme=github-light crossorigin=anonymous async></script></main><script type=application/javascript>var doNotTrack=!1;doNotTrack||(function(e,t,n,s,o,i,a){e.GoogleAnalyticsObject=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=1*new Date,i=t.createElement(n),a=t.getElementsByTagName(n)[0],i.async=1,i.src=s,a.parentNode.insertBefore(i,a)}(window,document,"script","https://www.google-analytics.com/analytics.js","ga"),ga("create","UA-35148726-3","auto"),ga("send","pageview"))</script></body></html>

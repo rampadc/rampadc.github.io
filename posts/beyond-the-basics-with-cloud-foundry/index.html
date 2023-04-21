@@ -1,220 +1,26 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-au" lang="en-au">
-<head>
-  <link href="https://gmpg.org/xfn/11" rel="profile">
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="generator" content="Hugo 0.79.0" />
-
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Beyond the basics with Cloud Foundry &middot; congx.dev</title>
-  <meta name="description" content="" />
-
-  
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/print.css" media="print">
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/poole.css">
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/syntax.css">
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/hyde.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700">
-
-
-  
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
-  <link rel="shortcut icon" href="/favicon.png">
-
-  
-  
-</head>
-
-  <body class="theme-base-navy ">
-  <aside class="sidebar">
-  <div class="container sidebar-sticky">
-    <div class="sidebar-about">
-      <a href="https://congx.dev/"><h1>congx.dev</h1></a>
-      <p class="lead">
-       An archive of things that are worth posting 
-      </p>
-    </div>
-
-    <nav>
-      <ul class="sidebar-nav">
-        <li><a href="https://congx.dev//readme">README</a> </li>
-        <li><a href="https://github.com/rampadc/"> Github </a></li><li><a href="https://www.linkedin.com/in/cong-ng/"> LinkedIn </a></li><li><a href="https://www.twitter.com/congxdev/"> Twitter </a></li>
-      </ul>
-    </nav>
-
-    <p>&copy; 2021. All rights reserved. </p>
-  </div>
-</aside>
-
-    <main class="content container">
-    <div class="post">
-  <h1>Beyond the basics with Cloud Foundry</h1>
-  <time datetime=2019-06-12T23:00:00&#43;1100 class="post-date">Wed, Jun 12, 2019</time>
-
-  
-  <span class="post-tags">
-    
-    #<a href="https://congx.dev/tags/ibm/">IBM</a>&nbsp;
-    
-    #<a href="https://congx.dev/tags/cloud-foundry/">Cloud Foundry</a>&nbsp;
-    
-    #<a href="https://congx.dev/tags/toddler/">toddler</a>&nbsp;
-    
-  </span>
-  
-  
-  
-
-  
-    <div class="table-of-contents">
-      <h2>
-        
-          Table of Contents
-        
-      </h2>
-      <nav id="TableOfContents">
-  <ul>
-    <li><a href="#which-cf-cli-to-use">Which CF CLI to use</a></li>
-    <li><a href="#developing-locally-with-cf-local">Developing locally with CF Local</a></li>
-    <li><a href="#deploying-docker-images-into-cf-containers">Deploying Docker images into CF containers</a></li>
-    <li><a href="#sequencing-applications-start-up">Sequencing applications start-up</a></li>
-    <li><a href="#configuring-container-to-container-networking">Configuring container-to-container networking</a>
-      <ul>
-        <li><a href="#what-i-need-is-tcp-routing">What I need is TCP routing</a></li>
-        <li><a href="#actually-configuring-c2c-networking">Actually configuring C2C networking</a></li>
-      </ul>
-    </li>
-    <li><a href="#summary">Summary</a></li>
-  </ul>
-</nav>
-    </div>
-  
-
-  <div class="post-content"><div>
-        <p>The advent of Docker changed the way we develop applications. Once you had written a Dockerfile and built the image, your application will run (almost) anywhere, regardless of the underlying operating system, and best of all, it just works. You can then expose ports, map volumes to persist data and deploy your image in Docker Swarm or Kubernetes (K8s). With great flexibility, however, comes greater costs, whether that is increased developer&rsquo;s skillset requirements and time spent on writing multiple K8s YAML config files, or pricier services on your favourite cloud provider.</p>
-<p>This blog post presents the usage of different tools and interesting tidbits to ease development with Cloud Foundry (CF), similar to the likes of Docker. These include:</p>
-<ul>
-<li>Developing and testing CF applications locally</li>
-<li>Running Docker images inside a CF container</li>
-<li>Sequencing start-ups of multiple CF applications</li>
-<li>Configuring container-to-container networking</li>
-</ul>
-<p>For the remainder of this blog post, I will be using <a href="https://github.com/rampadc/toddler-auth">toddler-auth</a> as the example.</p>
-<h2 id="which-cf-cli-to-use">Which CF CLI to use<a href="#which-cf-cli-to-use" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>Just before we get started, if you are using the standalone IBM Cloud CLI, it bundles in CF CLI. Everything that comes after <code>ibmcloud cf</code> maps to the normal Cloud Foundry cf&rsquo;s command. Personally, because I use IBM Cloud day-to-day, I removed <code>cf</code> and created an alias to <code>ibmcloud cf</code> with <code>alias cf='ibmcloud cf'</code>. Henceforth, any mentions of <code>cf</code> refers to <code>ibmcloud cf</code>.</p>
-<h2 id="developing-locally-with-cf-local">Developing locally with CF Local<a href="#developing-locally-with-cf-local" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p><a href="https://pivotal.io/cf-local">CF Local</a> lets you develop locally and requires Docker to be installed. To install CF Local, invoke <code>cf install-plugin cflocal</code>. CF Local <a href="https://github.com/cloudfoundry-incubator/cflocal/issues/3">only</a> uses a <code>local.yml</code> instead of <code>manifest.yml</code>.</p>
-<p>Writing <code>local.yml</code> is similar to a <code>docker-compose.yml</code> file. After all, they are YAML files. You can place multiple applications, specify environment variables just like any CF apps.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
-<span style="color:#f92672">applications</span>:
-- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">toddler-auth</span>
-  <span style="color:#f92672">routes</span>:
-    - <span style="color:#f92672">route</span>: <span style="color:#ae81ff">toddler-auth.apps.internal</span>
-  <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">128M</span>
-  <span style="color:#f92672">disk_quota</span>: <span style="color:#ae81ff">128M</span>
-  <span style="color:#f92672">env</span>:
-    <span style="color:#f92672">TODDLER_USERNAME</span>: <span style="color:#ae81ff">&lt;username&gt;</span>
-    <span style="color:#f92672">TODDLER_PASSWORD</span>: <span style="color:#ae81ff">&lt;password&gt;</span>
-    <span style="color:#f92672">TODDLER_WORLD_ID</span>: <span style="color:#ae81ff">&lt;worldId&gt;</span>
-</code></pre></div><p>Once you have navigated to the application folder, stage the application with <code>cf local stage toddler-auth</code>.</p>
-<p>Staging the application&hellip;</p>
-<p><img src="./stage.gif" alt="staging"></p>
-<p>Then, run the application with cf local run toddler-auth.</p>
-<p>Running&hellip;</p>
-<p><img src="./run.gif" alt="running"></p>
-<p>The first staging period can take some time to download buildpacks and set things up, but once it completes, CF Local creates <code>.cache</code> files inside the application&rsquo;s directory. Subsequent runs are faster.</p>
-<h2 id="deploying-docker-images-into-cf-containers">Deploying Docker images into CF containers<a href="#deploying-docker-images-into-cf-containers" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p><a href="https://www.cloudfoundry.org/blog/garden-and-runc/">Sometime in 2015</a>, Cloud Foundry started to support Docker images by adopting the Open Container Initiative (OCI) container execution interface. For more information on deploying a Docker image, have a look at the <a href="https://docs.cloudfoundry.org/devguide/deploy-apps/push-docker.html">full documentation</a>. Two most important tidbits are:</p>
-<ul>
-<li>Only 1 exposed port per image is supported.</li>
-<li>Exposed port is controlled by the <code>EXPOSE</code> directive in the Dockerfile.</li>
-</ul>
-<p>While you can control the exposed port by other means as outlined in the docs, using the default exposed port is the easiest way to go. An example to using a Docker image is provided in toddler-auth&rsquo;s <code>manifest.yml</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
-<span style="color:#f92672">applications</span>:
-- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">toddler-nats</span>
-  <span style="color:#f92672">memory</span>: <span style="color:#ae81ff">128M</span>
-  <span style="color:#f92672">disk_quota</span>: <span style="color:#ae81ff">256M</span>
-  <span style="color:#f92672">docker</span>:
-    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">bitnami/nats:latest</span>
-  <span style="color:#f92672">routes</span>:
-    - <span style="color:#f92672">route</span>: <span style="color:#ae81ff">toddler-nats.apps.internal</span>
-</code></pre></div><p>In the above example, I am running an application named toddler-nats. It uses bitnami&rsquo;s nats.io image from Docker Hub and maps an internal route of <code>toddler-nats.apps.internal</code>.</p>
-<h2 id="sequencing-applications-start-up">Sequencing applications start-up<a href="#sequencing-applications-start-up" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>In the world of Docker Compose, Swarm and Kubernetes, applications are started in parallel. Applications startup sequence is not controlled by the orchestrator. This can be annoying as you need to write extra bash files and build in service availability detection.</p>
-<p>On the contrary, if your manifest.yml contains multiple applications, CF applications are deployed in sequence during deployment from top to bottom. If any application in the chain fails, the entire deployment is halted. This is great if you need to sequence start-ups of multiple applications.</p>
-<h2 id="configuring-container-to-container-networking">Configuring container-to-container networking<a href="#configuring-container-to-container-networking" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>Before touching on container-to-container networking, I just want to touch on why this was significant for my project.</p>
-<h3 id="what-i-need-is-tcp-routing">What I need is TCP routing<a href="#what-i-need-is-tcp-routing" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
-<p>My Toddler stack relies on NATS as the centralised message queue for microservices' communication. NATS is a great alternative to HTTP. It&rsquo;s got all the nice features of a message queue like pub/sub, topic routing, very high throughput and well-developed client libraries.</p>
-<p>In mid-2016, Cloud Foundry <a href="https://www.cloudfoundry.org/blog/tcp-routing-comes-to-cloud-foundry/">rolled out support for TCP routing</a>. Not all cloud providers, however, support this feature. IBM Cloud for one, does not.</p>
-<p><img src="./no-tcp-routing.png" alt="no-tcp"></p>
-<p>From the <a href="https://docs.cloudfoundry.org/devguide/deploy-apps/routes-domains.html#list-routes">listing routes</a> doc, if <code>tcp</code> is shown under type for any route, that route can be configured as a TCP route. Well, my public CF account does not. Searching around revealed that you can, however, set up custom TCP port with <a href="https://www.ibm.com/cloud/blog/cloud-foundry-container-to-container-networking">container-to-container networking (C2C networking)</a>.</p>
-<h3 id="actually-configuring-c2c-networking">Actually configuring C2C networking<a href="#actually-configuring-c2c-networking" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h3>
-<p>Setting up C2C networking was straightforward. C2C networking is disabled by default. To enable C2C between 2 applications, you first need both apps deployed. Then, invoke</p>
-<p><code>ibmcloud cf add-network-policy $SOURCE_APP_NAME --destination-app $DEST_APP_NAME --port $PORT --protocol tcp</code></p>
-<p>For my project, I needed to enabled port 4222 from toddler-auth to toddler-nats. On my terminal, this was</p>
-<p><code>cf add-network-policy toddler-auth --destination-app toddler-nats --port 4222 --protocol tcp</code></p>
-<p>To talk to toddler-nats, I mapped an internal route on toddler-nats to be <code>toddler-nats.apps.internal</code>. To talk to toddler-nats, <code>nats://toddler-nats.app.internal</code> was used.</p>
-<p>Something to note here was that I did not have to add a network policy into CF Local when deploying the application locally.</p>
-<h2 id="summary">Summary<a href="#summary" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>To summarise,</p>
-<ul>
-<li>Developing and testing locally with CF Local maps to locally build an image and test a deployment with docker-compose.</li>
-<li>Configuring container-to-container networking maps to calling services within a docker-compose file.</li>
-<li>Running a Docker image inside a CF container was a good-to-know.</li>
-<li>Sequencing application start-up was a good-to-know.</li>
-</ul>
-
-      </div></div>
-  
-
-  
-    <div class="pagination">
-        <div class="pagination__title">
-            <span class="pagination__title-h">READ OTHER POSTS</span>
-            <hr />
-        </div>
-        <div class="pagination__buttons">
-            
-            <div class="button previous">
-                <a href="https://congx.dev/posts/birth-of-toddler/">
-                    <span class="button__icon">←</span>
-                    <span class="button__text">Birth of Toddler</span>
-                </a>
-            </div>
-            
-            
-            <div class="button next">
-                <a href="https://congx.dev/posts/thinkpad-keyboards-controllers/">
-                    <span class="button__text">There will be ThinkPad keyboard controllers</span>
-                    <span class="button__icon">→</span>
-                </a>
-            </div>
-            
-        </div>
-    </div>
-  
-</div>
-
-
-    </main>
-
-    
-      
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-35148726-3', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-    
-  </body>
-</html>
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en-au lang=en-au><head><link href=https://gmpg.org/xfn/11 rel=profile><meta charset=utf-8><meta name=generator content="Hugo 0.111.3"><meta name=viewport content="width=device-width,initial-scale=1"><title>Beyond the basics with Cloud Foundry &#183; congx.dev</title><meta name=description content><link type=text/css rel=stylesheet href=https://congx.dev/css/print.css media=print><link type=text/css rel=stylesheet href=https://congx.dev/css/poole.css><link type=text/css rel=stylesheet href=https://congx.dev/css/syntax.css><link type=text/css rel=stylesheet href=https://congx.dev/css/hyde.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700"><link rel=apple-touch-icon-precomposed sizes=144x144 href=/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=/favicon.png></head><body class=theme-base-navy><aside class=sidebar><div class="container sidebar-sticky"><div class=sidebar-about><a href=https://congx.dev/><h1>congx.dev</h1></a><p class=lead>An archive of things that are worth posting</p></div><nav><ul class=sidebar-nav><li><a href=https://congx.dev//readme>README</a></li><li><a href=https://github.com/rampadc/>Github</a></li><li><a href=https://www.linkedin.com/in/cong-ng/>LinkedIn</a></li><li><a href=https://www.twitter.com/congxdev/>Twitter</a></li></ul></nav><p>&copy; 2023. All rights reserved.</p></div></aside><main class="content container"><div class=post><h1>Beyond the basics with Cloud Foundry</h1><time datetime=2019-06-12T23:00:00+1100 class=post-date>Wed, Jun 12, 2019</time>
+<span class=post-tags>#<a href=https://congx.dev/tags/ibm/>IBM</a>&nbsp;
+#<a href=https://congx.dev/tags/cloud-foundry/>Cloud Foundry</a>&nbsp;
+#<a href=https://congx.dev/tags/toddler/>toddler</a>&nbsp;</span><div class=table-of-contents><h2>Table of Contents</h2><nav id=TableOfContents><ul><li><a href=#which-cf-cli-to-use>Which CF CLI to use</a></li><li><a href=#developing-locally-with-cf-local>Developing locally with CF Local</a></li><li><a href=#deploying-docker-images-into-cf-containers>Deploying Docker images into CF containers</a></li><li><a href=#sequencing-applications-start-up>Sequencing applications start-up</a></li><li><a href=#configuring-container-to-container-networking>Configuring container-to-container networking</a><ul><li><a href=#what-i-need-is-tcp-routing>What I need is TCP routing</a></li><li><a href=#actually-configuring-c2c-networking>Actually configuring C2C networking</a></li></ul></li><li><a href=#summary>Summary</a></li></ul></nav></div><div class=post-content><div><p>The advent of Docker changed the way we develop applications. Once you had written a Dockerfile and built the image, your application will run (almost) anywhere, regardless of the underlying operating system, and best of all, it just works. You can then expose ports, map volumes to persist data and deploy your image in Docker Swarm or Kubernetes (K8s). With great flexibility, however, comes greater costs, whether that is increased developer&rsquo;s skillset requirements and time spent on writing multiple K8s YAML config files, or pricier services on your favourite cloud provider.</p><p>This blog post presents the usage of different tools and interesting tidbits to ease development with Cloud Foundry (CF), similar to the likes of Docker. These include:</p><ul><li>Developing and testing CF applications locally</li><li>Running Docker images inside a CF container</li><li>Sequencing start-ups of multiple CF applications</li><li>Configuring container-to-container networking</li></ul><p>For the remainder of this blog post, I will be using <a href=https://github.com/rampadc/toddler-auth>toddler-auth</a> as the example.</p><h2 id=which-cf-cli-to-use>Which CF CLI to use<a href=#which-cf-cli-to-use class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>Just before we get started, if you are using the standalone IBM Cloud CLI, it bundles in CF CLI. Everything that comes after <code>ibmcloud cf</code> maps to the normal Cloud Foundry cf&rsquo;s command. Personally, because I use IBM Cloud day-to-day, I removed <code>cf</code> and created an alias to <code>ibmcloud cf</code> with <code>alias cf='ibmcloud cf'</code>. Henceforth, any mentions of <code>cf</code> refers to <code>ibmcloud cf</code>.</p><h2 id=developing-locally-with-cf-local>Developing locally with CF Local<a href=#developing-locally-with-cf-local class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p><a href=https://pivotal.io/cf-local>CF Local</a> lets you develop locally and requires Docker to be installed. To install CF Local, invoke <code>cf install-plugin cflocal</code>. CF Local <a href=https://github.com/cloudfoundry-incubator/cflocal/issues/3>only</a> uses a <code>local.yml</code> instead of <code>manifest.yml</code>.</p><p>Writing <code>local.yml</code> is similar to a <code>docker-compose.yml</code> file. After all, they are YAML files. You can place multiple applications, specify environment variables just like any CF apps.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:#f92672>applications</span>:
+</span></span><span style=display:flex><span>- <span style=color:#f92672>name</span>: <span style=color:#ae81ff>toddler-auth</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>routes</span>:
+</span></span><span style=display:flex><span>    - <span style=color:#f92672>route</span>: <span style=color:#ae81ff>toddler-auth.apps.internal</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>memory</span>: <span style=color:#ae81ff>128M</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>disk_quota</span>: <span style=color:#ae81ff>128M</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>env</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>TODDLER_USERNAME</span>: <span style=color:#ae81ff>&lt;username&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>TODDLER_PASSWORD</span>: <span style=color:#ae81ff>&lt;password&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>TODDLER_WORLD_ID</span>: <span style=color:#ae81ff>&lt;worldId&gt;</span>
+</span></span></code></pre></div><p>Once you have navigated to the application folder, stage the application with <code>cf local stage toddler-auth</code>.</p><p>Staging the application&mldr;</p><p><img src=./stage.gif alt=staging></p><p>Then, run the application with cf local run toddler-auth.</p><p>Running&mldr;</p><p><img src=./run.gif alt=running></p><p>The first staging period can take some time to download buildpacks and set things up, but once it completes, CF Local creates <code>.cache</code> files inside the application&rsquo;s directory. Subsequent runs are faster.</p><h2 id=deploying-docker-images-into-cf-containers>Deploying Docker images into CF containers<a href=#deploying-docker-images-into-cf-containers class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p><a href=https://www.cloudfoundry.org/blog/garden-and-runc/>Sometime in 2015</a>, Cloud Foundry started to support Docker images by adopting the Open Container Initiative (OCI) container execution interface. For more information on deploying a Docker image, have a look at the <a href=https://docs.cloudfoundry.org/devguide/deploy-apps/push-docker.html>full documentation</a>. Two most important tidbits are:</p><ul><li>Only 1 exposed port per image is supported.</li><li>Exposed port is controlled by the <code>EXPOSE</code> directive in the Dockerfile.</li></ul><p>While you can control the exposed port by other means as outlined in the docs, using the default exposed port is the easiest way to go. An example to using a Docker image is provided in toddler-auth&rsquo;s <code>manifest.yml</code>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:#f92672>applications</span>:
+</span></span><span style=display:flex><span>- <span style=color:#f92672>name</span>: <span style=color:#ae81ff>toddler-nats</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>memory</span>: <span style=color:#ae81ff>128M</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>disk_quota</span>: <span style=color:#ae81ff>256M</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>docker</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>image</span>: <span style=color:#ae81ff>bitnami/nats:latest</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>routes</span>:
+</span></span><span style=display:flex><span>    - <span style=color:#f92672>route</span>: <span style=color:#ae81ff>toddler-nats.apps.internal</span>
+</span></span></code></pre></div><p>In the above example, I am running an application named toddler-nats. It uses bitnami&rsquo;s nats.io image from Docker Hub and maps an internal route of <code>toddler-nats.apps.internal</code>.</p><h2 id=sequencing-applications-start-up>Sequencing applications start-up<a href=#sequencing-applications-start-up class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>In the world of Docker Compose, Swarm and Kubernetes, applications are started in parallel. Applications startup sequence is not controlled by the orchestrator. This can be annoying as you need to write extra bash files and build in service availability detection.</p><p>On the contrary, if your manifest.yml contains multiple applications, CF applications are deployed in sequence during deployment from top to bottom. If any application in the chain fails, the entire deployment is halted. This is great if you need to sequence start-ups of multiple applications.</p><h2 id=configuring-container-to-container-networking>Configuring container-to-container networking<a href=#configuring-container-to-container-networking class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>Before touching on container-to-container networking, I just want to touch on why this was significant for my project.</p><h3 id=what-i-need-is-tcp-routing>What I need is TCP routing<a href=#what-i-need-is-tcp-routing class=hanchor arialabel=Anchor>&nbsp;#</a></h3><p>My Toddler stack relies on NATS as the centralised message queue for microservices&rsquo; communication. NATS is a great alternative to HTTP. It&rsquo;s got all the nice features of a message queue like pub/sub, topic routing, very high throughput and well-developed client libraries.</p><p>In mid-2016, Cloud Foundry <a href=https://www.cloudfoundry.org/blog/tcp-routing-comes-to-cloud-foundry/>rolled out support for TCP routing</a>. Not all cloud providers, however, support this feature. IBM Cloud for one, does not.</p><p><img src=./no-tcp-routing.png alt=no-tcp></p><p>From the <a href=https://docs.cloudfoundry.org/devguide/deploy-apps/routes-domains.html#list-routes>listing routes</a> doc, if <code>tcp</code> is shown under type for any route, that route can be configured as a TCP route. Well, my public CF account does not. Searching around revealed that you can, however, set up custom TCP port with <a href=https://www.ibm.com/cloud/blog/cloud-foundry-container-to-container-networking>container-to-container networking (C2C networking)</a>.</p><h3 id=actually-configuring-c2c-networking>Actually configuring C2C networking<a href=#actually-configuring-c2c-networking class=hanchor arialabel=Anchor>&nbsp;#</a></h3><p>Setting up C2C networking was straightforward. C2C networking is disabled by default. To enable C2C between 2 applications, you first need both apps deployed. Then, invoke</p><p><code>ibmcloud cf add-network-policy $SOURCE_APP_NAME --destination-app $DEST_APP_NAME --port $PORT --protocol tcp</code></p><p>For my project, I needed to enabled port 4222 from toddler-auth to toddler-nats. On my terminal, this was</p><p><code>cf add-network-policy toddler-auth --destination-app toddler-nats --port 4222 --protocol tcp</code></p><p>To talk to toddler-nats, I mapped an internal route on toddler-nats to be <code>toddler-nats.apps.internal</code>. To talk to toddler-nats, <code>nats://toddler-nats.app.internal</code> was used.</p><p>Something to note here was that I did not have to add a network policy into CF Local when deploying the application locally.</p><h2 id=summary>Summary<a href=#summary class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>To summarise,</p><ul><li>Developing and testing locally with CF Local maps to locally build an image and test a deployment with docker-compose.</li><li>Configuring container-to-container networking maps to calling services within a docker-compose file.</li><li>Running a Docker image inside a CF container was a good-to-know.</li><li>Sequencing application start-up was a good-to-know.</li></ul></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>READ OTHER POSTS</span><hr></div><div class=pagination__buttons><div class="button previous"><a href=https://congx.dev/posts/birth-of-toddler/><span class=button__icon>←</span>
+<span class=button__text>Birth of Toddler</span></a></div><div class="button next"><a href=https://congx.dev/posts/thinkpad-keyboards-controllers/><span class=button__text>There will be ThinkPad keyboard controllers</span>
+<span class=button__icon>→</span></a></div></div></div></div><h2>Comments</h2><script src=https://utteranc.es/client.js repo=rampadc/rampadc.github.io issue-term=pathname label=blog theme=github-light crossorigin=anonymous async></script></main><script type=application/javascript>var doNotTrack=!1;doNotTrack||(function(e,t,n,s,o,i,a){e.GoogleAnalyticsObject=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=1*new Date,i=t.createElement(n),a=t.getElementsByTagName(n)[0],i.async=1,i.src=s,a.parentNode.insertBefore(i,a)}(window,document,"script","https://www.google-analytics.com/analytics.js","ga"),ga("create","UA-35148726-3","auto"),ga("send","pageview"))</script></body></html>

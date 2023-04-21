@@ -1,238 +1,68 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-au" lang="en-au">
-<head>
-  <link href="https://gmpg.org/xfn/11" rel="profile">
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="generator" content="Hugo 0.79.0" />
-
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Adding Talk to Ghost &middot; congx.dev</title>
-  <meta name="description" content="" />
-
-  
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/print.css" media="print">
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/poole.css">
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/syntax.css">
-  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/hyde.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700">
-
-
-  
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
-  <link rel="shortcut icon" href="/favicon.png">
-
-  
-  
-</head>
-
-  <body class="theme-base-navy ">
-  <aside class="sidebar">
-  <div class="container sidebar-sticky">
-    <div class="sidebar-about">
-      <a href="https://congx.dev/"><h1>congx.dev</h1></a>
-      <p class="lead">
-       An archive of things that are worth posting 
-      </p>
-    </div>
-
-    <nav>
-      <ul class="sidebar-nav">
-        <li><a href="https://congx.dev//readme">README</a> </li>
-        <li><a href="https://github.com/rampadc/"> Github </a></li><li><a href="https://www.linkedin.com/in/cong-ng/"> LinkedIn </a></li><li><a href="https://www.twitter.com/congxdev/"> Twitter </a></li>
-      </ul>
-    </nav>
-
-    <p>&copy; 2021. All rights reserved. </p>
-  </div>
-</aside>
-
-    <main class="content container">
-    <div class="post">
-  <h1>Adding Talk to Ghost</h1>
-  <time datetime=2018-12-22T00:20:00&#43;1100 class="post-date">Sat, Dec 22, 2018</time>
-
-  
-  <span class="post-tags">
-    
-    #<a href="https://congx.dev/tags/ghost/">ghost</a>&nbsp;
-    
-  </span>
-  
-  
-  
-
-  
-    <div class="table-of-contents">
-      <h2>
-        
-          Table of Contents
-        
-      </h2>
-      <nav id="TableOfContents">
-  <ul>
-    <li><a href="#setup-a-talk-subdomain-for-the-site">Setup a talk subdomain for the site</a></li>
-    <li><a href="#create-a-folder-to-put-the-configuration-files">Create a folder to put the configuration files</a></li>
-    <li><a href="#add-ssl-to-the-new-subdomain">Add SSL to the new subdomain</a></li>
-    <li><a href="#configure-and-start-talk">Configure and start Talk</a></li>
-    <li><a href="#finalising-nginx-and-push-changes">Finalising NGINX and push changes</a></li>
-    <li><a href="#configuring-talks-admin-configurations">Configuring Talk&rsquo;s Admin Configurations</a></li>
-    <li><a href="#finishing-touches">Finishing touches</a></li>
-  </ul>
-</nav>
-    </div>
-  
-
-  <div class="post-content"><div>
-        <p>Back when this blog still ran on Ghost, I added Mozilla Coral Project&rsquo;s Talk to Ghost, and&hellip;</p>
-<p>Legit, adding <a href="https://coralproject.net/talk/">Talk</a> to Ghost is not as straightforward as the documentation. While the <a href="https://docs.coralproject.net/talk">Quick Start</a> is simple enough on running Talk on your own server, what they don&rsquo;t mention is the amount of overhead setup that comes with it. Being a noob to Ghost, NGINX and hosting a blog on my own server made the setup experience frustrating for me. But persistence prevailed, we now have comments!</p>
-<blockquote>
-<p>Talk is cool, I like Talk.</p>
-</blockquote>
-<p>So, how does this work?</p>
-<p>For this, I am using Docker. It saves time from having to <a href="https://docs.coralproject.net/talk/planning-architecture/">compile code and dependencies</a>.</p>
-<h2 id="setup-a-talk-subdomain-for-the-site">Setup a talk subdomain for the site<a href="#setup-a-talk-subdomain-for-the-site" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>Coral <a href="https://docs.coralproject.net/talk/configuration/">recommends</a> that we use something along the line of talk.domain.com. This configuration not only needs messing around with NGINX but also setting up a subdomain routing with your DNS server. Since I bought my domain from Namecheap, they&rsquo;ve got a guide on adding a subdomain.</p>
-<p><img src="./talk-subdomain.png" alt="talk subdomain"></p>
-<p>Once that is configured, I added SSL and routing in my NGINX configurations. One point to note here is that to setup SSL successfully, I&rsquo;ve found that you have to wait for the DNS configuration to take effect. Namecheap says it could take anywhere up to 30 minutes for their system.</p>
-<h2 id="create-a-folder-to-put-the-configuration-files">Create a folder to put the configuration files<a href="#create-a-folder-to-put-the-configuration-files" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>From this point onwards, I work out of a folder with path <code>/var/www/talk.lettus.xyz</code> owned by and editable by my non-root username. In this folder, I create a <code>.well_known</code> folder. I&rsquo;m not sure if the following step&rsquo;s script creates it for me, so I just make one anyway in case ghost-cli created it. It&rsquo;s used for manual verification that the DNS you&rsquo;re creating a SSL certificate for is indeed pointing to your server.</p>
-<h2 id="add-ssl-to-the-new-subdomain">Add SSL to the new subdomain<a href="#add-ssl-to-the-new-subdomain" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>You can also use certbot for this step.</p>
-<p>When setting up my blog, Ghost also setup SSL with LetsEncrypt. Behind the scenes, ghost-cli talks to the <a href="https://github.com/Neilpang/acme.sh">ACME client script</a>. You don&rsquo;t have to download/install the tool as Ghost already did this for you. The script at the time of this post (Dec 2018) sits in <code>/etc/letsencrypt</code> folder on your server.</p>
-<p><img src="./lets-encrypt-acme.png" alt="Let&rsquo;s Encrypt Acme script"></p>
-<p>Working out of <code>/etc/letsencrypt</code>, you&rsquo;d follow the instructions on ACME&rsquo;s Git README from step 2 to 3. In step 3, paths to <code>key.pem</code> and <code>cert.pem</code> needs to be specified. Ghost uses <code>*.cer</code> and <code>*.key</code> for the <code>cert.pem</code> and <code>key.pem</code> files respectively as evident in their pre-configured SSL NGINX configuration file.</p>
-<p><img src="./ssl-certificate-nginx.png" alt="SSL NGINX config"></p>
-<p>I then cloned Ghost&rsquo;s auto-generated NGINX configuration files into my <code>/var/www/talk.lettus.xyz</code> folder and modify them, editing the <code>server_name</code>, <code>root</code>, <code>ssl_cetificate</code>, <code>ssl_certificate_key</code> and proxy_pass parameters. The location for proxy_pass should point to your Talk&rsquo;s server location. For me, it is <a href="http://127.0.0.1:3000">http://127.0.0.1:3000</a>, which we can find out in the next step. At the end of this step, my SSL configuration file looks like the following block.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-nginx" data-lang="nginx"><span style="color:#66d9ef">server</span> {
-    <span style="color:#f92672">listen</span> <span style="color:#ae81ff">443</span> <span style="color:#e6db74">ssl</span> <span style="color:#e6db74">http2</span>;
-    <span style="color:#f92672">listen</span> <span style="color:#e6db74">[::]:443</span> <span style="color:#e6db74">ssl</span> <span style="color:#e6db74">http2</span>;
-
-    <span style="color:#f92672">server_name</span> <span style="color:#e6db74">talk.lettus.xyz</span>;
-    <span style="color:#f92672">root</span> <span style="color:#e6db74">/var/www/talk.lettus.xyz</span>;
-
-    <span style="color:#f92672">ssl_certificate</span> <span style="color:#e6db74">/var/www/talk.lettus.xyz/cert.pem</span>;
-    <span style="color:#f92672">ssl_certificate_key</span> <span style="color:#e6db74">/var/www/talk.lettus.xyz/key.pem</span>;
-    <span style="color:#f92672">include</span> <span style="color:#e6db74">/etc/nginx/snippets/ssl-params-no-frame.conf</span>;
-
-    <span style="color:#f92672">location</span> <span style="color:#e6db74">/</span> {
-        <span style="color:#f92672">proxy_set_header</span> <span style="color:#e6db74">X-Forwarded-For</span> $proxy_add_x_forwarded_for;
-        <span style="color:#f92672">proxy_set_header</span> <span style="color:#e6db74">X-Forwarded-Proto</span> $scheme;
-        <span style="color:#f92672">proxy_set_header</span> <span style="color:#e6db74">X-Real-IP</span> $remote_addr;
-        <span style="color:#f92672">proxy_set_header</span> <span style="color:#e6db74">Host</span> $http_host;
-        <span style="color:#f92672">proxy_pass</span> <span style="color:#e6db74">http://127.0.0.1:3000</span>;
-    }
-
-    <span style="color:#f92672">location</span> ~ <span style="color:#e6db74">/.well-known</span> {
-        <span style="color:#f92672">allow</span> <span style="color:#e6db74">all</span>;
-    }
-
-
-    <span style="color:#f92672">client_max_body_size</span> <span style="color:#ae81ff">50m</span>;
-}
-</code></pre></div><p>A bit later on, you are going to configure Talk to allow its content to be displayed on your page. By default, NGINX&rsquo;s SSL configuration sets <code>X-Frame-Options to SAMEORIGIN</code>. While this is what you usually want, this setting won&rsquo;t allow Talk&rsquo;s comment HTML to be loaded at all. Talk server will check the sites for you anyway. So to fix this, you gotta edit 1 line in NGINX&rsquo;s <code>ssl-params.conf</code> file. To preserve default configurations for our blogs, I duplicated the <code>ssl-params.conf</code> and placed it in the same folder (<code>/etc/nginx/snippets/</code>) with a new name <code>ssl-params-no-frame.conf</code> and commented out add_header <code>X-Frame-Options SAMEORIGIN;</code>.</p>
-<p>You can leave the <code>proxy_pass</code> address as your Ghost&rsquo;s blog to ensure navigating to <code>talk.your-domain.com</code> actually works.</p>
-<h2 id="configure-and-start-talk">Configure and start Talk<a href="#configure-and-start-talk" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>Finally we can start Talk&rsquo;s <a href="https://docs.coralproject.net/talk/">Quick Start guide</a> 😊. For Talk to work, you will need Redis and MongoDB. I created a free MongoDB database at mlab.com since I want the configuration and comments to probably persist when my VPS is upgraded or have health issues. Coral&rsquo;s already released v4.7 on their Docker Hub so I changed the version in the docker-compose file as well. There doesn&rsquo;t seem to be any breakage. Placing the final docker-compose.yml file into my Talk folder, it looks a bit like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">version</span>: <span style="color:#e6db74">&#39;2&#39;</span>
-<span style="color:#f92672">services</span>:
-  <span style="color:#f92672">talk</span>:
-    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">coralproject/talk:latest</span>
-    <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">always</span>
-    <span style="color:#f92672">ports</span>:
-      - <span style="color:#e6db74">&#34;3000:3000&#34;</span>
-    <span style="color:#f92672">depends_on</span>:
-      - <span style="color:#ae81ff">redis</span>
-    <span style="color:#f92672">environment</span>:
-      - <span style="color:#ae81ff">TALK_MONGO_URL=mongodb://&lt;db-user&gt;:&lt;db-password&gt;@&lt;db-identifier&gt;.mlab.com:63989/&lt;database-name&gt;</span>
-      - <span style="color:#ae81ff">TALK_REDIS_URL=redis://redis</span>
-      - <span style="color:#ae81ff">TALK_ROOT_URL=https://talk.lettus.xyz</span>
-      - <span style="color:#ae81ff">TALK_PORT=3000</span>
-      - <span style="color:#ae81ff">TALK_JWT_SECRET=&lt;my-super-secret-password&gt;</span>
-  <span style="color:#f92672">redis</span>:
-    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">redis:latest</span>
-    <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">always</span>
-    <span style="color:#f92672">volumes</span>:
-      - <span style="color:#ae81ff">redis:/data</span>
-<span style="color:#f92672">volumes</span>:
-  <span style="color:#f92672">redis</span>:
-    <span style="color:#f92672">external</span>: <span style="color:#66d9ef">false</span>
-</code></pre></div><p>Port 3000 is published, which is what I used for <code>proxy_pass</code>. I created a free cluster with mlab so your <code>TALK_MONGO_URL</code> will look different. Lastly, replace <code>TALK_ROOT_URL</code> with your configured talk subdomain.</p>
-<p>Then we just run <code>docker-compose up -d</code>.</p>
-<h2 id="finalising-nginx-and-push-changes">Finalising NGINX and push changes<a href="#finalising-nginx-and-push-changes" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>Now that I had a Talk server running, <code>curl 127.0.0.1:3000</code> redirects me to some mysterious <code>/admin</code> page. Let&rsquo;s create a few symbolic links for our Talk NGINX configuration files and make sure NGINX is happy with our configurations.</p>
-<p>Because I put all of my configuration files in <code>/var/www/talk.lettus.xyz</code>, I run the following two commands to create links to <code>/etc/nginx/sites-enabled</code>, similar to how ghost-cli does it.</p>
-<pre><code>$ sudo ln -s /var/www/talk.lettus.xyz/talk.lettus.xyz.conf /etc/nginx/sites-enabled/
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en-au lang=en-au><head><link href=https://gmpg.org/xfn/11 rel=profile><meta charset=utf-8><meta name=generator content="Hugo 0.111.3"><meta name=viewport content="width=device-width,initial-scale=1"><title>Adding Talk to Ghost &#183; congx.dev</title><meta name=description content><link type=text/css rel=stylesheet href=https://congx.dev/css/print.css media=print><link type=text/css rel=stylesheet href=https://congx.dev/css/poole.css><link type=text/css rel=stylesheet href=https://congx.dev/css/syntax.css><link type=text/css rel=stylesheet href=https://congx.dev/css/hyde.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700"><link rel=apple-touch-icon-precomposed sizes=144x144 href=/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=/favicon.png></head><body class=theme-base-navy><aside class=sidebar><div class="container sidebar-sticky"><div class=sidebar-about><a href=https://congx.dev/><h1>congx.dev</h1></a><p class=lead>An archive of things that are worth posting</p></div><nav><ul class=sidebar-nav><li><a href=https://congx.dev//readme>README</a></li><li><a href=https://github.com/rampadc/>Github</a></li><li><a href=https://www.linkedin.com/in/cong-ng/>LinkedIn</a></li><li><a href=https://www.twitter.com/congxdev/>Twitter</a></li></ul></nav><p>&copy; 2023. All rights reserved.</p></div></aside><main class="content container"><div class=post><h1>Adding Talk to Ghost</h1><time datetime=2018-12-22T00:20:00+1100 class=post-date>Sat, Dec 22, 2018</time>
+<span class=post-tags>#<a href=https://congx.dev/tags/ghost/>ghost</a>&nbsp;</span><div class=table-of-contents><h2>Table of Contents</h2><nav id=TableOfContents><ul><li><a href=#setup-a-talk-subdomain-for-the-site>Setup a talk subdomain for the site</a></li><li><a href=#create-a-folder-to-put-the-configuration-files>Create a folder to put the configuration files</a></li><li><a href=#add-ssl-to-the-new-subdomain>Add SSL to the new subdomain</a></li><li><a href=#configure-and-start-talk>Configure and start Talk</a></li><li><a href=#finalising-nginx-and-push-changes>Finalising NGINX and push changes</a></li><li><a href=#configuring-talks-admin-configurations>Configuring Talk&rsquo;s Admin Configurations</a></li><li><a href=#finishing-touches>Finishing touches</a></li></ul></nav></div><div class=post-content><div><p>Back when this blog still ran on Ghost, I added Mozilla Coral Project&rsquo;s Talk to Ghost, and&mldr;</p><p>Legit, adding <a href=https://coralproject.net/talk/>Talk</a> to Ghost is not as straightforward as the documentation. While the <a href=https://docs.coralproject.net/talk>Quick Start</a> is simple enough on running Talk on your own server, what they don&rsquo;t mention is the amount of overhead setup that comes with it. Being a noob to Ghost, NGINX and hosting a blog on my own server made the setup experience frustrating for me. But persistence prevailed, we now have comments!</p><blockquote><p>Talk is cool, I like Talk.</p></blockquote><p>So, how does this work?</p><p>For this, I am using Docker. It saves time from having to <a href=https://docs.coralproject.net/talk/planning-architecture/>compile code and dependencies</a>.</p><h2 id=setup-a-talk-subdomain-for-the-site>Setup a talk subdomain for the site<a href=#setup-a-talk-subdomain-for-the-site class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>Coral <a href=https://docs.coralproject.net/talk/configuration/>recommends</a> that we use something along the line of talk.domain.com. This configuration not only needs messing around with NGINX but also setting up a subdomain routing with your DNS server. Since I bought my domain from Namecheap, they&rsquo;ve got a guide on adding a subdomain.</p><p><img src=./talk-subdomain.png alt="talk subdomain"></p><p>Once that is configured, I added SSL and routing in my NGINX configurations. One point to note here is that to setup SSL successfully, I&rsquo;ve found that you have to wait for the DNS configuration to take effect. Namecheap says it could take anywhere up to 30 minutes for their system.</p><h2 id=create-a-folder-to-put-the-configuration-files>Create a folder to put the configuration files<a href=#create-a-folder-to-put-the-configuration-files class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>From this point onwards, I work out of a folder with path <code>/var/www/talk.lettus.xyz</code> owned by and editable by my non-root username. In this folder, I create a <code>.well_known</code> folder. I&rsquo;m not sure if the following step&rsquo;s script creates it for me, so I just make one anyway in case ghost-cli created it. It&rsquo;s used for manual verification that the DNS you&rsquo;re creating a SSL certificate for is indeed pointing to your server.</p><h2 id=add-ssl-to-the-new-subdomain>Add SSL to the new subdomain<a href=#add-ssl-to-the-new-subdomain class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>You can also use certbot for this step.</p><p>When setting up my blog, Ghost also setup SSL with LetsEncrypt. Behind the scenes, ghost-cli talks to the <a href=https://github.com/Neilpang/acme.sh>ACME client script</a>. You don&rsquo;t have to download/install the tool as Ghost already did this for you. The script at the time of this post (Dec 2018) sits in <code>/etc/letsencrypt</code> folder on your server.</p><p><img src=./lets-encrypt-acme.png alt="Let&amp;rsquo;s Encrypt Acme script"></p><p>Working out of <code>/etc/letsencrypt</code>, you&rsquo;d follow the instructions on ACME&rsquo;s Git README from step 2 to 3. In step 3, paths to <code>key.pem</code> and <code>cert.pem</code> needs to be specified. Ghost uses <code>*.cer</code> and <code>*.key</code> for the <code>cert.pem</code> and <code>key.pem</code> files respectively as evident in their pre-configured SSL NGINX configuration file.</p><p><img src=./ssl-certificate-nginx.png alt="SSL NGINX config"></p><p>I then cloned Ghost&rsquo;s auto-generated NGINX configuration files into my <code>/var/www/talk.lettus.xyz</code> folder and modify them, editing the <code>server_name</code>, <code>root</code>, <code>ssl_cetificate</code>, <code>ssl_certificate_key</code> and proxy_pass parameters. The location for proxy_pass should point to your Talk&rsquo;s server location. For me, it is <a href=http://127.0.0.1:3000>http://127.0.0.1:3000</a>, which we can find out in the next step. At the end of this step, my SSL configuration file looks like the following block.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nginx data-lang=nginx><span style=display:flex><span><span style=color:#66d9ef>server</span> {
+</span></span><span style=display:flex><span>    <span style=color:#f92672>listen</span> <span style=color:#ae81ff>443</span> <span style=color:#e6db74>ssl</span> <span style=color:#e6db74>http2</span>;
+</span></span><span style=display:flex><span>    <span style=color:#f92672>listen</span> <span style=color:#e6db74>[::]:443</span> <span style=color:#e6db74>ssl</span> <span style=color:#e6db74>http2</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>server_name</span> <span style=color:#e6db74>talk.lettus.xyz</span>;
+</span></span><span style=display:flex><span>    <span style=color:#f92672>root</span> <span style=color:#e6db74>/var/www/talk.lettus.xyz</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>ssl_certificate</span> <span style=color:#e6db74>/var/www/talk.lettus.xyz/cert.pem</span>;
+</span></span><span style=display:flex><span>    <span style=color:#f92672>ssl_certificate_key</span> <span style=color:#e6db74>/var/www/talk.lettus.xyz/key.pem</span>;
+</span></span><span style=display:flex><span>    <span style=color:#f92672>include</span> <span style=color:#e6db74>/etc/nginx/snippets/ssl-params-no-frame.conf</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>location</span> <span style=color:#e6db74>/</span> {
+</span></span><span style=display:flex><span>        <span style=color:#f92672>proxy_set_header</span> <span style=color:#e6db74>X-Forwarded-For</span> $proxy_add_x_forwarded_for;
+</span></span><span style=display:flex><span>        <span style=color:#f92672>proxy_set_header</span> <span style=color:#e6db74>X-Forwarded-Proto</span> $scheme;
+</span></span><span style=display:flex><span>        <span style=color:#f92672>proxy_set_header</span> <span style=color:#e6db74>X-Real-IP</span> $remote_addr;
+</span></span><span style=display:flex><span>        <span style=color:#f92672>proxy_set_header</span> <span style=color:#e6db74>Host</span> $http_host;
+</span></span><span style=display:flex><span>        <span style=color:#f92672>proxy_pass</span> <span style=color:#e6db74>http://127.0.0.1:3000</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>location</span> ~ <span style=color:#e6db74>/.well-known</span> {
+</span></span><span style=display:flex><span>        <span style=color:#f92672>allow</span> <span style=color:#e6db74>all</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>client_max_body_size</span> <span style=color:#ae81ff>50m</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>A bit later on, you are going to configure Talk to allow its content to be displayed on your page. By default, NGINX&rsquo;s SSL configuration sets <code>X-Frame-Options to SAMEORIGIN</code>. While this is what you usually want, this setting won&rsquo;t allow Talk&rsquo;s comment HTML to be loaded at all. Talk server will check the sites for you anyway. So to fix this, you gotta edit 1 line in NGINX&rsquo;s <code>ssl-params.conf</code> file. To preserve default configurations for our blogs, I duplicated the <code>ssl-params.conf</code> and placed it in the same folder (<code>/etc/nginx/snippets/</code>) with a new name <code>ssl-params-no-frame.conf</code> and commented out add_header <code>X-Frame-Options SAMEORIGIN;</code>.</p><p>You can leave the <code>proxy_pass</code> address as your Ghost&rsquo;s blog to ensure navigating to <code>talk.your-domain.com</code> actually works.</p><h2 id=configure-and-start-talk>Configure and start Talk<a href=#configure-and-start-talk class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>Finally we can start Talk&rsquo;s <a href=https://docs.coralproject.net/talk/>Quick Start guide</a> 😊. For Talk to work, you will need Redis and MongoDB. I created a free MongoDB database at mlab.com since I want the configuration and comments to probably persist when my VPS is upgraded or have health issues. Coral&rsquo;s already released v4.7 on their Docker Hub so I changed the version in the docker-compose file as well. There doesn&rsquo;t seem to be any breakage. Placing the final docker-compose.yml file into my Talk folder, it looks a bit like this:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>version</span>: <span style=color:#e6db74>&#39;2&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>services</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>talk</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>image</span>: <span style=color:#ae81ff>coralproject/talk:latest</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>restart</span>: <span style=color:#ae81ff>always</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>ports</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#e6db74>&#34;3000:3000&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>depends_on</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#ae81ff>redis</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>environment</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#ae81ff>TALK_MONGO_URL=mongodb://&lt;db-user&gt;:&lt;db-password&gt;@&lt;db-identifier&gt;.mlab.com:63989/&lt;database-name&gt;</span>
+</span></span><span style=display:flex><span>      - <span style=color:#ae81ff>TALK_REDIS_URL=redis://redis</span>
+</span></span><span style=display:flex><span>      - <span style=color:#ae81ff>TALK_ROOT_URL=https://talk.lettus.xyz</span>
+</span></span><span style=display:flex><span>      - <span style=color:#ae81ff>TALK_PORT=3000</span>
+</span></span><span style=display:flex><span>      - <span style=color:#ae81ff>TALK_JWT_SECRET=&lt;my-super-secret-password&gt;</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>redis</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>image</span>: <span style=color:#ae81ff>redis:latest</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>restart</span>: <span style=color:#ae81ff>always</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>volumes</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#ae81ff>redis:/data</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>volumes</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>redis</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>external</span>: <span style=color:#66d9ef>false</span>
+</span></span></code></pre></div><p>Port 3000 is published, which is what I used for <code>proxy_pass</code>. I created a free cluster with mlab so your <code>TALK_MONGO_URL</code> will look different. Lastly, replace <code>TALK_ROOT_URL</code> with your configured talk subdomain.</p><p>Then we just run <code>docker-compose up -d</code>.</p><h2 id=finalising-nginx-and-push-changes>Finalising NGINX and push changes<a href=#finalising-nginx-and-push-changes class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>Now that I had a Talk server running, <code>curl 127.0.0.1:3000</code> redirects me to some mysterious <code>/admin</code> page. Let&rsquo;s create a few symbolic links for our Talk NGINX configuration files and make sure NGINX is happy with our configurations.</p><p>Because I put all of my configuration files in <code>/var/www/talk.lettus.xyz</code>, I run the following two commands to create links to <code>/etc/nginx/sites-enabled</code>, similar to how ghost-cli does it.</p><pre tabindex=0><code>$ sudo ln -s /var/www/talk.lettus.xyz/talk.lettus.xyz.conf /etc/nginx/sites-enabled/
 $ sudo ln -s /var/www/talk.lettus.xyz/talk.lettus.xyz-ssl.conf /etc/nginx/sites-enabled/
-</code></pre><p>Then run <code>sudo nginx -t</code> to make sure NGINX is happy, and push the changes with <code>sudo nginx -s reload</code>.</p>
-<h2 id="configuring-talks-admin-configurations">Configuring Talk&rsquo;s Admin Configurations<a href="#configuring-talks-admin-configurations" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>Add a new admin, add in permitted domains, copy the Embed Comment Stream block of code in <code>Configure &gt; Tech Settings</code> and paste it into Ghost&rsquo;s footer block in our usual Ghost&rsquo;s code injector settings page.</p>
-<h2 id="finishing-touches">Finishing touches<a href="#finishing-touches" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
-<p>Well, if you put the comments block into the footer, it&rsquo;s going to be below the footer, which isn&rsquo;t what you want. So you&rsquo;ve got to do a bit of scripting to insert the comments block just below your article like so:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://talk.lettus.xyz/static/embed.js&#34;</span> <span style="color:#a6e22e">async</span> <span style="color:#a6e22e">onload</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;
-</span><span style="color:#e6db74">  var articles = document.querySelectorAll(&#39;.post-full.post&#39;);
-</span><span style="color:#e6db74">  if (articles.length === 1) {
-</span><span style="color:#e6db74">    var coral = document.createElement(&#39;div&#39;);
-</span><span style="color:#e6db74">    coral.setAttribute(&#39;id&#39;, &#39;coral_talk_stream&#39;);
-</span><span style="color:#e6db74">    articles[0].appendChild(coral);
-</span><span style="color:#e6db74">    
-</span><span style="color:#e6db74">    Coral.Talk.render(document.getElementById(&#39;coral_talk_stream&#39;), {
-</span><span style="color:#e6db74">      talk: &#39;https://talk.lettus.xyz/&#39;
-</span><span style="color:#e6db74">    });
-</span><span style="color:#e6db74">  }
-</span><span style="color:#e6db74">  
-</span><span style="color:#e6db74">&#34;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
-</code></pre></div><p>Thanks to Snorre for his <a href="https://snorre.io/embedding-coral-talk-in-your-ghost-blog/">tip</a> on this but <code>getElementsByClassName</code> can&rsquo;t get 2 classes at a time mate. You gotta use <code>querySelectorAll</code>. Edit the code block with your own Talk&rsquo;s server details.</p>
-<p>And that&rsquo;s it! Time to find out how to enable Google and Facebook commenting and all the plugins Talk have to offer.</p>
-
-      </div></div>
-  
-
-  
-    <div class="pagination">
-        <div class="pagination__title">
-            <span class="pagination__title-h">READ OTHER POSTS</span>
-            <hr />
-        </div>
-        <div class="pagination__buttons">
-            
-            <div class="button previous">
-                <a href="https://congx.dev/posts/tribal-wars-2-manager-services-overview/">
-                    <span class="button__icon">←</span>
-                    <span class="button__text">Tribal Wars 2 Manager - Services Overview</span>
-                </a>
-            </div>
-            
-            
-            <div class="button next">
-                <a href="https://congx.dev/posts/tribal-wars-2-manager-architecture/">
-                    <span class="button__text">Tribal Wars 2 Manager - Architecture</span>
-                    <span class="button__icon">→</span>
-                </a>
-            </div>
-            
-        </div>
-    </div>
-  
-</div>
-
-
-    </main>
-
-    
-      
-<script type="application/javascript">
-var doNotTrack = false;
-if (!doNotTrack) {
-	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-	ga('create', 'UA-35148726-3', 'auto');
-	
-	ga('send', 'pageview');
-}
-</script>
-<script async src='https://www.google-analytics.com/analytics.js'></script>
-
-    
-  </body>
-</html>
+</code></pre><p>Then run <code>sudo nginx -t</code> to make sure NGINX is happy, and push the changes with <code>sudo nginx -s reload</code>.</p><h2 id=configuring-talks-admin-configurations>Configuring Talk&rsquo;s Admin Configurations<a href=#configuring-talks-admin-configurations class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>Add a new admin, add in permitted domains, copy the Embed Comment Stream block of code in <code>Configure > Tech Settings</code> and paste it into Ghost&rsquo;s footer block in our usual Ghost&rsquo;s code injector settings page.</p><h2 id=finishing-touches>Finishing touches<a href=#finishing-touches class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>Well, if you put the comments block into the footer, it&rsquo;s going to be below the footer, which isn&rsquo;t what you want. So you&rsquo;ve got to do a bit of scripting to insert the comments block just below your article like so:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-html data-lang=html><span style=display:flex><span>&lt;<span style=color:#f92672>script</span> <span style=color:#a6e22e>src</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;https://talk.lettus.xyz/static/embed.js&#34;</span> <span style=color:#a6e22e>async</span> <span style=color:#a6e22e>onload</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  var articles = document.querySelectorAll(&#39;.post-full.post&#39;);
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  if (articles.length === 1) {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    var coral = document.createElement(&#39;div&#39;);
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    coral.setAttribute(&#39;id&#39;, &#39;coral_talk_stream&#39;);
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    articles[0].appendChild(coral);
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    Coral.Talk.render(document.getElementById(&#39;coral_talk_stream&#39;), {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      talk: &#39;https://talk.lettus.xyz/&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    });
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>&#34;</span>&gt;&lt;/<span style=color:#f92672>script</span>&gt;
+</span></span></code></pre></div><p>Thanks to Snorre for his <a href=https://snorre.io/embedding-coral-talk-in-your-ghost-blog/>tip</a> on this but <code>getElementsByClassName</code> can&rsquo;t get 2 classes at a time mate. You gotta use <code>querySelectorAll</code>. Edit the code block with your own Talk&rsquo;s server details.</p><p>And that&rsquo;s it! Time to find out how to enable Google and Facebook commenting and all the plugins Talk have to offer.</p></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>READ OTHER POSTS</span><hr></div><div class=pagination__buttons><div class="button previous"><a href=https://congx.dev/posts/tribal-wars-2-manager-services-overview/><span class=button__icon>←</span>
+<span class=button__text>Tribal Wars 2 Manager - Services Overview</span></a></div><div class="button next"><a href=https://congx.dev/posts/tribal-wars-2-manager-architecture/><span class=button__text>Tribal Wars 2 Manager - Architecture</span>
+<span class=button__icon>→</span></a></div></div></div></div><h2>Comments</h2><script src=https://utteranc.es/client.js repo=rampadc/rampadc.github.io issue-term=pathname label=blog theme=github-light crossorigin=anonymous async></script></main><script type=application/javascript>var doNotTrack=!1;doNotTrack||(function(e,t,n,s,o,i,a){e.GoogleAnalyticsObject=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=1*new Date,i=t.createElement(n),a=t.getElementsByTagName(n)[0],i.async=1,i.src=s,a.parentNode.insertBefore(i,a)}(window,document,"script","https://www.google-analytics.com/analytics.js","ga"),ga("create","UA-35148726-3","auto"),ga("send","pageview"))</script></body></html>
