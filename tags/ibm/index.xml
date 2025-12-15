@@ -1,5 +1,51 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IBM on congx.dev</title><link>https://congx.dev/tags/ibm/</link><description>Recent content in IBM on congx.dev</description><generator>Hugo -- gohugo.io</generator><language>en-au</language><lastBuildDate>Mon, 04 Jan 2021 00:33:00 +1100</lastBuildDate><atom:link href="https://congx.dev/tags/ibm/index.xml" rel="self" type="application/rss+xml"/><item><title>Multi-objective Optimisation with IBM ILOG CPLEX - Part 2</title><link>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-2/</link><pubDate>Mon, 04 Jan 2021 00:33:00 +1100</pubDate><guid>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-2/</guid><description>Recap part 1 In part 1, I created some multi-objective optimisation models with OPL using both the CP Optimiser and CPLEX Optimiser. However, I hit a no-documentation barrier when started using the staticLexFull() function and found the DOcplex.mp Python example to be a more readable.
-In this post, I&amp;rsquo;ll take a look at first converting the existing weighted model to Python, proceed with adding additional weights to the model and finally deploy the model to run on IBM Cloud with Watson Machine Learning.</description></item><item><title>Multi-objective Optimisation with IBM ILOG CPLEX - Part 1</title><link>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/</link><pubDate>Sun, 03 Jan 2021 23:33:00 +1100</pubDate><guid>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/</guid><description>Eons ago (2015), I played this online game called Tribal Wars 2 and created a report that summarised the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happened to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&amp;rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.
-In this first post, I&amp;rsquo;m going to:</description></item><item><title>Logging with Papertrail</title><link>https://congx.dev/posts/logging-with-papertrail/</link><pubDate>Sun, 23 Jun 2019 16:44:00 +1100</pubDate><guid>https://congx.dev/posts/logging-with-papertrail/</guid><description>IBM Cloud is deprecating Kibana as a method to view Cloud Foundry logs. Moving forward, they are recommending LogDNA as a 3rd-party service. That&amp;rsquo;s cool. The process of logging Cloud Foundry is simple enough anyway.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>IBM on congx.dev</title>
+    <link>https://congx.dev/tags/ibm/</link>
+    <description>Recent content in IBM on congx.dev</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-au</language>
+    <lastBuildDate>Mon, 04 Jan 2021 00:33:00 +1100</lastBuildDate><atom:link href="https://congx.dev/tags/ibm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Multi-objective Optimisation with IBM ILOG CPLEX - Part 2</title>
+      <link>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-2/</link>
+      <pubDate>Mon, 04 Jan 2021 00:33:00 +1100</pubDate>
+      
+      <guid>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-2/</guid>
+      <description>Recap part 1 In part 1, I created some multi-objective optimisation models with OPL using both the CP Optimiser and CPLEX Optimiser. However, I hit a no-documentation barrier when started using the staticLexFull() function and found the DOcplex.mp Python example to be a more readable.
+In this post, I&amp;rsquo;ll take a look at first converting the existing weighted model to Python, proceed with adding additional weights to the model and finally deploy the model to run on IBM Cloud with Watson Machine Learning.</description>
+    </item>
+    
+    <item>
+      <title>Multi-objective Optimisation with IBM ILOG CPLEX - Part 1</title>
+      <link>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/</link>
+      <pubDate>Sun, 03 Jan 2021 23:33:00 +1100</pubDate>
+      
+      <guid>https://congx.dev/posts/multiobjective-optimisation-with-ibm-ilog-cplex-1/</guid>
+      <description>Eons ago (2015), I played this online game called Tribal Wars 2 and created a report that summarised the best troops combination to build. Recently, however, the game maker Innogames wiped their online forums to its pre-historic ages, which happened to include my report on army sizes. Back then, I used MATLAB Optimization Toolbox. Now I&amp;rsquo;m going to give IBM ILOG CPLEX a try and see how it goes.
+In this first post, I&amp;rsquo;m going to:</description>
+    </item>
+    
+    <item>
+      <title>Logging with Papertrail</title>
+      <link>https://congx.dev/posts/logging-with-papertrail/</link>
+      <pubDate>Sun, 23 Jun 2019 16:44:00 +1100</pubDate>
+      
+      <guid>https://congx.dev/posts/logging-with-papertrail/</guid>
+      <description>IBM Cloud is deprecating Kibana as a method to view Cloud Foundry logs. Moving forward, they are recommending LogDNA as a 3rd-party service. That&amp;rsquo;s cool. The process of logging Cloud Foundry is simple enough anyway.
 With the general CF CLI, you would:
-Create a user-provided service with cf cups DRAIN-NAME -l SYSLOG-URL. Bind an app to the created service instance with name DRAIN-NAME as follows cf bind-service APP-NAME DRAIN-NAME. Simple right?</description></item><item><title>Beyond the basics with Cloud Foundry</title><link>https://congx.dev/posts/beyond-the-basics-with-cloud-foundry/</link><pubDate>Wed, 12 Jun 2019 23:00:00 +1100</pubDate><guid>https://congx.dev/posts/beyond-the-basics-with-cloud-foundry/</guid><description>The advent of Docker changed the way we develop applications. Once you had written a Dockerfile and built the image, your application will run (almost) anywhere, regardless of the underlying operating system, and best of all, it just works. You can then expose ports, map volumes to persist data and deploy your image in Docker Swarm or Kubernetes (K8s). With great flexibility, however, comes greater costs, whether that is increased developer&amp;rsquo;s skillset requirements and time spent on writing multiple K8s YAML config files, or pricier services on your favourite cloud provider.</description></item></channel></rss>
+ Create a user-provided service with cf cups DRAIN-NAME -l SYSLOG-URL. Bind an app to the created service instance with name DRAIN-NAME as follows cf bind-service APP-NAME DRAIN-NAME.  Simple right?</description>
+    </item>
+    
+    <item>
+      <title>Beyond the basics with Cloud Foundry</title>
+      <link>https://congx.dev/posts/beyond-the-basics-with-cloud-foundry/</link>
+      <pubDate>Wed, 12 Jun 2019 23:00:00 +1100</pubDate>
+      
+      <guid>https://congx.dev/posts/beyond-the-basics-with-cloud-foundry/</guid>
+      <description>The advent of Docker changed the way we develop applications. Once you had written a Dockerfile and built the image, your application will run (almost) anywhere, regardless of the underlying operating system, and best of all, it just works. You can then expose ports, map volumes to persist data and deploy your image in Docker Swarm or Kubernetes (K8s). With great flexibility, however, comes greater costs, whether that is increased developer&amp;rsquo;s skillset requirements and time spent on writing multiple K8s YAML config files, or pricier services on your favourite cloud provider.</description>
+    </item>
+    
+  </channel>
+</rss>

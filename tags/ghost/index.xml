@@ -1,2 +1,21 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>ghost on congx.dev</title><link>https://congx.dev/tags/ghost/</link><description>Recent content in ghost on congx.dev</description><generator>Hugo -- gohugo.io</generator><language>en-au</language><lastBuildDate>Sat, 22 Dec 2018 00:20:00 +1100</lastBuildDate><atom:link href="https://congx.dev/tags/ghost/index.xml" rel="self" type="application/rss+xml"/><item><title>Adding Talk to Ghost</title><link>https://congx.dev/posts/add-talk-commenting-to-ghost/</link><pubDate>Sat, 22 Dec 2018 00:20:00 +1100</pubDate><guid>https://congx.dev/posts/add-talk-commenting-to-ghost/</guid><description>Back when this blog still ran on Ghost, I added Mozilla Coral Project&amp;rsquo;s Talk to Ghost, and&amp;hellip;
-Legit, adding Talk to Ghost is not as straightforward as the documentation. While the Quick Start is simple enough on running Talk on your own server, what they don&amp;rsquo;t mention is the amount of overhead setup that comes with it. Being a noob to Ghost, NGINX and hosting a blog on my own server made the setup experience frustrating for me.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ghost on congx.dev</title>
+    <link>https://congx.dev/tags/ghost/</link>
+    <description>Recent content in ghost on congx.dev</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-au</language>
+    <lastBuildDate>Sat, 22 Dec 2018 00:20:00 +1100</lastBuildDate><atom:link href="https://congx.dev/tags/ghost/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Adding Talk to Ghost</title>
+      <link>https://congx.dev/posts/add-talk-commenting-to-ghost/</link>
+      <pubDate>Sat, 22 Dec 2018 00:20:00 +1100</pubDate>
+      
+      <guid>https://congx.dev/posts/add-talk-commenting-to-ghost/</guid>
+      <description>Back when this blog still ran on Ghost, I added Mozilla Coral Project&amp;rsquo;s Talk to Ghost, and&amp;hellip;
+Legit, adding Talk to Ghost is not as straightforward as the documentation. While the Quick Start is simple enough on running Talk on your own server, what they don&amp;rsquo;t mention is the amount of overhead setup that comes with it. Being a noob to Ghost, NGINX and hosting a blog on my own server made the setup experience frustrating for me.</description>
+    </item>
+    
+  </channel>
+</rss>

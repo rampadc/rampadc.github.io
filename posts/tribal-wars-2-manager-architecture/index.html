@@ -1,31 +1,197 @@
-<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en-au lang=en-au><head><link href=https://gmpg.org/xfn/11 rel=profile><meta charset=utf-8><meta name=generator content="Hugo 0.111.3"><meta name=viewport content="width=device-width,initial-scale=1"><title>Tribal Wars 2 Manager - Architecture &#183; congx.dev</title><meta name=description content><link type=text/css rel=stylesheet href=https://congx.dev/css/print.css media=print><link type=text/css rel=stylesheet href=https://congx.dev/css/poole.css><link type=text/css rel=stylesheet href=https://congx.dev/css/syntax.css><link type=text/css rel=stylesheet href=https://congx.dev/css/hyde.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700"><link rel=apple-touch-icon-precomposed sizes=144x144 href=/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=/favicon.png></head><body class=theme-base-navy><aside class=sidebar><div class="container sidebar-sticky"><div class=sidebar-about><a href=https://congx.dev/><h1>congx.dev</h1></a><p class=lead>An archive of things that are worth posting</p></div><nav><ul class=sidebar-nav><li><a href=https://congx.dev//readme>README</a></li><li><a href=https://github.com/rampadc/>Github</a></li><li><a href=https://www.linkedin.com/in/cong-ng/>LinkedIn</a></li><li><a href=https://www.twitter.com/congxdev/>Twitter</a></li></ul></nav><p>&copy; 2023. All rights reserved.</p></div></aside><main class="content container"><div class=post><h1>Tribal Wars 2 Manager - Architecture</h1><time datetime=2018-12-20T17:24:00+1100 class=post-date>Thu, Dec 20, 2018</time>
-<span class=post-tags>#<a href=https://congx.dev/tags/toddler/>toddler</a>&nbsp;</span><div class=table-of-contents><h2>Table of Contents</h2><nav id=TableOfContents><ul><li><a href=#how-the-game-works>How the game works</a></li><li><a href=#project-high-level-design>Project high-level design</a></li></ul></nav></div><div class=post-content><div><p>Earlier this year, I developed a single process NodeJS application for all the services in this manager (shown down below) and it started to raise out-of-memory errors due to Node&rsquo;s limitation. This project aims to eliminate this problem by splitting the manager into multiple services.</p><p>This blog post serves a documentation for the high-level design of my Tribal Wars 2 manager. The development for this project is not about cheating in Tribal Wars 2 but using the game as a motivator to learn new technologies. As of the published date of this post, this project is not open-source as it is still in development.</p><h2 id=how-the-game-works>How the game works<a href=#how-the-game-works class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>Behind the scenes, Tribal Wars 2, henceforth referred to as TW2, uses a web socket implementation Socket.IO to communicate between the game GUI and server. At the time of this post December 2018, the game is using <a href=http://socket.io>Socket.IO</a> version 2.0. To connect to the game, I am using <a href=https://www.npmjs.com/package/socket.io-client>socket.io-client</a> for Javascript as other implementations of the library is not as up-to-date.</p><p>The sequence to establish a connection to the game is as follows:</p><ol><li>Use socket.io-client to connect to the game</li><li>Listen to the socket&rsquo;s connect and disconnect events detect when a connection is ready.</li><li>Listen to the socket&rsquo;s msg event to intercept messages.</li><li>The code excerpt below shows a rough sketch of how this works.</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#66d9ef>const</span> <span style=color:#a6e22e>io</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;socket.io-client&#39;</span>);
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>const</span> <span style=color:#a6e22e>socket</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>io</span>.<span style=color:#a6e22e>connect</span>(<span style=color:#e6db74>&#39;https://en.tribalwars2.com/&#39;</span>, {
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>query</span><span style=color:#f92672>:</span> <span style=color:#e6db74>&#39;platform=desktop&#39;</span>,
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>transports</span><span style=color:#f92672>:</span> [<span style=color:#e6db74>&#34;websocket&#34;</span>, <span style=color:#e6db74>&#34;polling&#34;</span>, <span style=color:#e6db74>&#34;polling-jsonp&#34;</span>, <span style=color:#e6db74>&#34;polling-xhr&#34;</span>]
-</span></span><span style=display:flex><span>});
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>socket</span>.<span style=color:#a6e22e>on</span>(<span style=color:#e6db74>&#39;connect&#39;</span>, () =&gt; {
-</span></span><span style=display:flex><span>    <span style=color:#75715e>// socket connected
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>});
-</span></span><span style=display:flex><span><span style=color:#a6e22e>socket</span>.<span style=color:#a6e22e>on</span>(<span style=color:#e6db74>&#34;disconnect&#34;</span>, () =&gt; {
-</span></span><span style=display:flex><span>    <span style=color:#75715e>// socket disconnected, handle retries here
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>});
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>socket</span>.<span style=color:#a6e22e>on</span>(<span style=color:#e6db74>&#34;msg&#34;</span>, (<span style=color:#a6e22e>messageObject</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>any</span>) =&gt; {
-</span></span><span style=display:flex><span>    <span style=color:#75715e>// message received
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>});
-</span></span></code></pre></div><p>To send a message to the game, the message must contain a type from the game&rsquo;s routing and events keys in the game&rsquo;s loaded Javascript file, and it should have an ID to identify replies to any requests. The game&rsquo;s Javascript file changes frequently with each new release version. When loading the game, a game file usually comes up following the naming convention game-xyz.min.js, where xyz is a string of numbers and letters.</p><p>The code block to send a message is similar to the following.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#a6e22e>send</span>(<span style=color:#a6e22e>msgObj</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>any</span>) {
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>this</span>.<span style=color:#a6e22e>socket</span>.<span style=color:#a6e22e>emit</span>(<span style=color:#e6db74>&#34;msg&#34;</span>, {
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>type</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>msgObj</span>.<span style=color:#a6e22e>type</span>,
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>data</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>msgObj</span>.<span style=color:#a6e22e>data</span>,
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>id</span><span style=color:#f92672>:</span> <span style=color:#a6e22e>msgObj</span>.<span style=color:#a6e22e>id</span>,
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>headers</span><span style=color:#f92672>:</span> {
-</span></span><span style=display:flex><span>            <span style=color:#a6e22e>traveltimes</span><span style=color:#f92672>:</span> [[<span style=color:#e6db74>&#34;browser_send&#34;</span>, Date.<span style=color:#a6e22e>now</span>()]]
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    });
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=project-high-level-design>Project high-level design<a href=#project-high-level-design class=hanchor arialabel=Anchor>&nbsp;#</a></h2><p>Now, with the basics out of the way, there are a couple of technologies that I want to play with in this project. These include:</p><ol><li>RabbitMQ - originally, I was going with Apache ArtemisMQ since I was learning Kotlin and was going to do a full Spring microservices thing. However, one of my mates was looking for a tech project to try out Jenkins and he&rsquo;s only Ruby proficient. We went with RabbitMQ for its range of client library support in multiple languages.</li><li>Elastic Stack - while looking for an alternative to Splunk Enterprise, I came across the Elastic stack or ELK previously. It&rsquo;s like a MongoDB with all the cool bells and whistles; and you can even build a nice custom dashboard with Kibana and/or Canvas. So say a custom game map with player info and achievement datagrid.</li><li>Activiti BPM - ops service for sending farms, attacks, defending, back-timing, dodging, etc. usually comes with some intelligence or rules that can be baked in and prioritised by the player.</li><li>Anchore - for container security and compliance checks</li><li>Jenkins pipeline to build up a docker stack for all services, perform CI tasks along the way.</li><li>NGINX - last but not least, some reverse proxy. The player is likely to want a dashboard with information from each service, game data, etc.</li><li>Kubernetes - used to orchestrate services in the manager. Personally, I have yet to work with K8s on a multi-node setup.</li></ol><p>This manager is going to include multiple services: data scraping service, farm service, ops service, reports, trading service and alerting services for when you get attacked and such. They communicate to each other and to/from the game via RabbitMQ. The data is likely be stored in Elasticsearch and backed up to a free mlab&rsquo;s MongoDB cluster.</p><p>The following diagram illustrates how services would work with each other. All services will likely to live on a single Docker node, while RabbitMQ and Elastic stack lives on their own separate nodes. I look forward to using Kubernetes to orchestrate the stack.</p><p><img src=components.png alt="Manager&amp;rsquo;s components"></p></div></div><div class=pagination><div class=pagination__title><span class=pagination__title-h>READ OTHER POSTS</span><hr></div><div class=pagination__buttons><div class="button previous"><a href=https://congx.dev/posts/add-talk-commenting-to-ghost/><span class=button__icon>←</span>
-<span class=button__text>Adding Talk to Ghost</span></a></div><div class="button next"><a href=https://congx.dev/posts/my-first-post/><span class=button__text>What is this blog about?</span>
-<span class=button__icon>→</span></a></div></div></div></div><h2>Comments</h2><script src=https://utteranc.es/client.js repo=rampadc/rampadc.github.io issue-term=pathname label=blog theme=github-light crossorigin=anonymous async></script></main><script type=application/javascript>var doNotTrack=!1;doNotTrack||(function(e,t,n,s,o,i,a){e.GoogleAnalyticsObject=o,e[o]=e[o]||function(){(e[o].q=e[o].q||[]).push(arguments)},e[o].l=1*new Date,i=t.createElement(n),a=t.getElementsByTagName(n)[0],i.async=1,i.src=s,a.parentNode.insertBefore(i,a)}(window,document,"script","https://www.google-analytics.com/analytics.js","ga"),ga("create","UA-35148726-3","auto"),ga("send","pageview"))</script></body></html>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-au" lang="en-au">
+<head>
+  <link href="https://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="generator" content="Hugo 0.79.0" />
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Tribal Wars 2 Manager - Architecture &middot; congx.dev</title>
+  <meta name="description" content="" />
+
+  
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/print.css" media="print">
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/poole.css">
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/syntax.css">
+  <link type="text/css" rel="stylesheet" href="https://congx.dev/css/hyde.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700">
+
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  
+</head>
+
+  <body class="theme-base-navy ">
+  <aside class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <a href="https://congx.dev/"><h1>congx.dev</h1></a>
+      <p class="lead">
+       An archive of things that are worth posting 
+      </p>
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li><a href="https://congx.dev//readme">README</a> </li>
+        <li><a href="https://github.com/rampadc/"> Github </a></li><li><a href="https://www.linkedin.com/in/cong-ng/"> LinkedIn </a></li><li><a href="https://www.twitter.com/congxdev/"> Twitter </a></li>
+      </ul>
+    </nav>
+
+    <p>&copy; 2025. All rights reserved. </p>
+  </div>
+</aside>
+
+    <main class="content container">
+    <div class="post">
+  <h1>Tribal Wars 2 Manager - Architecture</h1>
+  <time datetime=2018-12-20T17:24:00&#43;1100 class="post-date">Thu, Dec 20, 2018</time>
+
+  
+  <span class="post-tags">
+    
+    #<a href="https://congx.dev/tags/toddler/">toddler</a>&nbsp;
+    
+  </span>
+  
+  
+  
+
+  
+    <div class="table-of-contents">
+      <h2>
+        
+          Table of Contents
+        
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#how-the-game-works">How the game works</a></li>
+    <li><a href="#project-high-level-design">Project high-level design</a></li>
+  </ul>
+</nav>
+    </div>
+  
+
+  <div class="post-content"><div>
+        <p>Earlier this year, I developed a single process NodeJS application for all the services in this manager (shown down below) and it started to raise out-of-memory errors due to Node&rsquo;s limitation. This project aims to eliminate this problem by splitting the manager into multiple services.</p>
+<p>This blog post serves a documentation for the high-level design of my Tribal Wars 2 manager. The development for this project is not about cheating in Tribal Wars 2 but using the game as a motivator to learn new technologies. As of the published date of this post, this project is not open-source as it is still in development.</p>
+<h2 id="how-the-game-works">How the game works<a href="#how-the-game-works" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
+<p>Behind the scenes, Tribal Wars 2, henceforth referred to as TW2, uses a web socket implementation Socket.IO to communicate between the game GUI and server. At the time of this post December 2018, the game is using <a href="http://socket.io">Socket.IO</a> version 2.0. To connect to the game, I am using <a href="https://www.npmjs.com/package/socket.io-client">socket.io-client</a> for Javascript as other implementations of the library is not as up-to-date.</p>
+<p>The sequence to establish a connection to the game is as follows:</p>
+<ol>
+<li>Use socket.io-client to connect to the game</li>
+<li>Listen to the socket&rsquo;s connect and disconnect events detect when a connection is ready.</li>
+<li>Listen to the socket&rsquo;s msg event to intercept messages.</li>
+<li>The code excerpt below shows a rough sketch of how this works.</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">io</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;socket.io-client&#39;</span>);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">socket</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">connect</span>(<span style="color:#e6db74">&#39;https://en.tribalwars2.com/&#39;</span>, {
+    <span style="color:#a6e22e">query</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;platform=desktop&#39;</span>,
+    <span style="color:#a6e22e">transports</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#34;websocket&#34;</span>, <span style="color:#e6db74">&#34;polling&#34;</span>, <span style="color:#e6db74">&#34;polling-jsonp&#34;</span>, <span style="color:#e6db74">&#34;polling-xhr&#34;</span>]
+});
+
+<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;connect&#39;</span>, () =&gt; {
+    <span style="color:#75715e">// socket connected
+</span><span style="color:#75715e"></span>});
+<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#34;disconnect&#34;</span>, () =&gt; {
+    <span style="color:#75715e">// socket disconnected, handle retries here
+</span><span style="color:#75715e"></span>});
+
+<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#34;msg&#34;</span>, (<span style="color:#a6e22e">messageObject</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">any</span>) =&gt; {
+    <span style="color:#75715e">// message received
+</span><span style="color:#75715e"></span>});
+</code></pre></div><p>To send a message to the game, the message must contain a type from the game&rsquo;s routing and events keys in the game&rsquo;s loaded Javascript file, and it should have an ID to identify replies to any requests. The game&rsquo;s Javascript file changes frequently with each new release version. When loading the game, a game file usually comes up following the naming convention game-xyz.min.js, where xyz is a string of numbers and letters.</p>
+<p>The code block to send a message is similar to the following.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#a6e22e">send</span>(<span style="color:#a6e22e">msgObj</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">any</span>) {
+    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">emit</span>(<span style="color:#e6db74">&#34;msg&#34;</span>, {
+        <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">msgObj</span>.<span style="color:#a6e22e">type</span>,
+        <span style="color:#a6e22e">data</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">msgObj</span>.<span style="color:#a6e22e">data</span>,
+        <span style="color:#a6e22e">id</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">msgObj</span>.<span style="color:#a6e22e">id</span>,
+        <span style="color:#a6e22e">headers</span><span style="color:#f92672">:</span> {
+            <span style="color:#a6e22e">traveltimes</span><span style="color:#f92672">:</span> [[<span style="color:#e6db74">&#34;browser_send&#34;</span>, Date.<span style="color:#a6e22e">now</span>()]]
+        }
+    });
+}
+</code></pre></div><h2 id="project-high-level-design">Project high-level design<a href="#project-high-level-design" class="hanchor" ariaLabel="Anchor">&nbsp;#</a> </h2>
+<p>Now, with the basics out of the way, there are a couple of technologies that I want to play with in this project. These include:</p>
+<ol>
+<li>RabbitMQ - originally, I was going with Apache ArtemisMQ since I was learning Kotlin and was going to do a full Spring microservices thing. However, one of my mates was looking for a tech project to try out Jenkins and he&rsquo;s only Ruby proficient. We went with RabbitMQ for its range of client library support in multiple languages.</li>
+<li>Elastic Stack - while looking for an alternative to Splunk Enterprise, I came across the Elastic stack or ELK previously. It&rsquo;s like a MongoDB with all the cool bells and whistles; and you can even build a nice custom dashboard with Kibana and/or Canvas. So say a custom game map with player info and achievement datagrid.</li>
+<li>Activiti BPM - ops service for sending farms, attacks, defending, back-timing, dodging, etc. usually comes with some intelligence or rules that can be baked in and prioritised by the player.</li>
+<li>Anchore - for container security and compliance checks</li>
+<li>Jenkins pipeline to build up a docker stack for all services, perform CI tasks along the way.</li>
+<li>NGINX - last but not least, some reverse proxy. The player is likely to want a dashboard with information from each service, game data, etc.</li>
+<li>Kubernetes - used to orchestrate services in the manager. Personally, I have yet to work with K8s on a multi-node setup.</li>
+</ol>
+<p>This manager is going to include multiple services: data scraping service, farm service, ops service, reports, trading service and alerting services for when you get attacked and such. They communicate to each other and to/from the game via RabbitMQ. The data is likely be stored in Elasticsearch and backed up to a free mlab&rsquo;s MongoDB cluster.</p>
+<p>The following diagram illustrates how services would work with each other. All services will likely to live on a single Docker node, while RabbitMQ and Elastic stack lives on their own separate nodes. I look forward to using Kubernetes to orchestrate the stack.</p>
+<p><img src="components.png" alt="Manager&rsquo;s components"></p>
+
+      </div></div>
+  
+
+  
+    <div class="pagination">
+        <div class="pagination__title">
+            <span class="pagination__title-h">READ OTHER POSTS</span>
+            <hr />
+        </div>
+        <div class="pagination__buttons">
+            
+            <div class="button previous">
+                <a href="https://congx.dev/posts/add-talk-commenting-to-ghost/">
+                    <span class="button__icon">←</span>
+                    <span class="button__text">Adding Talk to Ghost</span>
+                </a>
+            </div>
+            
+            
+            <div class="button next">
+                <a href="https://congx.dev/posts/my-first-post/">
+                    <span class="button__text">What is this blog about?</span>
+                    <span class="button__icon">→</span>
+                </a>
+            </div>
+            
+        </div>
+    </div>
+  
+</div>
+
+<h2>Comments</h2>
+<script src="https://utteranc.es/client.js"
+        repo="rampadc/rampadc.github.io"
+        issue-term="pathname"
+        label="blog"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
+    </main>
+
+    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-35148726-3', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    
+  </body>
+</html>
