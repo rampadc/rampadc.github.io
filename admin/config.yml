@@ -1,0 +1,109 @@
+# Sveltia CMS configuration for congx.dev (Hugo + GitHub Pages)
+# Docs: https://sveltiacms.app/en/docs/
+#
+# Auth: GitHub Personal Access Token (PAT) only — no OAuth server.
+# Open /admin/, sign in with a fine-grained PAT that has Contents
+# read/write on rampadc/congxdev-src. Token stays in browser local storage.
+
+backend:
+  name: github
+  repo: rampadc/congxdev-src
+  branch: master
+
+# Site-wide media library. Post images also live next to each post (leaf bundles).
+media_folder: static/uploads
+public_folder: /uploads
+
+# Prefer clean ASCII slugs for new posts
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: "-"
+
+collections:
+  - name: posts
+    label: Blog Posts
+    label_singular: Post
+    folder: content/posts
+    # Hugo leaf bundle: content/posts/my-slug/index.md + images beside it
+    path: "{{slug}}/index"
+    create: true
+    # Deletions require a direct git commit (reduces blast radius if PAT is stolen)
+    delete: false
+    # Existing posts use TOML front matter (+++)
+    format: toml-frontmatter
+    extension: md
+    slug: "{{slug}}"
+    identifier_field: title
+    summary: "{{title}} — {{date}}"
+    sortable_fields:
+      fields: [date, title]
+      default:
+        field: date
+        direction: descending
+    # Images for a post live in the same folder as index.md (matches your archive)
+    media_folder: ""
+    public_folder: ""
+    preview_path: posts/{{slug}}
+    fields:
+      - label: Title
+        name: title
+        widget: string
+
+      - label: Publish Date
+        name: date
+        widget: datetime
+        date_format: YYYY-MM-DD
+        time_format: HH:mm
+        format: YYYY-MM-DDTHH:mm:ssZ
+
+      - label: Author
+        name: author
+        widget: string
+        default: Cong Nguyen
+
+      - label: Cover Image
+        name: cover
+        widget: image
+        required: false
+
+      - label: Tags
+        name: tags
+        widget: list
+        required: false
+        allow_add: true
+
+      - label: Keywords
+        name: keywords
+        widget: list
+        required: false
+        allow_add: true
+
+      - label: Description
+        name: description
+        widget: text
+        required: false
+        hint: Short summary for SEO / post listing (optional)
+
+      - label: Show Full Content on List
+        name: showFullContent
+        widget: boolean
+        default: false
+        required: false
+
+      - label: Table of Contents
+        name: toc
+        widget: boolean
+        default: true
+        required: false
+
+      - label: Draft
+        name: draft
+        widget: boolean
+        default: true
+        hint: Drafts are not published by the production Hugo build until you uncheck this
+
+      - label: Body
+        name: body
+        widget: markdown
+        hint: Paste or drag images into the editor — they are saved next to this post

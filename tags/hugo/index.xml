@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Hugo on congx.dev</title><link>https://congx.dev/tags/hugo/</link><description>Recent content in Hugo on congx.dev</description><generator>Hugo</generator><language>en-AU</language><lastBuildDate>Sat, 02 Jan 2021 03:55:00 +1100</lastBuildDate><atom:link href="https://congx.dev/tags/hugo/index.xml" rel="self" type="application/rss+xml"/><item><title>Custom Light Theme for Hugo Terminal</title><link>https://congx.dev/posts/custom-light-terminal-theme/</link><pubDate>Sat, 02 Jan 2021 03:55:00 +1100</pubDate><guid>https://congx.dev/posts/custom-light-terminal-theme/</guid><description>&lt;p&gt;I really like &lt;a href="https://github.com/panr/hugo-theme-terminal"&gt;Panr&amp;rsquo;s Hugo theme Terminal&lt;/a&gt;. It&amp;rsquo;s beautiful. For long texts, however, the contrast can make texts a bit hard to read. This post outlines the files I made customisations to, to create a light theme with a dark blue accent. This is in no way a complete customisation of the Terminal theme, just enough of it that fits my current needs.&lt;/p&gt;
+&lt;h2 id="create-a-new-theme-variant"&gt;Create a new theme variant&lt;/h2&gt;
+&lt;p&gt;To begin creating a new theme variant, I use my existing blog &lt;a href="https://congx.dev"&gt;https://congx.dev&lt;/a&gt; and edit the theme in &lt;code&gt;themes/terminal&lt;/code&gt; directory directly. This approach is &lt;a href="https://github.com/panr/hugo-theme-terminal#how-to-edit"&gt;recommended&lt;/a&gt; by panr in the source GitHub repository.&lt;/p&gt;</description></item><item><title>Building and shipping Hugo posts with Travis CI for Github Pages</title><link>https://congx.dev/posts/build-ship-hugo-travisci-gh-pages/</link><pubDate>Tue, 10 Dec 2019 14:40:00 +0000</pubDate><guid>https://congx.dev/posts/build-ship-hugo-travisci-gh-pages/</guid><description>&lt;p&gt;Since my blog source code is private, this blog post contains snippets of how I set up Travis CI to build and push Hugo&amp;rsquo;s &lt;code&gt;public&lt;/code&gt; folder to another &lt;a href="https://github.com/rampadc/rampadc.github.io"&gt;repository&lt;/a&gt; that hosts my public Github Pages.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s a simple solution, yet the top Google results only feature custom scripts 🤷🤷‍♀️🤷‍♂️.&lt;/p&gt;
+&lt;h2 id="configuring-travis-ci"&gt;Configuring Travis CI&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;.travis.yml&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;install&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;curl -LO https://github.com/gohugoio/hugo/releases/download/v0.59.1/hugo_0.59.1_Linux-64bit.deb&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;sudo dpkg -i hugo_0.59.1_Linux-64bit.deb&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;script&lt;/span&gt;:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;git submodule init&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;git submodule update&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;hugo&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;rm -Rf .git&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;git clone $REMOTE_REPO remote_repo&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;cp -TR public remote_repo&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;cd remote_repo&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;git add .&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;git commit -m &amp;#34;🚀 CI Updating blog 🎁&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; - &lt;span style="color:#ae81ff"&gt;git push&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;Line 10 removes the existing &lt;code&gt;.git&lt;/code&gt; folder in order to clone another git folder inside it and push that one instead&lt;/li&gt;
+&lt;li&gt;Line 12 clones an existing git repository into a folder called &lt;code&gt;remote_repo&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Line 13 copies all the content from &lt;code&gt;public&lt;/code&gt; into &lt;code&gt;remote_repo&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;On line 12, the REMOTE_REPO is configured as a secure Travis environment variable. It contains the a link to a remote repository in the format of&lt;/p&gt;</description></item></channel></rss>

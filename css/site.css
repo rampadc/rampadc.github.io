@@ -1,0 +1,23 @@
+.post-cover {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 0 1rem;
+}
+
+.posts .post-cover {
+  max-height: 16rem;
+  width: 100%;
+  object-fit: cover;
+}
+
+.term-header {
+  margin: 0 0 2rem;
+}
+
+.term-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: #757575;
+}
